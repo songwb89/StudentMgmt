@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI课件讲解 - 奕兆科技</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <!-- ECharts for Mind Map -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f3ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            300: '#a5b4fc',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+        }
+
+        /* 自定义滚动条 */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c7d2fe;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #a5b4fc;
+        }
+
+        /* Tab内容区自适应高度 */
+        .tab-content-container {
+            min-height: 0;
+            flex: 1;
+        }
+        
+        .tab-content {
+            min-height: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 确保视频和脑图容器自适应 */
+        #mindmapContainer, #videoContainer {
+            height: auto !important;
+            min-height: 400px;
+            flex: 1;
+        }
+        
+        /* 思维导图容器自适应 */
+        #mindmapContainer {
+            flex: 1;
+        }
+
+        /* 课件卡片样式 */
+        .course-card {
+            transition: all 0.2s ease;
+        }
+
+        /* 进度条动画 */
+        @keyframes progress {
+            0% { width: 0%; }
+        }
+        .progress-bar {
+            animation: progress 0.5s ease-out;
+        }
+
+        /* 加载动画 */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin 2s linear infinite;
+        }
+
+        /* 渐变背景动画 */
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animate-gradient {
+            background-size: 200% 200%;
+            animation: gradient 3s ease infinite;
+        }
+
+        /* Tab切换动画 */
+        .tab-content {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 思维导图节点样式 */
+        .mindmap-node {
+            transition: all 0.3s ease;
+        }
+        .mindmap-node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 顶部导航栏 -->
+    <div class="h-full flex flex-col">
+    <header class="bg-white border-b border-gray-200 z-50 shadow-sm flex-shrink-0">
+        <div class="px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg">
+                    <i data-lucide="sparkles" class="w-5 h-5"></i>
+                </div>
+                <span class="text-lg font-semibold text-gray-800">奕兆科技</span>
+            </div>
+            <div class="flex items-center gap-3 cursor-pointer hover:bg-gray-50 px-3 py-1.5 rounded-lg transition-colors">
+                <div class="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center">
+                    <i data-lucide="user" class="w-3.5 h-3.5 text-gray-600"></i>
+                </div>
+                <span class="text-sm text-gray-600 font-medium">Admin</span>
+                <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- 返回按钮 -->
+    <div class="fixed left-6 top-20 z-50">
+        <button onclick="goBack()" class="w-10 h-10 bg-primary-500 hover:bg-primary-600 text-white rounded-full shadow-md hover:shadow-lg transition-all flex items-center justify-center">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        </button>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="flex-1 flex flex-col px-6 md:px-12 lg:px-16 xl:px-20 py-6 overflow-hidden">
+        <div class="flex gap-6 flex-1 min-h-0">
+            <!-- 左侧课件列表卡片 -->
+            <aside class="w-72 flex-shrink-0 flex flex-col">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col flex-1">
+                    <!-- 上传按钮组 -->
+                    <div class="p-4 border-b border-gray-100 space-y-2">
+                        <button onclick="handleLocalUpload()" class="w-full flex items-center justify-center gap-2 bg-primary-500 text-white px-4 py-2.5 rounded-lg hover:bg-primary-600 transition-colors font-medium text-sm">
+                            <i data-lucide="upload" class="w-4 h-4"></i>
+                            本地文件
+                        </button>
+                        <button onclick="handleOnlineCourse()" class="w-full flex items-center justify-center gap-2 bg-white text-primary-600 border border-gray-300 px-4 py-2.5 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm">
+                            <i data-lucide="globe" class="w-4 h-4"></i>
+                            在线课件
+                        </button>
+                    </div>
+
+                    <!-- 搜索框 -->
+                    <div class="px-4 pt-4">
+                        <div class="relative">
+                            <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                            <input type="text" placeholder="请输入关键词" class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary-400 focus:ring-1 focus:ring-primary-200 bg-gray-50">
+                        </div>
+                    </div>
+
+                    <!-- 课件列表 -->
+                    <div class="overflow-y-auto custom-scrollbar p-4 space-y-2 flex-1" id="courseList">
+                        <div class="text-xs text-gray-500 font-medium mb-3">我的课件</div>
+                        <!-- 课件项将动态生成 -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- 右侧内容卡片 -->
+            <main class="flex-1 flex flex-col">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col flex-1">
+                    <!-- 课件标题栏 -->
+                    <div class="border-b border-gray-100 px-6 py-4">
+                        <h2 class="text-lg font-bold text-gray-800" id="courseTitle">等腰三角形判定</h2>
+                    </div>
+
+                    <!-- Tab切换栏 -->
+                    <div class="border-b border-gray-100 px-6">
+                        <div class="flex gap-1">
+                            <button class="tab-btn active px-4 py-3 text-sm font-medium relative rounded-t-lg" onclick="switchTab('explanation')" data-tab="explanation">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="book-open" class="w-4 h-4"></i>
+                                    课件讲解
+                                </div>
+                                <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500 tab-indicator"></div>
+                            </button>
+                            <button class="tab-btn px-4 py-3 text-sm font-medium relative text-gray-600 rounded-t-lg" onclick="switchTab('mindmap')" data-tab="mindmap">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="git-branch" class="w-4 h-4"></i>
+                                    思维导图
+                                </div>
+                                <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500 tab-indicator hidden"></div>
+                            </button>
+                            <button class="tab-btn px-4 py-3 text-sm font-medium relative text-gray-600 rounded-t-lg" onclick="switchTab('video')" data-tab="video">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="video" class="w-4 h-4"></i>
+                                    视频概览
+                                </div>
+                                <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500 tab-indicator hidden"></div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tab内容区 -->
+                    <div class="tab-content-container flex-1 flex flex-col">
+                        <!-- 课件讲解Tab -->
+                        <div id="explanationTab" class="tab-content p-6">
+                            <!-- 课件展示区 -->
+                            <div class="flex items-center justify-center mb-6">
+                                <img id="courseImage" src="data/img/0.png" alt="课件页面" class="max-w-full h-auto shadow-lg rounded-lg">
+                            </div>
+
+                            <!-- 控制栏 -->
+                            <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                                <!-- 页码控制 -->
+                                <div class="flex items-center justify-center gap-4">
+                                    <button onclick="previousPage()" class="p-2 text-gray-700 hover:bg-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed" id="prevBtn" title="上一页">
+                                        <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                                    </button>
+                                    
+                                    <button onclick="togglePlay()" class="p-2 text-gray-700 hover:bg-white rounded-lg transition-colors" title="播放/暂停">
+                                        <i data-lucide="play" class="w-5 h-5" id="playIcon"></i>
+                                    </button>
+
+                                    <button onclick="nextPage()" class="p-2 text-gray-700 hover:bg-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed" id="nextBtn" title="下一页">
+                                        <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                                    </button>
+
+                                    <!-- 进度信息 -->
+                                    <div class="flex items-center gap-3 ml-auto">
+                                        <div class="text-sm text-gray-700 bg-white px-3 py-1.5 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors" title="播放速度">
+                                            倍速
+                                        </div>
+                                        <button class="p-2 text-gray-700 hover:bg-white rounded-lg transition-colors" title="音量">
+                                            <i data-lucide="volume-2" class="w-5 h-5"></i>
+                                        </button>
+                                        <button class="p-2 text-gray-700 hover:bg-white rounded-lg transition-colors" title="全屏">
+                                            <i data-lucide="maximize" class="w-5 h-5"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 思维导图Tab -->
+                        <div id="mindmapTab" class="tab-content p-6 hidden">
+                            <!-- 未生成状态 -->
+                            <div id="mindmapEmpty" class="hidden text-center py-20">
+                                <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i data-lucide="git-branch" class="w-8 h-8 text-primary-600"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2">思维导图未生成</h3>
+                                <p class="text-sm text-gray-600 mb-4">点击下方按钮，AI将为您生成课件知识结构图</p>
+                                <button onclick="generateMindmap()" class="inline-flex items-center gap-2 bg-primary-500 text-white px-5 py-2.5 rounded-lg hover:bg-primary-600 transition-colors font-medium">
+                                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                                    生成思维导图
+                                </button>
+                            </div>
+
+                            <!-- 已生成状态 -->
+                            <div id="mindmapContent">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-base font-semibold text-gray-800">课件知识结构</h3>
+                                    <div class="flex gap-2">
+                                        <button onclick="expandAll()" class="px-3 py-1.5 text-xs text-primary-600 hover:bg-primary-50 rounded-lg transition-colors">
+                                            展开全部
+                                        </button>
+                                        <button onclick="collapseAll()" class="px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                                            收起全部
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- 思维导图容器 -->
+                                <div id="mindmapContainer" style="width: 100%; min-height: 400px; border: 1px solid #e5e7eb; border-radius: 8px;"></div>
+                            </div>
+                        </div>
+
+                        <!-- 视频概览Tab -->
+                        <div id="videoTab" class="tab-content p-6 hidden">
+                            <!-- 未生成状态 -->
+                            <div id="videoEmpty" class="hidden text-center py-20">
+                                <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i data-lucide="video" class="w-8 h-8 text-primary-600"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-800 mb-2">视频概览未生成</h3>
+                                <p class="text-sm text-gray-600 mb-4">点击下方按钮，AI将为您生成课件视频概览（约需2-3分钟）</p>
+                                <button onclick="generateVideo()" class="inline-flex items-center gap-2 bg-primary-500 text-white px-5 py-2.5 rounded-lg hover:bg-primary-600 transition-colors font-medium">
+                                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                                    生成视频概览
+                                </button>
+                            </div>
+
+                            <!-- 已生成状态 -->
+                            <div id="videoContent">
+                                <!-- 视频播放器 -->
+                                <div class="bg-black rounded-lg overflow-hidden">
+                                    <video id="overviewVideo" class="w-full" controls>
+                                        <source src="data/final_presentation.mp4" type="video/mp4">
+                                        您的浏览器不支持视频播放。
+                                    </video>
+                                </div>
+                                
+                                <div class="mt-4 text-sm text-gray-600">
+                                    <p>本视频由AI自动生成，时长约3分钟，概括了课件的核心知识点和重点内容。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 上传进度弹窗 -->
+    <div id="uploadModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 animate-gradient bg-gradient-to-br from-white to-primary-50">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="upload" class="w-8 h-8 text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">上传中</h3>
+                <p class="text-gray-600 mb-6">正在上传课件文件...</p>
+                
+                <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
+                    <div id="uploadProgress" class="h-full bg-gradient-to-r from-primary-500 to-purple-600 progress-bar" style="width: 0%"></div>
+                </div>
+                <div class="text-sm text-gray-600">
+                    <span id="uploadPercent">0</span>%
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 生成讲解进度弹窗 -->
+    <div id="generateModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="sparkles" class="w-8 h-8 text-white animate-pulse"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">AI生成中</h3>
+                <p class="text-gray-600 mb-6" id="generateStage">正在解析课件内容...</p>
+                
+                <!-- 四阶段进度 -->
+                <div class="space-y-3 mb-6">
+                    <div class="flex items-center gap-3 text-sm">
+                        <div class="w-6 h-6 rounded-full bg-primary-500 text-white flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="check" class="w-3 h-3" id="stage1Icon"></i>
+                        </div>
+                        <span class="text-gray-600">解析课件内容</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm">
+                        <div class="w-6 h-6 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center flex-shrink-0" id="stage2">
+                            <span class="text-xs font-bold">2</span>
+                        </div>
+                        <span class="text-gray-400">分析知识点</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm">
+                        <div class="w-6 h-6 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center flex-shrink-0" id="stage3">
+                            <span class="text-xs font-bold">3</span>
+                        </div>
+                        <span class="text-gray-400">生成讲解文案</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm">
+                        <div class="w-6 h-6 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center flex-shrink-0" id="stage4">
+                            <span class="text-xs font-bold">4</span>
+                        </div>
+                        <span class="text-gray-400">语音合成</span>
+                    </div>
+                </div>
+                
+                <div class="text-sm text-gray-600">
+                    正在生成第 <span id="generatePage">1</span> / 15 页
+                </div>
+
+                <button onclick="cancelGenerate()" class="mt-6 text-sm text-gray-500 hover:text-gray-700 transition-colors">
+                    取消生成
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast提示 -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-gray-800 text-white px-6 py-3 rounded-xl shadow-lg hidden items-center gap-3 z-50">
+        <i data-lucide="check-circle" class="w-5 h-5"></i>
+        <span id="toastMessage">操作成功</span>
+    </div>
+
+    <script>
+        // 初始化 Lucide 图标
+        lucide.createIcons();
+
+        // 全局状态
+        let appState = {
+            currentCourse: 'course1',
+            currentTab: 'explanation',
+            currentPage: 1,
+            totalPages: 15,
+            isPlaying: false,
+            currentTime: 0,
+            duration: 225, // 3:45
+            mindmapChart: null,
+            narrationData: null, // 旁白数据
+            speechSynthesis: window.speechSynthesis,
+            currentUtterance: null, // 当前语音对象
+            playbackRate: 1.0, // 播放速度
+            volume: 1.0, // 音量
+            courses: {
+                course1: {
+                    title: '等腰三角形判定',
+                    subtitle: '第13章 轴对称 · 人教版数学（初中）（八年级 上）',
+                    type: 'online', // 在线课件
+                    pages: 15,
+                    status: 'ready', // 已就绪
+                    hasExplanation: true,
+                    hasMindmap: true,
+                    hasVideo: true
+                },
+                course2: {
+                    title: '软件工程导论',
+                    subtitle: '第3章 需求分析 · 计算机科学专业',
+                    type: 'pdf', // PDF课件
+                    pages: 42,
+                    status: 'ready',
+                    hasExplanation: true,
+                    hasMindmap: false,
+                    hasVideo: false
+                },
+                course3: {
+                    title: '数据结构与算法',
+                    subtitle: '第6章 图论基础 · 计算机科学专业',
+                    type: 'ppt', // PPT课件
+                    pages: 28,
+                    status: 'ready',
+                    hasExplanation: false,
+                    hasMindmap: false,
+                    hasVideo: false
+                },
+                course4: {
+                    title: '机器学习入门',
+                    subtitle: '第2章 监督学习 · 人工智能专业',
+                    type: 'pdf',
+                    pages: 35,
+                    status: 'generating', // 生成中
+                    hasExplanation: false,
+                    hasMindmap: false,
+                    hasVideo: false
+                },
+                course5: {
+                    title: '微积分基础',
+                    subtitle: '第4章 不定积分 · 高等数学（上）',
+                    type: 'online',
+                    pages: 22,
+                    status: 'generating',
+                    hasExplanation: false,
+                    hasMindmap: false,
+                    hasVideo: false
+                },
+                course6: {
+                    title: '操作系统原理',
+                    subtitle: '第5章 进程管理 · 计算机科学专业',
+                    type: 'ppt',
+                    pages: 48,
+                    status: 'ready',
+                    hasExplanation: true,
+                    hasMindmap: true,
+                    hasVideo: false
+                },
+                course7: {
+                    title: '英语语法精讲',
+                    subtitle: '第8章 虚拟语气 · 高中英语',
+                    type: 'pdf',
+                    pages: 18,
+                    status: 'generating',
+                    hasExplanation: false,
+                    hasMindmap: false,
+                    hasVideo: false
+                },
+                course8: {
+                    title: '有机化学',
+                    subtitle: '第3章 烃类化合物 · 高中化学',
+                    type: 'online',
+                    pages: 25,
+                    status: 'ready',
+                    hasExplanation: true,
+                    hasMindmap: false,
+                    hasVideo: true
+                }
+            }
+        };
+
+
+        // Tab切换
+        function switchTab(tabName) {
+            // 更新Tab按钮样式
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('text-gray-600');
+                btn.querySelector('.tab-indicator').classList.add('hidden');
+            });
+            const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
+            activeBtn.classList.add('active');
+            activeBtn.classList.remove('text-gray-600');
+            activeBtn.querySelector('.tab-indicator').classList.remove('hidden');
+
+            // 切换内容
+            document.getElementById('explanationTab').classList.add('hidden');
+            document.getElementById('mindmapTab').classList.add('hidden');
+            document.getElementById('videoTab').classList.add('hidden');
+            
+            document.getElementById(tabName + 'Tab').classList.remove('hidden');
+            appState.currentTab = tabName;
+
+            // 根据当前课件状态显示内容或空状态
+            const course = appState.courses[appState.currentCourse];
+            
+            if (tabName === 'mindmap') {
+                if (course.hasMindmap) {
+                    document.getElementById('mindmapEmpty').classList.add('hidden');
+                    document.getElementById('mindmapContent').classList.remove('hidden');
+                    if (!appState.mindmapChart) {
+                        setTimeout(initMindmap, 100);
+                    }
+                } else {
+                    document.getElementById('mindmapEmpty').classList.remove('hidden');
+                    document.getElementById('mindmapContent').classList.add('hidden');
+                }
+            }
+            
+            if (tabName === 'video') {
+                if (course.hasVideo) {
+                    document.getElementById('videoEmpty').classList.add('hidden');
+                    document.getElementById('videoContent').classList.remove('hidden');
+                } else {
+                    document.getElementById('videoEmpty').classList.remove('hidden');
+                    document.getElementById('videoContent').classList.add('hidden');
+                }
+            }
+
+            lucide.createIcons();
+        }
+
+        // 渲染课件列表
+        function renderCourseList() {
+            const courseList = document.getElementById('courseList');
+            courseList.innerHTML = '<div class="text-xs text-gray-500 font-medium mb-3">我的课件</div>';
+            
+            // 课件类型配置
+            const typeConfig = {
+                online: { icon: 'globe', bgColor: 'bg-red-500', tagColor: 'bg-red-100 text-red-700', label: '在线' },
+                pdf: { icon: 'file-text', bgColor: 'bg-red-500', tagColor: 'bg-red-100 text-red-700', label: 'PDF' },
+                ppt: { icon: 'presentation', bgColor: 'bg-red-500', tagColor: 'bg-red-100 text-red-700', label: 'PPT' }
+            };
+            
+            Object.entries(appState.courses).forEach(([courseId, course]) => {
+                const config = typeConfig[course.type];
+                const isGenerating = course.status === 'generating';
+                const isActive = courseId === appState.currentCourse;
+                
+                const courseCard = document.createElement('div');
+                courseCard.className = `course-card p-3 rounded-lg transition-all cursor-pointer ${
+                    isActive 
+                        ? 'border-2 border-primary-500 bg-primary-50'
+                        : 'hover:bg-gray-50'
+                }`;
+                
+                courseCard.onclick = () => selectCourse(courseId);
+                
+                courseCard.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 ${config.bgColor} rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="${config.icon}" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="font-medium text-sm text-gray-900 truncate">${course.title}</div>
+                            ${isGenerating ? `
+                            <div class="flex items-center gap-1 mt-1">
+                                <i data-lucide="loader-2" class="w-3 h-3 text-amber-500 animate-spin-slow"></i>
+                                <span class="text-xs text-amber-600">讲解生成中...</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                        <div class="text-xs text-gray-500 font-medium flex-shrink-0">${course.pages}页</div>
+                    </div>
+                `;
+                
+                courseList.appendChild(courseCard);
+            });
+            
+            lucide.createIcons();
+        }
+
+        // 选择课件
+        function selectCourse(courseId) {
+            const course = appState.courses[courseId];
+            
+            // 如果正在生成中，提示用户
+            if (course.status === 'generating') {
+                showToast('该课件讲解内容正在生成中，请稍后...');
+                return;
+            }
+            
+            appState.currentCourse = courseId;
+            
+            // 更新标题
+            document.getElementById('courseTitle').textContent = course.title;
+            
+            // 重新渲染课件列表以更新选中状态
+            renderCourseList();
+
+            // 重置页面
+            appState.currentPage = 1;
+            appState.totalPages = course.pages;
+            updateCoursePage();
+            
+            // 重置思维导图
+            appState.mindmapChart = null;
+            
+            // 切换回课件讲解Tab
+            switchTab('explanation');
+
+            showToast('已切换到：' + course.title);
+        }
+
+        // 更新课件页面
+        function updateCoursePage() {
+            // 只有course1有真实图片，其他课件使用占位符
+            let imgPath;
+            if (appState.currentCourse === 'course1') {
+                imgPath = `data/img/${appState.currentPage - 1}.png`;
+            } else {
+                // 使用第一张图作为占位符
+                imgPath = `data/img/0.png`;
+            }
+            document.getElementById('courseImage').src = imgPath;
+            document.getElementById('currentPage').textContent = appState.currentPage;
+            document.getElementById('totalPages').textContent = appState.totalPages;
+            
+            // 更新按钮状态
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            if (prevBtn) prevBtn.disabled = appState.currentPage <= 1;
+            if (nextBtn) nextBtn.disabled = appState.currentPage >= appState.totalPages;
+        }
+
+        // 切换缩略图导航
+        function toggleThumbnails() {
+            const thumbnailNav = document.getElementById('thumbnailNav');
+            const thumbnailGrid = document.getElementById('thumbnailGrid');
+            
+            if (thumbnailNav.classList.contains('hidden')) {
+                thumbnailNav.classList.remove('hidden');
+                
+                // 生成缩略图（仅course1有真实图片）
+                if (appState.currentCourse === 'course1' && thumbnailGrid.children.length === 0) {
+                    for (let i = 0; i < appState.totalPages; i++) {
+                        const thumb = document.createElement('div');
+                        thumb.className = 'cursor-pointer border-2 border-gray-200 rounded-lg overflow-hidden hover:border-primary-500 transition-colors';
+                        thumb.innerHTML = `
+                            <img src="data/img/${i}.png" alt="第${i+1}页" class="w-full h-auto">
+                            <div class="text-xs text-center py-1 bg-gray-50">第${i+1}页</div>
+                        `;
+                        thumb.onclick = () => jumpToPage(i + 1);
+                        thumbnailGrid.appendChild(thumb);
+                    }
+                }
+            } else {
+                thumbnailNav.classList.add('hidden');
+            }
+            
+            lucide.createIcons();
+        }
+
+        // 跳转到指定页面
+        function jumpToPage(page) {
+            // 停止当前播放
+            if (appState.isPlaying) {
+                appState.isPlaying = false;
+                stopSpeech();
+                const playIcon = document.getElementById('playIcon');
+                playIcon.setAttribute('data-lucide', 'play');
+                lucide.createIcons();
+            }
+            
+            appState.currentPage = page;
+            updateCoursePage();
+            appState.currentTime = 0;
+            updateAudioProgress();
+            
+            // 关闭缩略图导航
+            document.getElementById('thumbnailNav').classList.add('hidden');
+        }
+
+        // 播放/暂停
+        function togglePlay() {
+            appState.isPlaying = !appState.isPlaying;
+            const playIcon = document.getElementById('playIcon');
+            
+            if (appState.isPlaying) {
+                playIcon.setAttribute('data-lucide', 'pause');
+                startSpeech();
+            } else {
+                playIcon.setAttribute('data-lucide', 'play');
+                stopSpeech();
+            }
+            
+            lucide.createIcons();
+        }
+
+        // 开始语音播放
+        let progressInterval;
+        function startSpeech() {
+            // 检查是否有旁白数据
+            if (!appState.narrationData || !appState.narrationData.pages) {
+                showToast('旁白数据未加载');
+                appState.isPlaying = false;
+                return;
+            }
+
+            // 检查浏览器是否支持 Web Speech API
+            if (!appState.speechSynthesis) {
+                showToast('您的浏览器不支持语音合成');
+                appState.isPlaying = false;
+                return;
+            }
+
+            // 停止之前的播放
+            if (appState.currentUtterance) {
+                appState.speechSynthesis.cancel();
+            }
+
+            // 获取当前页面的旁白
+            const currentPageData = appState.narrationData.pages.find(p => p.page === appState.currentPage);
+            if (!currentPageData || !currentPageData.narration) {
+                showToast('当前页面没有旁白');
+                appState.isPlaying = false;
+                return;
+            }
+
+            // 创建语音对象
+            const utterance = new SpeechSynthesisUtterance(currentPageData.narration);
+            appState.currentUtterance = utterance;
+
+            // 设置语音参数
+            utterance.lang = 'zh-CN'; // 中文
+            utterance.rate = appState.playbackRate || 1.0; // 语速
+            utterance.pitch = 1.0; // 音调
+            utterance.volume = appState.volume || 1.0; // 音量
+
+            // 估算总时长（基于文本长度，平均每秒5个字）
+            const textLength = currentPageData.narration.length;
+            appState.duration = Math.ceil(textLength / 5);
+            appState.currentTime = 0;
+
+            // 语音结束时的回调
+            utterance.onend = () => {
+                appState.isPlaying = false;
+                const playIcon = document.getElementById('playIcon');
+                playIcon.setAttribute('data-lucide', 'play');
+                lucide.createIcons();
+                
+                // 自动翻到下一页
+                if (appState.currentPage < appState.totalPages) {
+                    nextPage();
+                } else {
+                    // 最后一页播放完，重置进度
+                    appState.currentTime = 0;
+                    updateAudioProgress();
+                }
+            };
+
+            // 语音错误时的回调
+            utterance.onerror = (event) => {
+                console.error('语音播放错误:', event);
+                showToast('语音播放出错');
+                appState.isPlaying = false;
+                const playIcon = document.getElementById('playIcon');
+                playIcon.setAttribute('data-lucide', 'play');
+                lucide.createIcons();
+            };
+
+            // 开始播放
+            appState.speechSynthesis.speak(utterance);
+
+            // 开始进度条更新
+            progressInterval = setInterval(() => {
+                if (appState.isPlaying) {
+                    appState.currentTime += 1;
+                    if (appState.currentTime > appState.duration) {
+                        appState.currentTime = appState.duration;
+                    }
+                    updateAudioProgress();
+                }
+            }, 1000);
+        }
+
+        // 停止语音播放
+        function stopSpeech() {
+            if (appState.speechSynthesis) {
+                appState.speechSynthesis.cancel();
+            }
+            if (progressInterval) {
+                clearInterval(progressInterval);
+            }
+        }
+
+        function updateAudioProgress() {
+            const progress = (appState.currentTime / appState.duration) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            const minutes = Math.floor(appState.currentTime / 60);
+            const seconds = appState.currentTime % 60;
+            document.getElementById('currentTime').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // 拖动进度条
+        function seekAudio(event) {
+            const rect = event.currentTarget.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const percentage = x / rect.width;
+            appState.currentTime = Math.floor(percentage * appState.duration);
+            updateAudioProgress();
+        }
+
+        // 音量控制
+        function setVolume(value) {
+            appState.volume = value;
+            
+            // 如果正在播放，更新当前语音的音量
+            if (appState.currentUtterance && appState.isPlaying) {
+                // Web Speech API 不支持动态修改音量，需要重新播放
+                const wasPlaying = appState.isPlaying;
+                if (wasPlaying) {
+                    stopSpeech();
+                    appState.isPlaying = false;
+                    
+                    // 短暂延迟后重新开始
+                    setTimeout(() => {
+                        appState.isPlaying = true;
+                        startSpeech();
+                    }, 100);
+                }
+            }
+        }
+
+        // 播放速度
+        function setPlaybackRate(rate) {
+            // 如果正在播放，重新开始播放以应用新速度
+            const wasPlaying = appState.isPlaying;
+            if (wasPlaying) {
+                stopSpeech();
+                appState.isPlaying = false;
+            }
+            
+            // 保存播放速度
+            appState.playbackRate = rate;
+            
+            // 如果之前在播放，重新开始
+            if (wasPlaying) {
+                appState.isPlaying = true;
+                startSpeech();
+            }
+            
+            showToast(`播放速度已设置为 ${rate}x`);
+        }
+
+        // 上一页
+        function previousPage() {
+            if (appState.currentPage > 1) {
+                // 停止当前播放
+                if (appState.isPlaying) {
+                    appState.isPlaying = false;
+                    stopSpeech();
+                    const playIcon = document.getElementById('playIcon');
+                    playIcon.setAttribute('data-lucide', 'play');
+                    lucide.createIcons();
+                }
+                
+                appState.currentPage--;
+                updateCoursePage();
+                appState.currentTime = 0;
+                updateAudioProgress();
+            }
+        }
+
+        // 下一页
+        function nextPage() {
+            if (appState.currentPage < appState.totalPages) {
+                // 停止当前播放
+                if (appState.isPlaying) {
+                    appState.isPlaying = false;
+                    stopSpeech();
+                    const playIcon = document.getElementById('playIcon');
+                    playIcon.setAttribute('data-lucide', 'play');
+                    lucide.createIcons();
+                }
+                
+                appState.currentPage++;
+                updateCoursePage();
+                appState.currentTime = 0;
+                updateAudioProgress();
+            }
+        }
+
+        // 初始化思维导图
+        async function initMindmap() {
+            try {
+                const response = await fetch('data/swdt.json');
+                const data = await response.json();
+                
+                const container = document.getElementById('mindmapContainer');
+                appState.mindmapChart = echarts.init(container);
+                
+                // 转换数据格式
+                const treeData = {
+                    name: data.title,
+                    children: data.nodes.map(node => convertNode(node))
+                };
+                
+                const option = {
+                    tooltip: {
+                        trigger: 'item',
+                        triggerOn: 'mousemove'
+                    },
+                    series: [{
+                        type: 'tree',
+                        data: [treeData],
+                        top: '5%',
+                        left: '10%',
+                        bottom: '5%',
+                        right: '20%',
+                        symbolSize: 12,
+                        orient: 'LR',
+                        label: {
+                            position: 'left',
+                            verticalAlign: 'middle',
+                            align: 'right',
+                            fontSize: 14,
+                            backgroundColor: '#fff',
+                            borderColor: '#6366f1',
+                            borderWidth: 2,
+                            borderRadius: 8,
+                            padding: [8, 12],
+                            color: '#374151'
+                        },
+                        leaves: {
+                            label: {
+                                position: 'right',
+                                verticalAlign: 'middle',
+                                align: 'left'
+                            }
+                        },
+                        expandAndCollapse: true,
+                        initialTreeDepth: 3,
+                        animationDuration: 550,
+                        animationDurationUpdate: 750,
+                        itemStyle: {
+                            color: '#6366f1',
+                            borderColor: '#8b5cf6'
+                        },
+                        lineStyle: {
+                            color: '#c7d2fe',
+                            width: 2,
+                            curveness: 0.5
+                        }
+                    }]
+                };
+                
+                appState.mindmapChart.setOption(option);
+            } catch (error) {
+                console.error('加载思维导图失败:', error);
+            }
+        }
+
+        function convertNode(node) {
+            const result = {
+                name: node.text
+            };
+            if (node.children && node.children.length > 0) {
+                result.children = node.children.map(child => convertNode(child));
+            }
+            return result;
+        }
+
+        // 展开全部
+        function expandAll() {
+            if (appState.mindmapChart) {
+                const option = appState.mindmapChart.getOption();
+                option.series[0].initialTreeDepth = -1;
+                appState.mindmapChart.setOption(option);
+                showToast('已展开全部节点');
+            }
+        }
+
+        // 收起全部
+        function collapseAll() {
+            if (appState.mindmapChart) {
+                const option = appState.mindmapChart.getOption();
+                option.series[0].initialTreeDepth = 2;
+                appState.mindmapChart.setOption(option);
+                showToast('已收起节点');
+            }
+        }
+
+        // 本地上传
+        function handleLocalUpload() {
+            const modal = document.getElementById('uploadModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // 模拟上传进度
+            let progress = 0;
+            const uploadInterval = setInterval(() => {
+                progress += 10;
+                document.getElementById('uploadProgress').style.width = progress + '%';
+                document.getElementById('uploadPercent').textContent = progress;
+                
+                if (progress >= 100) {
+                    clearInterval(uploadInterval);
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                        modal.classList.remove('flex');
+                        // 开始生成讲解
+                        startGeneration();
+                    }, 500);
+                }
+            }, 200);
+        }
+
+        // 开始生成讲解
+        function startGeneration() {
+            const modal = document.getElementById('generateModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            const stages = [
+                { text: '正在解析课件内容...', duration: 2000 },
+                { text: '正在分析知识点...', duration: 2000 },
+                { text: '正在生成讲解文案...', duration: 2000 },
+                { text: '正在进行语音合成...', duration: 2000 }
+            ];
+            
+            let currentStage = 0;
+            let currentPage = 1;
+            
+            function updateStage() {
+                if (currentStage < stages.length) {
+                    document.getElementById('generateStage').textContent = stages[currentStage].text;
+                    document.getElementById('generatePage').textContent = Math.min(currentPage, 15);
+                    
+                    // 更新阶段图标
+                    const stageNum = currentStage + 1;
+                    const stageEl = document.getElementById(`stage${stageNum}`);
+                    if (stageEl) {
+                        stageEl.classList.remove('bg-gray-200', 'text-gray-400');
+                        stageEl.classList.add('bg-primary-500', 'text-white');
+                        stageEl.innerHTML = '<i data-lucide="loader" class="w-3 h-3 animate-spin"></i>';
+                        lucide.createIcons();
+                    }
+                    
+                    setTimeout(() => {
+                        // 完成当前阶段
+                        if (stageEl) {
+                            stageEl.innerHTML = '<i data-lucide="check" class="w-3 h-3"></i>';
+                            lucide.createIcons();
+                        }
+                        
+                        currentStage++;
+                        currentPage += 3;
+                        updateStage();
+                    }, stages[currentStage].duration);
+                } else {
+                    // 完成
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                        modal.classList.remove('flex');
+                        showToast('课件讲解生成完成！');
+                    }, 500);
+                }
+            }
+            
+            updateStage();
+        }
+
+        // 取消生成
+        function cancelGenerate() {
+            const modal = document.getElementById('generateModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            showToast('已取消生成');
+        }
+
+        // 在线课件
+        function handleOnlineCourse() {
+            showToast('在线课件功能开发中...');
+        }
+
+        // 生成思维导图
+        function generateMindmap() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="network" class="w-8 h-8 text-white animate-pulse"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">生成思维导图中</h3>
+                        <p class="text-gray-600 mb-4">AI正在分析课件内容并构建知识结构...</p>
+                        <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div id="mindmapProgress" class="h-full bg-gradient-to-r from-primary-500 to-purple-600 progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            lucide.createIcons();
+
+            // 模拟生成进度
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 20;
+                const progressBar = document.getElementById('mindmapProgress');
+                if (progressBar) {
+                    progressBar.style.width = progress + '%';
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.body.removeChild(modal);
+                        // 更新状态
+                        appState.courses[appState.currentCourse].hasMindmap = true;
+                        // 刷新显示
+                        switchTab('mindmap');
+                        showToast('思维导图生成成功！');
+                    }, 500);
+                }
+            }, 600);
+        }
+
+        // 生成视频
+        function generateVideo() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="video" class="w-8 h-8 text-white animate-pulse"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">生成视频概览中</h3>
+                        <p class="text-gray-600 mb-4" id="videoStageText">正在生成概览文案...</p>
+                        
+                        <div class="space-y-3 mb-4">
+                            <div class="flex items-center gap-3 text-sm">
+                                <div class="w-6 h-6 rounded-full bg-primary-500 text-white flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="loader" class="w-3 h-3 animate-spin" id="videoStage1"></i>
+                                </div>
+                                <span class="text-gray-600">生成概览文案</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-sm">
+                                <div class="w-6 h-6 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center flex-shrink-0" id="videoStage2Wrapper">
+                                    <span class="text-xs font-bold">2</span>
+                                </div>
+                                <span class="text-gray-400">生成配图</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-sm">
+                                <div class="w-6 h-6 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center flex-shrink-0" id="videoStage3Wrapper">
+                                    <span class="text-xs font-bold">3</span>
+                                </div>
+                                <span class="text-gray-400">合成视频</span>
+                            </div>
+                        </div>
+                        
+                        <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div id="videoProgress" class="h-full bg-gradient-to-r from-primary-500 to-purple-600 progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            lucide.createIcons();
+
+            // 模拟三阶段生成
+            const stages = [
+                { text: '正在生成概览文案...', duration: 3000, progress: 33 },
+                { text: '正在生成配图...', duration: 3000, progress: 66 },
+                { text: '正在合成视频...', duration: 4000, progress: 100 }
+            ];
+            
+            let currentStage = 0;
+            
+            function updateVideoStage() {
+                if (currentStage < stages.length) {
+                    const stage = stages[currentStage];
+                    const stageText = document.getElementById('videoStageText');
+                    const progressBar = document.getElementById('videoProgress');
+                    
+                    if (stageText) stageText.textContent = stage.text;
+                    
+                    // 更新阶段图标
+                    const stageNum = currentStage + 1;
+                    const wrapper = document.getElementById(`videoStage${stageNum}Wrapper`);
+                    if (wrapper) {
+                        wrapper.classList.remove('bg-gray-200', 'text-gray-400');
+                        wrapper.classList.add('bg-primary-500', 'text-white');
+                        wrapper.innerHTML = '<i data-lucide="loader" class="w-3 h-3 animate-spin"></i>';
+                        lucide.createIcons();
+                    }
+                    
+                    setTimeout(() => {
+                        if (progressBar) progressBar.style.width = stage.progress + '%';
+                        
+                        // 完成当前阶段
+                        if (wrapper) {
+                            wrapper.innerHTML = '<i data-lucide="check" class="w-3 h-3"></i>';
+                            lucide.createIcons();
+                        }
+                        
+                        currentStage++;
+                        
+                        if (currentStage < stages.length) {
+                            updateVideoStage();
+                        } else {
+                            setTimeout(() => {
+                                document.body.removeChild(modal);
+                                // 更新状态
+                                appState.courses[appState.currentCourse].hasVideo = true;
+                                // 刷新显示
+                                switchTab('video');
+                                showToast('视频概览生成成功！');
+                            }, 500);
+                        }
+                    }, stage.duration);
+                }
+            }
+            
+            updateVideoStage();
+        }
+
+        // Toast提示
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+            
+            setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('flex');
+            }, 3000);
+            
+            lucide.createIcons();
+        }
+
+        // 加载旁白数据
+        async function loadNarrationData() {
+            try {
+                const response = await fetch('data/narration.json');
+                appState.narrationData = await response.json();
+                console.log('旁白数据加载成功', appState.narrationData);
+            } catch (error) {
+                console.error('加载旁白数据失败:', error);
+                showToast('旁白数据加载失败');
+            }
+        }
+
+        // 页面加载完成
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 渲染课件列表
+            renderCourseList();
+            
+            // 加载旁白数据
+            loadNarrationData();
+            
+            updateCoursePage();
+            lucide.createIcons();
+        });
+
+        // 键盘快捷键
+        document.addEventListener('keydown', function(e) {
+            // 只在课件讲解Tab且没有其他模态框时响应
+            if (appState.currentTab === 'explanation') {
+                // 左箭头：上一页
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    previousPage();
+                }
+                // 右箭头：下一页
+                if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    nextPage();
+                }
+                // 空格键：播放/暂停
+                if (e.key === ' ') {
+                    e.preventDefault();
+                    togglePlay();
+                }
+            }
+        });
+
+        // 窗口大小改变时重新渲染思维导图
+        window.addEventListener('resize', () => {
+            if (appState.mindmapChart) {
+                appState.mindmapChart.resize();
+            }
+        });
+
+        // 返回功能
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+    </div>
+</body>
+</html>
+
