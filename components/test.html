@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CustomSelect 组件测试</title>
+    
+    <!-- 引入组件 -->
+    <link rel="stylesheet" href="custom-select.css">
+    <script src="custom-select.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .test-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .test-section h2 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: #374151;
+        }
+        
+        .test-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .test-item {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .test-item label {
+            display: block;
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            background: #8b5cf6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #7c3aed;
+        }
+        
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+        
+        .output {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #374151;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .output-item {
+            padding: 4px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .output-item:last-child {
+            border-bottom: none;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+        
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 CustomSelect 组件测试</h1>
+            <p>测试自定义下拉选择组件的所有功能</p>
+        </div>
+        
+        <!-- 基础功能测试 -->
+        <div class="test-section">
+            <h2>1. 基础功能测试</h2>
+            <div class="test-row">
+                <div class="test-item">
+                    <label>基础下拉选择</label>
+                    <div id="basicSelect"></div>
+                </div>
+                <div class="test-item">
+                    <label>带默认值</label>
+                    <div id="defaultValueSelect"></div>
+                </div>
+                <div class="test-item">
+                    <label>不可清除</label>
+                    <div id="noClearSelect"></div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn btn-secondary" onclick="getValues()">获取所有值</button>
+                <button class="btn btn-secondary" onclick="resetAll()">重置所有</button>
+            </div>
+        </div>
+        
+        <!-- 级联功能测试 -->
+        <div class="test-section">
+            <h2>2. 级联功能测试</h2>
+            <div class="test-row">
+                <div class="test-item">
+                    <label>科目</label>
+                    <div id="cascadeSubject"></div>
+                </div>
+                <div class="test-item">
+                    <label>年级</label>
+                    <div id="cascadeGrade"></div>
+                </div>
+                <div class="test-item">
+                    <label>版本</label>
+                    <div id="cascadeVersion"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 动态控制测试 -->
+        <div class="test-section">
+            <h2>3. 动态控制测试</h2>
+            <div class="test-row">
+                <div class="test-item">
+                    <label>可控制的下拉</label>
+                    <div id="controllableSelect"></div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="enableSelect()">启用</button>
+                <button class="btn btn-primary" onclick="disableSelect()">禁用</button>
+                <button class="btn btn-secondary" onclick="setNewOptions()">更新选项</button>
+                <button class="btn btn-secondary" onclick="setSpecificValue()">设置值为"选项2"</button>
+            </div>
+        </div>
+        
+        <!-- 输出日志 -->
+        <div class="test-section">
+            <h2>📝 事件日志</h2>
+            <div id="output" class="output">
+                <div class="output-item">等待用户操作...</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 日志输出
+        const outputEl = document.getElementById('output');
+        function log(message, type = 'info') {
+            const time = new Date().toLocaleTimeString();
+            const badge = type === 'success' ? 'badge-success' : 'badge-info';
+            outputEl.innerHTML = `
+                <div class="output-item">
+                    [${time}] ${message} <span class="badge ${badge}">${type}</span>
+                </div>
+            ` + outputEl.innerHTML;
+        }
+        
+        // 1. 基础功能测试
+        const basicSelect = new CustomSelect({
+            container: '#basicSelect',
+            placeholder: '请选择水果',
+            options: ['苹果', '香蕉', '橙子', '葡萄', '西瓜'],
+            onChange: (value) => {
+                log(`基础选择器: ${value || '(清空)'}`, 'success');
+            }
+        });
+        
+        const defaultValueSelect = new CustomSelect({
+            container: '#defaultValueSelect',
+            placeholder: '请选择颜色',
+            options: ['红色', '蓝色', '绿色', '黄色'],
+            value: '蓝色',
+            onChange: (value) => {
+                log(`默认值选择器: ${value || '(清空)'}`, 'success');
+            }
+        });
+        
+        const noClearSelect = new CustomSelect({
+            container: '#noClearSelect',
+            placeholder: '请选择动物',
+            options: ['猫', '狗', '兔子', '鸟'],
+            clearable: false,
+            onChange: (value) => {
+                log(`不可清除选择器: ${value}`, 'success');
+            }
+        });
+        
+        // 2. 级联功能测试
+        const cascadeData = {
+            '语文': {
+                '一年级': ['人教版', '苏教版'],
+                '二年级': ['人教版', '苏教版', '北师大版'],
+                '三年级': ['人教版', '苏教版']
+            },
+            '数学': {
+                '一年级': ['人教版'],
+                '二年级': ['人教版', '北师大版'],
+                '三年级': ['人教版', '北师大版', '苏教版']
+            },
+            '英语': {
+                '三年级': ['人教版', '外研版'],
+                '四年级': ['人教版', '外研版', '牛津版'],
+                '五年级': ['人教版', '外研版']
+            }
+        };
+        
+        let cascadeGradeSelect, cascadeVersionSelect;
+        
+        const cascadeSubjectSelect = new CustomSelect({
+            container: '#cascadeSubject',
+            placeholder: '请选择科目',
+            options: Object.keys(cascadeData),
+            onChange: (subject) => {
+                log(`级联-科目: ${subject || '(清空)'}`, 'info');
+                
+                if (subject) {
+                    const grades = Object.keys(cascadeData[subject]);
+                    cascadeGradeSelect.setOptions(grades);
+                    cascadeGradeSelect.enable();
+                } else {
+                    cascadeGradeSelect.setOptions([]);
+                    cascadeGradeSelect.disable();
+                    cascadeVersionSelect.setOptions([]);
+                    cascadeVersionSelect.disable();
+                }
+            }
+        });
+        
+        cascadeGradeSelect = new CustomSelect({
+            container: '#cascadeGrade',
+            placeholder: '请选择年级',
+            options: [],
+            disabled: true,
+            onChange: (grade) => {
+                log(`级联-年级: ${grade || '(清空)'}`, 'info');
+                
+                const subject = cascadeSubjectSelect.getValue();
+                if (subject && grade) {
+                    const versions = cascadeData[subject][grade] || [];
+                    cascadeVersionSelect.setOptions(versions);
+                    cascadeVersionSelect.enable();
+                } else {
+                    cascadeVersionSelect.setOptions([]);
+                    cascadeVersionSelect.disable();
+                }
+            }
+        });
+        
+        cascadeVersionSelect = new CustomSelect({
+            container: '#cascadeVersion',
+            placeholder: '请选择版本',
+            options: [],
+            disabled: true,
+            onChange: (version) => {
+                log(`级联-版本: ${version || '(清空)'}`, 'info');
+            }
+        });
+        
+        // 3. 动态控制测试
+        const controllableSelect = new CustomSelect({
+            container: '#controllableSelect',
+            placeholder: '可控制的选择器',
+            options: ['选项1', '选项2', '选项3'],
+            onChange: (value) => {
+                log(`可控选择器: ${value || '(清空)'}`, 'success');
+            }
+        });
+        
+        // 控制函数
+        function enableSelect() {
+            controllableSelect.enable();
+            log('启用了选择器', 'info');
+        }
+        
+        function disableSelect() {
+            controllableSelect.disable();
+            log('禁用了选择器', 'info');
+        }
+        
+        function setNewOptions() {
+            controllableSelect.setOptions(['新选项A', '新选项B', '新选项C', '新选项D']);
+            log('更新了选项列表', 'info');
+        }
+        
+        function setSpecificValue() {
+            const options = ['选项1', '选项2', '选项3'];
+            controllableSelect.setOptions(options);
+            controllableSelect.setValue('选项2');
+            log('设置值为"选项2"', 'info');
+        }
+        
+        function getValues() {
+            const values = {
+                基础选择器: basicSelect.getValue(),
+                默认值选择器: defaultValueSelect.getValue(),
+                不可清除选择器: noClearSelect.getValue(),
+                可控选择器: controllableSelect.getValue()
+            };
+            log(`当前值: ${JSON.stringify(values)}`, 'success');
+        }
+        
+        function resetAll() {
+            basicSelect.reset();
+            defaultValueSelect.reset();
+            noClearSelect.reset();
+            controllableSelect.reset();
+            log('重置了所有选择器', 'info');
+        }
+    </script>
+</body>
+</html>
+

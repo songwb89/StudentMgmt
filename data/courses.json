@@ -1,0 +1,204 @@
+{
+  "courses": [
+    {
+      "id": "course_001",
+      "uploadTime": "2024-01-15T10:30:00Z",
+      "name": "等腰三角形判定",
+      "pages": 15,
+      "type": "online",
+      "explanationStatus": "completed",
+      "mindmapStatus": "pending",
+      "videoStatus": "pending"
+    },
+    {
+      "id": "course_002",
+      "uploadTime": "2024-01-14T14:20:00Z",
+      "name": "软件工程导论",
+      "pages": 42,
+      "type": "pdf",
+      "explanationStatus": "completed",
+      "mindmapStatus": "generating",
+      "videoStatus": "failed"
+    },
+    {
+      "id": "course_003",
+      "uploadTime": "2024-01-13T09:15:00Z",
+      "name": "数据结构与算法",
+      "pages": 28,
+      "type": "ppt",
+      "explanationStatus": "generating",
+      "mindmapStatus": "failed",
+      "videoStatus": "generating"
+    },
+    {
+      "id": "course_004",
+      "uploadTime": "2024-01-12T16:45:00Z",
+      "name": "机器学习入门",
+      "pages": 35,
+      "type": "pdf",
+      "explanationStatus": "failed",
+      "mindmapStatus": "pending",
+      "videoStatus": "completed"
+    },
+    {
+      "id": "course_005",
+      "uploadTime": "2024-01-11T11:30:00Z",
+      "name": "微积分基础",
+      "pages": 22,
+      "type": "online",
+      "explanationStatus": "completed",
+      "mindmapStatus": "failed",
+      "videoStatus": "generating"
+    },
+    {
+      "id": "course_006",
+      "uploadTime": "2024-01-10T13:20:00Z",
+      "name": "操作系统原理",
+      "pages": 48,
+      "type": "ppt",
+      "explanationStatus": "completed",
+      "mindmapStatus": "completed",
+      "videoStatus": "pending"
+    },
+    {
+      "id": "course_007",
+      "uploadTime": "2024-01-09T08:50:00Z",
+      "name": "英语语法精讲",
+      "pages": 18,
+      "type": "pdf",
+      "explanationStatus": "generating",
+      "mindmapStatus": "generating",
+      "videoStatus": "completed"
+    },
+    {
+      "id": "course_008",
+      "uploadTime": "2024-01-08T15:10:00Z",
+      "name": "有机化学",
+      "pages": 25,
+      "type": "online",
+      "explanationStatus": "completed",
+      "mindmapStatus": "failed",
+      "videoStatus": "completed"
+    },
+    {
+      "id": "course_009",
+      "uploadTime": "2024-01-07T12:40:00Z",
+      "name": "计算机网络",
+      "pages": 38,
+      "type": "ppt",
+      "explanationStatus": "failed",
+      "mindmapStatus": "completed",
+      "videoStatus": "generating"
+    },
+    {
+      "id": "course_010",
+      "uploadTime": "2024-01-06T10:25:00Z",
+      "name": "线性代数",
+      "pages": 32,
+      "type": "pdf",
+      "explanationStatus": "completed",
+      "mindmapStatus": "generating",
+      "videoStatus": "failed"
+    },
+    {
+      "id": "course_011",
+      "uploadTime": "2024-01-05T14:15:00Z",
+      "name": "数据库系统概论",
+      "pages": 45,
+      "type": "online",
+      "explanationStatus": "generating",
+      "mindmapStatus": "failed",
+      "videoStatus": "completed"
+    },
+    {
+      "id": "course_012",
+      "uploadTime": "2024-01-04T09:35:00Z",
+      "name": "物理力学基础",
+      "pages": 20,
+      "type": "ppt",
+      "explanationStatus": "completed",
+      "mindmapStatus": "pending",
+      "videoStatus": "pending"
+    },
+    {
+      "id": "course_013",
+      "uploadTime": "2024-01-03T16:20:00Z",
+      "name": "编译原理",
+      "pages": 52,
+      "type": "pdf",
+      "explanationStatus": "failed",
+      "mindmapStatus": "generating",
+      "videoStatus": "failed"
+    },
+    {
+      "id": "course_014",
+      "uploadTime": "2024-01-02T11:45:00Z",
+      "name": "概率论与数理统计",
+      "pages": 30,
+      "type": "online",
+      "explanationStatus": "completed",
+      "mindmapStatus": "failed",
+      "videoStatus": "completed"
+    },
+    {
+      "id": "course_015",
+      "uploadTime": "2024-01-01T13:30:00Z",
+      "name": "人工智能导论",
+      "pages": 40,
+      "type": "ppt",
+      "explanationStatus": "generating",
+      "mindmapStatus": "completed",
+      "videoStatus": "generating"
+    },
+    {
+      "id": "course_016",
+      "uploadTime": "2023-12-31T08:15:00Z",
+      "name": "离散数学",
+      "pages": 36,
+      "type": "pdf",
+      "explanationStatus": "completed",
+      "mindmapStatus": "generating",
+      "videoStatus": "failed"
+    },
+    {
+      "id": "course_017",
+      "uploadTime": "2023-12-30T15:50:00Z",
+      "name": "计算机图形学",
+      "pages": 28,
+      "type": "online",
+      "explanationStatus": "failed",
+      "mindmapStatus": "failed",
+      "videoStatus": "completed"
+    },
+    {
+      "id": "course_018",
+      "uploadTime": "2023-12-29T12:25:00Z",
+      "name": "数字信号处理",
+      "pages": 33,
+      "type": "ppt",
+      "explanationStatus": "completed",
+      "mindmapStatus": "completed",
+      "videoStatus": "generating"
+    },
+    {
+      "id": "course_019",
+      "uploadTime": "2023-12-28T10:40:00Z",
+      "name": "生物化学",
+      "pages": 26,
+      "type": "pdf",
+      "explanationStatus": "generating",
+      "mindmapStatus": "failed",
+      "videoStatus": "failed"
+    },
+    {
+      "id": "course_020",
+      "uploadTime": "2023-12-27T14:05:00Z",
+      "name": "电路分析基础",
+      "pages": 31,
+      "type": "online",
+      "explanationStatus": "completed",
+      "mindmapStatus": "generating",
+      "videoStatus": "completed"
+    }
+  ]
+}
