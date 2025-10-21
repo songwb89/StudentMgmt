@@ -112,7 +112,86 @@
         /* 课件卡片样式 */
         .course-card {
             transition: all 0.2s ease;
+            position: relative;
         }
+
+        /* 删除按钮样式 */
+        .course-delete-btn {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgb(239, 68, 68);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.2s ease;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .course-delete-btn:hover {
+            background: rgb(220, 38, 38);
+            transform: translateY(-50%) scale(1.15);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(220, 38, 38, 0.5);
+        }
+
+        .course-delete-btn svg {
+            color: white !important;
+            stroke: white !important;
+            width: 14px;
+            height: 14px;
+            stroke-width: 2.5;
+        }
+
+        .course-card:hover .course-delete-btn {
+            opacity: 1;
+        }
+
+        /* 生成讲解按钮样式 */
+        .course-generate-btn {
+            position: absolute;
+            top: 50%;
+            right: 50px;
+            transform: translateY(-50%);
+            padding: 6px 14px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            opacity: 0;
+            transition: all 0.2s ease;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+            font-size: 13px;
+            font-weight: 500;
+            color: white;
+        }
+
+        .course-generate-btn:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #6a3f92 100%);
+            transform: translateY(-50%) translateX(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .course-generate-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .course-card:hover .course-generate-btn {
+            opacity: 1;
+        }
+
 
         /* 进度条动画 */
         @keyframes progress {
@@ -550,18 +629,21 @@
             padding: 16px 18px;
             border: 1px solid #e5e7eb;
             border-radius: 10px;
-            cursor: pointer;
             transition: all 0.2s;
             background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
         }
         .course-item:hover {
             border-color: #8b5cf6;
             box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
             transform: translateY(-1px);
         }
-        .course-item.selected {
-            border-color: #8b5cf6;
-            background: #f3f0ff;
+        .course-item-content {
+            flex: 1;
+            cursor: pointer;
         }
         .course-item-name {
             font-size: 15px;
@@ -575,6 +657,32 @@
             line-height: 1.4;
             font-weight: 400;
             letter-spacing: 0.2px;
+        }
+        .course-item-actions {
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .course-item:hover .course-item-actions {
+            opacity: 1;
+        }
+        .course-item-actions .generate-btn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .course-item-actions .generate-btn:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #6a4190 100%);
+            transform: translateX(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
         .empty-state {
             text-align: center;
@@ -1026,15 +1134,6 @@
                 </div>
             </div>
 
-            <!-- 弹窗底部操作 -->
-            <div class="modal-actions">
-                <button onclick="closeOnlineCourseModal()" class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors font-medium text-sm">
-                    取消
-                </button>
-                <button id="confirmSelectBtn" onclick="confirmSelectOnlineCourse()" class="px-5 py-2.5 rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                    生成AI讲解
-                </button>
-            </div>
         </div>
     </div>
 
@@ -1349,8 +1448,8 @@
     </div>
 
     <!-- Toast提示 -->
-    <div id="toast" class="fixed bottom-6 right-6 bg-gray-800 text-white px-6 py-3 rounded-xl shadow-lg hidden items-center gap-3 z-50">
-        <i data-lucide="check-circle" class="w-5 h-5"></i>
+    <div id="toast" class="fixed top-20 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-xl shadow-2xl z-[100] opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3">
+        <i id="toastIcon" data-lucide="check-circle" class="w-5 h-5"></i>
         <span id="toastMessage">操作成功</span>
     </div>
 
@@ -1519,9 +1618,9 @@
             
             // 课件类型配置
             const typeConfig = {
-                online: { icon: 'globe', bgColor: 'bg-red-500', tagColor: 'bg-red-100 text-red-700', label: '在线' },
+                online: { icon: 'globe', bgColor: 'bg-blue-500', tagColor: 'bg-blue-100 text-blue-700', label: '在线' },
                 pdf: { icon: 'file-text', bgColor: 'bg-red-500', tagColor: 'bg-red-100 text-red-700', label: 'PDF' },
-                ppt: { icon: 'presentation', bgColor: 'bg-red-500', tagColor: 'bg-red-100 text-red-700', label: 'PPT' }
+                ppt: { icon: 'presentation', bgColor: 'bg-orange-500', tagColor: 'bg-orange-100 text-orange-700', label: 'PPT' }
             };
             
             // 过滤与排序
@@ -1549,6 +1648,9 @@
                 courseCard.onclick = () => selectCourse(course.id);
                 
                 courseCard.innerHTML = `
+                    <button class="course-delete-btn" onclick="event.stopPropagation(); deleteCourse('${course.id}')" title="删除课件">
+                        <i data-lucide="x" style="color: white; stroke: white;"></i>
+                    </button>
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 ${config.bgColor} rounded-lg flex items-center justify-center flex-shrink-0">
                             <i data-lucide="${config.icon}" class="w-5 h-5 text-white"></i>
@@ -1605,8 +1707,113 @@
 
             // 切换回课件讲解Tab
             switchTab('explanation');
+        }
 
-            showToast('已切换到：' + course.name);
+        // 自定义确认对话框
+        function showConfirmDialog(title, message, confirmText = '确定') {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirmDialog');
+                const dialog = document.getElementById('confirmDialogInner');
+                const titleEl = document.getElementById('confirmDialogTitle');
+                const messageEl = document.getElementById('confirmDialogMessage');
+                const cancelBtn = document.getElementById('confirmDialogCancel');
+                const confirmBtn = document.getElementById('confirmDialogConfirm');
+
+                // 设置内容
+                titleEl.textContent = title;
+                messageEl.textContent = message;
+                confirmBtn.textContent = confirmText;
+
+                // 显示对话框
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    dialog.classList.remove('scale-95', 'opacity-0');
+                    dialog.classList.add('scale-100', 'opacity-100');
+                }, 10);
+
+                lucide.createIcons();
+
+                // 处理确认
+                const handleConfirm = () => {
+                    dialog.classList.add('scale-95', 'opacity-0');
+                    dialog.classList.remove('scale-100', 'opacity-100');
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                        cleanup();
+                        resolve(true);
+                    }, 200);
+                };
+
+                // 处理取消
+                const handleCancel = () => {
+                    dialog.classList.add('scale-95', 'opacity-0');
+                    dialog.classList.remove('scale-100', 'opacity-100');
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                        cleanup();
+                        resolve(false);
+                    }, 200);
+                };
+
+                // 清理事件监听器
+                const cleanup = () => {
+                    confirmBtn.removeEventListener('click', handleConfirm);
+                    cancelBtn.removeEventListener('click', handleCancel);
+                    modal.removeEventListener('click', handleBackdropClick);
+                };
+
+                // 点击背景关闭
+                const handleBackdropClick = (e) => {
+                    if (e.target === modal) {
+                        handleCancel();
+                    }
+                };
+
+                // 绑定事件
+                confirmBtn.addEventListener('click', handleConfirm);
+                cancelBtn.addEventListener('click', handleCancel);
+                modal.addEventListener('click', handleBackdropClick);
+            });
+        }
+
+        // 删除课件
+        async function deleteCourse(courseId) {
+            const course = appState.courses.find(c => c.id === courseId);
+            if (!course) return;
+
+            // 显示自定义确认对话框
+            const confirmed = await showConfirmDialog(
+                '删除课件讲解',
+                `确定要删除「${course.name}」的讲解吗？\n删除后将无法恢复。`,
+                '删除讲解'
+            );
+
+            if (!confirmed) return;
+
+            // 从课件列表中删除
+            const courseIndex = appState.courses.findIndex(c => c.id === courseId);
+            if (courseIndex !== -1) {
+                appState.courses.splice(courseIndex, 1);
+            }
+
+            // 如果删除的是当前选中的课件
+            if (appState.currentCourse === courseId) {
+                // 尝试选中下一个课件，如果没有则选中上一个，如果都没有则清空
+                if (appState.courses.length > 0) {
+                    const nextCourse = appState.courses[Math.min(courseIndex, appState.courses.length - 1)];
+                    selectCourse(nextCourse.id);
+                } else {
+                    // 没有课件了，清空当前选择
+                    appState.currentCourse = null;
+                    document.getElementById('courseTitle').textContent = '请选择课件';
+                    renderCourseList();
+                }
+            } else {
+                // 只需要刷新列表
+                renderCourseList();
+            }
+
+            showToast(`已删除课件讲解：${course.name}`);
         }
 
         // 更新课件页面
@@ -1875,8 +2082,6 @@
             
             // 关闭菜单
             document.getElementById('speedMenu').classList.remove('show');
-            
-            showToast(`播放速度: ${speed}x`);
         }
         
         // 点击其他地方关闭倍速菜单
@@ -2072,8 +2277,6 @@
                 appState.isPlaying = true;
                 startSpeech();
             }
-            
-            showToast(`播放速度已设置为 ${rate}x`);
         }
 
         // 上一页
@@ -2650,9 +2853,6 @@
             
             // 重置筛选器
             resetOnlineCourseFilters();
-            
-            // 禁用确定按钮
-            document.getElementById('confirmSelectBtn').disabled = true;
         }
 
         // 点击背景关闭弹窗
@@ -2918,11 +3118,17 @@
             
             // 渲染当前页的课件
             const coursesHTML = currentPageCourses.map(course => `
-                <div class="course-item ${selectedOnlineCourse?.id === course.id ? 'selected' : ''}" 
-                     onclick="selectOnlineCourse('${course.id}')">
-                    <div class="course-item-name">${course.name}</div>
-                    <div class="course-item-meta">
-                        ${course.subject} · ${course.grade} · ${course.version} · ${course.unit} · ${course.pages}页
+                <div class="course-item">
+                    <div class="course-item-content" onclick="selectOnlineCourse('${course.id}')">
+                        <div class="course-item-name">${course.name}</div>
+                        <div class="course-item-meta">
+                            ${course.subject} · ${course.grade} · ${course.version} · ${course.unit} · ${course.pages}页
+                        </div>
+                    </div>
+                    <div class="course-item-actions">
+                        <button class="generate-btn" onclick="event.stopPropagation(); addOnlineCourseAndGenerate('${course.id}')">
+                            生成讲解
+                        </button>
                     </div>
                 </div>
             `).join('');
@@ -2999,67 +3205,102 @@
             listContainer.addEventListener('scroll', scrollListener);
         }
 
-        // 选择课件
+        // 选择课件（在线课件选择弹窗中使用，已弃用但保留以防其他地方调用）
         function selectOnlineCourse(courseId) {
             const course = onlineCoursesData.find(c => c.id === courseId);
             if (course) {
                 selectedOnlineCourse = course;
                 
-                // 更新UI
-                document.querySelectorAll('.course-item').forEach(item => {
-                    item.classList.remove('selected');
-                });
-                event.target.closest('.course-item').classList.add('selected');
-                
-                // 启用确定按钮
-                document.getElementById('confirmSelectBtn').disabled = false;
             }
         }
 
-        // 确认选择课件
-        function confirmSelectOnlineCourse() {
-            if (!selectedOnlineCourse) return;
+        // 为指定课件生成讲解
+        function generateExplanationForCourse(courseId) {
+            const course = appState.courses.find(c => c.id === courseId);
+            if (!course) return;
 
-            // 创建新课件对象
+            // 检查是否已经在生成中
+            if (course.explanationStatus === 'generating') {
+                showToast('该课件正在生成讲解中...');
+                return;
+            }
+
+            // 检查是否已经生成完成
+            if (course.explanationStatus === 'completed') {
+                showToast('该课件已生成讲解，可直接查看');
+                // 选中该课件并切换到讲解标签
+                selectCourse(courseId);
+                switchTab('explanation');
+                return;
+            }
+
+            // 开始生成
+            course.explanationStatus = 'generating';
+            renderCourseList();
+
+            // 显示提示
+            showToast(`开始生成「${course.name}」的讲解...`);
+
+            // 模拟生成过程
+            setTimeout(() => {
+                course.explanationStatus = 'completed';
+                renderCourseList();
+                
+                // 如果当前选中的是这个课件，更新详情
+                if (appState.currentCourse === courseId) {
+                    updateCoursePage();
+                }
+                
+                showToast(`「${course.name}」讲解生成完成！`);
+            }, 3000);
+        }
+
+        // 添加在线课件并生成讲解
+        function addOnlineCourseAndGenerate(onlineCourseId) {
+            const onlineCourse = onlineCoursesData.find(c => c.id === onlineCourseId);
+            if (!onlineCourse) return;
+
+            // 检查是否已经添加过
+            const existingCourse = appState.courses.find(c => c.id === onlineCourseId);
+            if (existingCourse) {
+                // 已添加，关闭弹窗，选中课件并生成讲解
+                closeOnlineCourseModal();
+                selectCourse(existingCourse.id);
+                generateExplanationForCourse(existingCourse.id);
+                return;
+            }
+
+            // 添加到本地课件列表
             const newCourse = {
-                id: `course_${Date.now()}`,
-                uploadTime: new Date().toISOString(),
-                name: selectedOnlineCourse.name,
-                pages: selectedOnlineCourse.pages,
+                ...onlineCourse,
                 type: 'online',
-                explanationStatus: 'generating',
-                mindmapStatus: 'pending',
-                videoStatus: 'pending',
-                // 保存关联信息
-                subject: selectedOnlineCourse.subject,
-                grade: selectedOnlineCourse.grade,
-                version: selectedOnlineCourse.version,
-                unit: selectedOnlineCourse.unit
+                uploadTime: new Date().toISOString(),
+                explanationStatus: 'generating'  // 直接设置为生成中状态
             };
-
-            // 添加到课件列表
-            coursesData.courses.unshift(newCourse);
+            
+            appState.courses.unshift(newCourse);
+            renderCourseList();
 
             // 关闭弹窗
             closeOnlineCourseModal();
 
-            // 重新渲染课件列表
-            renderCourseList(coursesData.courses);
-
-            // 选中新添加的课件
+            // 选中该课件
             selectCourse(newCourse.id);
 
             // 显示提示
-            showToast(`已添加课件：${newCourse.name}`);
+            showToast(`开始生成「${newCourse.name}」的讲解...`);
 
-            // 模拟生成过程
+            // 模拟生成过程（3秒后完成）
             setTimeout(() => {
                 newCourse.explanationStatus = 'completed';
-                renderCourseList(coursesData.courses);
-                if (currentCourseId === newCourse.id) {
-                    updateCourseDetail();
+                renderCourseList();
+                
+                // 更新详情页
+                if (appState.currentCourse === newCourse.id) {
+                    updateCoursePage();
                 }
-                showToast('课件讲解生成完成');
+                
+                showToast(`「${newCourse.name}」讲解生成完成！`);
             }, 3000);
         }
 
@@ -3074,13 +3315,6 @@
             
             // 重新渲染课件列表
             renderCourseList();
-            
-            // 如果有搜索关键词，显示提示（只在清空时或手动搜索时显示）
-            if (appState.searchKeyword && window.searchTriggeredManually) {
-                const filtered = appState.courses.filter(c => c.name.includes(appState.searchKeyword));
-                showToast(`找到 ${filtered.length} 个相关课件`);
-                window.searchTriggeredManually = false;
-            }
         }
 
         // 实时搜索（带防抖）
@@ -3214,19 +3448,48 @@
             }, 5000);
         }
 
-        // Toast提示
-        function showToast(message) {
+        // Toast提示 - 支持类型区分
+        function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
-            document.getElementById('toastMessage').textContent = message;
-            toast.classList.remove('hidden');
-            toast.classList.add('flex');
+            const icon = document.getElementById('toastIcon');
+            const messageEl = document.getElementById('toastMessage');
             
-            setTimeout(() => {
-                toast.classList.add('hidden');
-                toast.classList.remove('flex');
-            }, 3000);
+            messageEl.textContent = message;
             
+            // 根据类型设置不同的颜色和图标
+            let bgColor, iconName;
+            if (type === 'success') {
+                bgColor = 'bg-green-500';
+                iconName = 'check-circle';
+            } else if (type === 'error') {
+                bgColor = 'bg-amber-500'; // 琥珀色更友好
+                iconName = 'alert-circle';
+            } else if (type === 'info') {
+                bgColor = 'bg-blue-500';
+                iconName = 'info';
+            } else {
+                bgColor = 'bg-gray-900';
+                iconName = 'check-circle';
+            }
+            
+            // 重置类名并显示
+            toast.className = `fixed top-20 left-1/2 -translate-x-1/2 ${bgColor} text-white px-6 py-3 rounded-xl shadow-2xl z-[100] transition-all duration-300 flex items-center gap-3 opacity-100 transform translate-y-0`;
+            toast.classList.remove('pointer-events-none');
+            
+            // 更新图标
+            icon.setAttribute('data-lucide', iconName);
             lucide.createIcons();
+            
+            // 3秒后自动隐藏
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', '-translate-y-2');
+                
+                // 完全隐藏后添加 pointer-events-none
+                setTimeout(() => {
+                    toast.classList.add('pointer-events-none');
+                }, 300);
+            }, 3000);
         }
 
         // 加载旁白数据
@@ -3472,6 +3735,31 @@
             window.history.back();
         }
     </script>
+    </div>
+
+    <!-- Confirm 确认对话框 -->
+    <div id="confirmDialog" class="fixed inset-0 bg-black/50 z-[300] hidden flex items-center justify-center">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all scale-95 opacity-0" id="confirmDialogInner">
+            <div class="p-6">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="alert-circle" class="w-6 h-6 text-amber-600"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2" id="confirmDialogTitle">确认操作</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed" id="confirmDialogMessage">确定要执行此操作吗？</p>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-100 p-4 flex gap-3 justify-end">
+                <button id="confirmDialogCancel" class="px-5 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-all">
+                    取消
+                </button>
+                <button id="confirmDialogConfirm" class="px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-medium transition-all">
+                    确定
+                </button>
+            </div>
+        </div>
     </div>
 </body>
 </html>
