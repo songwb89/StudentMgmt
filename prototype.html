@@ -1705,7 +1705,7 @@
             
             lucide.createIcons();
             appState.isLoadingMore = false;
-            // 若列表未出现滚动条且还有更多项，自动继续加载，避免停留在“加载中...”
+            // 若列表未出现滚动条且还有更多项，自动继续加载，避免停留在"加载中..."
             setTimeout(autoFillCourseListIfNeeded, 0);
         }
 
@@ -3435,11 +3435,11 @@
                 updateCoursePage();
             }
             
-            // 5秒后以70%成功、30%失败结束
+            // 5秒后以90%成功、10%失败结束
             setTimeout(() => {
                 const updatedCourse = getCurrentCourse();
                 if (!updatedCourse) return;
-                const isSuccess = Math.random() < 0.7;
+                const isSuccess = Math.random() < 0.9;
                 updatedCourse.explanationStatus = isSuccess ? 'completed' : 'failed';
                 saveCoursesToStorage();
                 // 刷新显示
@@ -3465,11 +3465,11 @@
                 switchTab('mindmap');
             }
             
-            // 5秒后以70%成功、30%失败结束
+            // 5秒后以90%成功、10%失败结束
             setTimeout(() => {
                 const updatedCourse = getCurrentCourse();
                 if (!updatedCourse) return;
-                const isSuccess = Math.random() < 0.7;
+                const isSuccess = Math.random() < 0.9;
                 updatedCourse.mindmapStatus = isSuccess ? 'completed' : 'failed';
                 saveCoursesToStorage();
                 // 刷新显示
@@ -3495,11 +3495,11 @@
                 switchTab('video');
             }
             
-            // 5秒后以70%成功、30%失败结束
+            // 5秒后以90%成功、10%失败结束
             setTimeout(() => {
                 const updatedCourse = getCurrentCourse();
                 if (!updatedCourse) return;
-                const isSuccess = Math.random() < 0.7;
+                const isSuccess = Math.random() < 0.9;
                 updatedCourse.videoStatus = isSuccess ? 'completed' : 'failed';
                 saveCoursesToStorage();
                 // 刷新显示
