@@ -703,6 +703,26 @@
             gap: 12px;
         }
 
+        /* 页码指示器 - 动态定位在图片右下角，一直显示浅色弱化 */
+        .ppt-page-indicator {
+            position: fixed;
+            z-index: 15;
+            background: rgba(107, 114, 128, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            color: rgba(255, 255, 255, 0.9);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: 0.2px;
+            pointer-events: none;
+            user-select: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            opacity: 1;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         /* 精致播放控制栏 - 悬浮底部 */
         .ppt-controls {
             position: absolute;
@@ -1223,6 +1243,11 @@
                             <!-- PPT图片 -->
                             <img id="courseImage" src="data/img/0.png" alt="课件页面" class="w-auto ppt-enhanced-shadow rounded-lg border border-gray-200">
 
+                            <!-- 页码指示器 -->
+                            <div class="ppt-page-indicator" id="pageIndicator">
+                                <span id="pageIndicatorText">1/15</span>
+                            </div>
+
                             <!-- 右侧导航按钮 -->
                             <button onclick="nextPage()" class="ppt-nav-btn ppt-nav-btn-right" id="nextBtn" title="下一页 (→)">
                                 <i data-lucide="chevron-right" class="w-8 h-8 text-gray-700"></i>
@@ -1619,7 +1644,7 @@
             // 课件类型配置
             const typeConfig = {
                 online: { icon: 'globe', bgColor: 'bg-blue-500', tagColor: 'bg-blue-100 text-blue-700', label: '在线' },
-                pdf: { icon: 'file-text', bgColor: 'bg-red-500', tagColor: 'bg-red-100 text-red-700', label: 'PDF' },
+                pdf: { icon: 'file-text', bgColor: 'bg-orange-500', tagColor: 'bg-orange-100 text-orange-700', label: 'PDF' },
                 ppt: { icon: 'presentation', bgColor: 'bg-orange-500', tagColor: 'bg-orange-100 text-orange-700', label: 'PPT' }
             };
             
@@ -1796,6 +1821,9 @@
                 appState.courses.splice(courseIndex, 1);
             }
 
+            // 保存到 LocalStorage
+            saveCoursesToStorage();
+
             // 如果删除的是当前选中的课件
             if (appState.currentCourse === courseId) {
                 // 尝试选中下一个课件，如果没有则选中上一个，如果都没有则清空
@@ -1884,6 +1912,33 @@
             const nextBtn = document.getElementById('nextBtn');
             if (prevBtn) prevBtn.disabled = appState.currentPage <= 1;
             if (nextBtn) nextBtn.disabled = appState.currentPage >= appState.totalPages;
+
+            // 更新页码指示器
+            updatePageIndicator();
+        }
+
+        // 更新页码指示器位置和内容
+        function updatePageIndicator() {
+            const indicator = document.getElementById('pageIndicator');
+            const indicatorText = document.getElementById('pageIndicatorText');
+            const courseImage = document.getElementById('courseImage');
+            
+            if (!indicator || !indicatorText || !courseImage) return;
+            
+            // 更新页码文本
+            indicatorText.textContent = `${appState.currentPage}/${appState.totalPages}`;
+            
+            // 计算图片的实际显示位置和尺寸
+            const rect = courseImage.getBoundingClientRect();
+            
+            // 计算页码指示器的位置（图片右下角，向左和向上偏移一点）
+            const offsetX = 16; // 距离右边缘的偏移
+            const offsetY = 16; // 距离下边缘的偏移
+            
+            // 设置页码指示器的位置
+            indicator.style.left = `${rect.right - offsetX}px`;
+            indicator.style.top = `${rect.bottom - offsetY}px`;
+            indicator.style.transform = 'translate(-100%, -100%)'; // 让指示器以右下角为锚点
         }
 
         // 切换缩略图导航
@@ -2219,6 +2274,11 @@
                 fullscreenIcon.setAttribute('data-lucide', 'maximize');
             }
             lucide.createIcons();
+            
+            // 全屏状态改变时更新页码指示器位置
+            setTimeout(() => {
+                updatePageIndicator();
+            }, 100); // 延迟一点确保全屏动画完成
         });
 
         function updateAudioProgress() {
@@ -3723,12 +3783,22 @@
             }
         });
 
-        // 窗口大小改变时重新渲染思维导图
+        // 窗口大小改变时重新渲染思维导图和更新页码指示器位置
         window.addEventListener('resize', () => {
             if (appState.mindmapChart) {
                 appState.mindmapChart.resize();
             }
+            // 更新页码指示器位置
+            updatePageIndicator();
         });
+
+        // 监听图片加载完成事件，更新页码指示器位置
+        const courseImage = document.getElementById('courseImage');
+        if (courseImage) {
+            courseImage.addEventListener('load', () => {
+                updatePageIndicator();
+            });
+        }
 
         // 返回功能
         function goBack() {
