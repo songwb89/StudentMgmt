@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据分析 - 奕兆科技</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 顶部栏样式 */
+        .top-header {
+            height: 60px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(to bottom right, rgb(99, 102, 241), rgb(139, 92, 246));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: rgb(31, 41, 55);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .user-info:hover {
+            background: rgb(249, 250, 251);
+        }
+
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgb(243, 244, 246);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-avatar i {
+            width: 14px;
+            height: 14px;
+            color: rgb(75, 85, 99);
+        }
+
+        .user-name {
+            font-size: 14px;
+            color: rgb(75, 85, 99);
+            font-weight: 500;
+        }
+
+        .user-dropdown-icon {
+            width: 16px;
+            height: 16px;
+            color: rgb(156, 163, 175);
+        }
+
+        /* 左侧导航栏样式 */
+        .sidebar {
+            width: 160px;
+            background: linear-gradient(180deg, #1e6fff 0%, #0d4fd4 100%);
+            height: calc(100vh - 60px);
+            position: fixed;
+            left: 0;
+            top: 60px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .nav-item {
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: 500;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: white;
+            border-radius: 0 2px 2px 0;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            margin-left: 160px;
+            margin-top: 60px;
+            min-height: calc(100vh - 60px);
+            background: #f5f7fa;
+            padding: 0;
+        }
+
+        /* 标签页切换 */
+        .tabs {
+            display: flex;
+            gap: 0;
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        .tab-btn {
+            padding: 8px 24px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: #6b7280;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: #1e6fff;
+        }
+
+        .tab-btn.active {
+            background: #1e6fff;
+            color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 选择器 */
+        .selector-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .selector {
+            position: relative;
+            display: inline-block;
+        }
+
+        .selector-display {
+            padding: 8px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 140px;
+            transition: all 0.2s;
+            justify-content: space-between;
+        }
+
+        .selector-display:hover {
+            border-color: #1e6fff;
+            box-shadow: 0 0 0 3px rgba(30, 111, 255, 0.1);
+        }
+
+        .selector-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 4px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            padding: 8px;
+            z-index: 1000;
+            min-width: 140px;
+        }
+
+        .selector-option {
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .selector-option:hover {
+            background: #f0f5ff;
+            color: #1e6fff;
+        }
+
+        /* 学生卡片 */
+        .student-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 20px;
+        }
+
+        .student-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .student-avatar-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .student-details {
+            flex: 1;
+        }
+
+        .student-name-large {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .student-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .stat-trend {
+            font-size: 12px;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-trend.up {
+            color: #22c55e;
+        }
+
+        .stat-trend.down {
+            color: #ef4444;
+        }
+
+        /* 图表容器 */
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+
+        /* 隐藏类 */
+        .hidden {
+            display: none !important;
+        }
+
+        /* 高亮提示 */
+        .highlight-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #fef2f2;
+            border: 1px solid #ef4444;
+            border-radius: 6px;
+            color: #dc2626;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部栏 -->
+    <header class="top-header">
+        <div class="logo">
+            <div class="logo-icon">
+                <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i>
+            </div>
+            <span class="logo-text">奕兆科技</span>
+        </div>
+        <div class="user-info">
+            <div class="user-avatar">
+                <i data-lucide="user"></i>
+            </div>
+            <span class="user-name">Admin</span>
+            <i data-lucide="chevron-down" class="user-dropdown-icon"></i>
+        </div>
+    </header>
+
+    <!-- 左侧导航栏 -->
+    <aside class="sidebar">
+        <nav>
+            <div class="nav-item">
+                <i data-lucide="message-square" size="18"></i>
+                <span>智能教学</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="check-square" size="18"></i>
+                <span>作业&批改</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="file-text" size="18"></i>
+                <span>智能组卷</span>
+            </div>
+            <div class="nav-item active">
+                <i data-lucide="trending-up" size="18"></i>
+                <span>数据分析</span>
+            </div>
+            <div class="nav-item" onclick="location.href='student-management.html'">
+                <i data-lucide="users" size="18"></i>
+                <span>学生管理</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="monitor" size="18"></i>
+                <span>AI创作</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="folder" size="18"></i>
+                <span>我的资源</span>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 数据分析内容图片 -->
+        <div style="width: 100%; height: auto;">
+            <img src="image.png" alt="数据分析" style="width: 100%; height: auto; display: block;">
+        </div>
+    </main>
+
+    <script>
+        // 初始化 Lucide 图标
+        lucide.createIcons();
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,2541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生管理 - 奕兆科技</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 顶部栏样式 */
+        .top-header {
+            height: 60px;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(to bottom right, rgb(99, 102, 241), rgb(139, 92, 246));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: rgb(31, 41, 55);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .user-info:hover {
+            background: rgb(249, 250, 251);
+        }
+
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgb(243, 244, 246);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-avatar i {
+            width: 14px;
+            height: 14px;
+            color: rgb(75, 85, 99);
+        }
+
+        .user-name {
+            font-size: 14px;
+            color: rgb(75, 85, 99);
+            font-weight: 500;
+        }
+
+        .user-dropdown-icon {
+            width: 16px;
+            height: 16px;
+            color: rgb(156, 163, 175);
+        }
+
+        /* 左侧导航栏样式 */
+        .sidebar {
+            width: 160px;
+            background: linear-gradient(180deg, #1e6fff 0%, #0d4fd4 100%);
+            height: calc(100vh - 60px);
+            position: fixed;
+            left: 0;
+            top: 60px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .nav-item {
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: 500;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: white;
+            border-radius: 0 2px 2px 0;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            margin-left: 160px;
+            margin-top: 60px;
+            min-height: calc(100vh - 60px);
+            background: #f5f7fa;
+            padding: 32px 40px;
+        }
+
+        /* 标签页切换 */
+        .tabs {
+            display: flex;
+            gap: 0;
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        .tab-btn {
+            padding: 8px 24px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: #6b7280;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: #1e6fff;
+        }
+
+        .tab-btn.active {
+            background: #1e6fff;
+            color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 学生卡片 */
+        .student-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px 28px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+            z-index: 0;
+        }
+
+        .student-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+            z-index: 10;
+        }
+
+        /* 得分率标签 */
+        .score-rate-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: white;
+            border-radius: 6px;
+            padding: 4px 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            font-size: 12px;
+            font-weight: 600;
+            color: rgb(75, 85, 99);
+            border: 1px solid rgb(229, 231, 235);
+        }
+
+        .score-rate-badge.warning {
+            background: #fef2f2;
+            border: 2px solid #ef4444;
+            color: #dc2626;
+            font-weight: 700;
+            font-size: 12px;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+            cursor: help;
+        }
+
+        .score-rate-badge.warning::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: calc(100% + 8px);
+            left: calc(100% - 20px);
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .score-rate-badge.warning::before {
+            content: '';
+            position: absolute;
+            top: calc(100% + 2px);
+            left: calc(100% - 14px);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 6px solid #1f2937;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 1000;
+        }
+
+        .score-rate-badge.warning:hover::after,
+        .score-rate-badge.warning:hover::before {
+            opacity: 1;
+        }
+
+        .score-rate-badge.good {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: rgb(22, 163, 74);
+        }
+
+        .score-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .score-dot.high {
+            background: #22c55e;
+        }
+
+        .score-dot.medium {
+            background: #f59e0b;
+        }
+
+        .score-dot.low {
+            background: #ef4444;
+        }
+
+        .student-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .student-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .student-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .student-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .student-id {
+            font-size: 15px;
+            color: #9ca3af;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 分组界面 */
+        .group-layout {
+            display: flex;
+            gap: 24px;
+            height: calc(100vh - 180px);
+        }
+
+        .group-sidebar {
+            width: 320px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .group-main {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 20px;
+        }
+
+        .group-scheme-item {
+            background: #f0f5ff;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .group-scheme-item:hover {
+            background: #e6f0ff;
+        }
+
+        .group-scheme-item.active {
+            background: #1e6fff;
+            color: white;
+        }
+
+        .group-scheme-item.active .scheme-meta {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .scheme-name {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .scheme-meta {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .more-btn {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .more-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .group-scheme-item.active .more-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 方案更多按钮下拉菜单 */
+        .scheme-more-dropdown {
+            position: absolute;
+            right: 12px;
+            top: 12px;
+        }
+
+        .scheme-more-dropdown .more-btn {
+            position: static;
+        }
+
+        .scheme-more-content {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 4px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            padding: 8px;
+            z-index: 1000;
+            min-width: 120px;
+            display: none;
+        }
+
+        .scheme-more-dropdown:hover .scheme-more-content {
+            display: block;
+        }
+
+        .scheme-more-item {
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #374151;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .scheme-more-item:hover {
+            background: #f3f4f6;
+            color: #1e6fff;
+        }
+
+        .group-scheme-item.active .scheme-more-dropdown .more-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* 小组更多按钮下拉菜单 */
+        .group-more-dropdown {
+            position: relative;
+        }
+
+        .group-more-dropdown .more-btn {
+            position: static;
+            width: 24px;
+            height: 24px;
+        }
+
+        .group-more-content {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 4px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            padding: 8px;
+            z-index: 1000;
+            min-width: 120px;
+            display: none;
+        }
+
+        .group-more-dropdown:hover .group-more-content {
+            display: block;
+        }
+
+        .group-more-item {
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #374151;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .group-more-item:hover {
+            background: #f3f4f6;
+            color: #1e6fff;
+        }
+
+        /* 小组卡片 */
+        .group-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .group-card.pending {
+            border: 2px dashed #d1d5db;
+        }
+
+        .group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            gap: 16px;
+            flex-wrap: nowrap;
+        }
+
+        .group-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 4px 8px;
+            margin: -4px -8px;
+            border-radius: 4px;
+            flex: 1;
+            min-width: 0;
+            transition: all 0.2s;
+        }
+
+        .group-title:hover {
+            background: #f9fafb;
+        }
+
+        .group-title-input {
+            padding: 4px 8px;
+            border: 1px solid #1e6fff;
+            border-radius: 4px;
+            background: #f0f5ff;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            outline: none;
+            min-width: 100px;
+        }
+
+        .group-count {
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: normal;
+        }
+
+        /* 学生标签 */
+        .student-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #374151;
+            margin: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .student-tag:hover {
+            background: #e5e7eb;
+        }
+
+        .student-tag.selected {
+            background: #dbeafe;
+            border-color: #1e6fff;
+            color: #1e6fff;
+        }
+
+        /* 添加按钮 */
+        .add-group-btn {
+            width: 100%;
+            padding: 12px;
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            background: white;
+            color: #1e6fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .add-group-btn:hover {
+            border-color: #1e6fff;
+            background: #f0f5ff;
+        }
+
+        .create-scheme-btn {
+            width: 100%;
+            padding: 12px;
+            background: #e6f0ff;
+            border: 1px solid #1e6fff;
+            border-radius: 8px;
+            color: #1e6fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 16px;
+            font-weight: 500;
+        }
+
+        .create-scheme-btn:hover {
+            background: #1e6fff;
+            color: white;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .empty-state img {
+            width: 240px;
+            margin-bottom: 24px;
+        }
+
+        .empty-state-title {
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 40px;
+        }
+
+        /* 下拉菜单 */
+        .dropdown-menu {
+            position: absolute;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            padding: 8px;
+            z-index: 1000;
+            min-width: 120px;
+        }
+
+        .dropdown-item {
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .dropdown-item:hover {
+            background: #f3f4f6;
+        }
+
+        /* 模态框 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #1f2937;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #1e6fff;
+            box-shadow: 0 0 0 3px rgba(30, 111, 255, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #1e6fff;
+            box-shadow: 0 0 0 3px rgba(30, 111, 255, 0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-primary {
+            background: #1e6fff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0d4fd4;
+        }
+
+        /* 年级选择器 */
+        .grade-selector {
+            padding: 10px 20px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 操作按钮组 */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #d1d5db;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .action-btn:hover {
+            border-color: #1e6fff;
+            color: #1e6fff;
+            background: #f0f5ff;
+        }
+
+        /* 移动到下拉菜单 */
+        .move-dropdown {
+            position: relative;
+        }
+
+        .move-dropdown-content {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 4px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            padding: 8px;
+            z-index: 1000;
+            min-width: 160px;
+            display: none;
+        }
+
+        /* 使用伪元素填充按钮和下拉菜单之间的间隙 */
+        .move-dropdown-content::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .move-dropdown:hover .move-dropdown-content {
+            display: block;
+        }
+
+        /* 当鼠标悬停在下拉内容上时也保持显示 */
+        .move-dropdown-content:hover {
+            display: block;
+        }
+
+        .move-dropdown-item {
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .move-dropdown-item:hover {
+            background: #f0f5ff;
+            color: #1e6fff;
+        }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+
+        /* 隐藏类 */
+        .hidden {
+            display: none !important;
+        }
+
+        /* 智能分组按钮 */
+        .smart-group-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #1e6fff 0%, #0d4fd4 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(30, 111, 255, 0.3);
+        }
+
+        .smart-group-btn:hover {
+            background: linear-gradient(135deg, #0d4fd4 0%, #0a3fa3 100%);
+            box-shadow: 0 4px 12px rgba(30, 111, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* 智能分组模态框 */
+        .smart-group-modal {
+            max-width: 600px;
+        }
+
+        /* 时间段选择器 */
+        .time-period-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .time-period-btn {
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .time-period-btn:hover {
+            border-color: #1e6fff;
+            background: #f0f5ff;
+        }
+
+        .time-period-btn.active {
+            border-color: #1e6fff;
+            background: #1e6fff;
+            color: white;
+        }
+
+        /* 分组数量选择器 */
+        .group-count-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .group-count-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .group-count-btn:hover {
+            border-color: #1e6fff;
+            background: #f0f5ff;
+        }
+
+        .group-count-btn.active {
+            border-color: #1e6fff;
+            background: #1e6fff;
+            color: white;
+        }
+
+        /* 百分比滑块容器 */
+        .percentage-slider-container {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .slider-wrapper {
+            position: relative;
+            height: 60px;
+            margin: 30px 0;
+        }
+
+        .slider-track {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #e5e7eb;
+            transform: translateY(-50%);
+            border-radius: 2px;
+        }
+
+        .slider-segment {
+            position: absolute;
+            top: 50%;
+            height: 8px;
+            transform: translateY(-50%);
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .slider-handle {
+            position: absolute;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 3px solid #1e6fff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            cursor: grab;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+
+        .slider-handle:hover {
+            border-width: 4px;
+            width: 24px;
+            height: 24px;
+        }
+
+        .slider-handle:active {
+            cursor: grabbing;
+            border-width: 5px;
+        }
+
+        .slider-handle.fixed {
+            cursor: not-allowed;
+            border-color: #9ca3af;
+        }
+
+        .slider-label {
+            position: absolute;
+            top: -25px;
+            transform: translateX(-50%);
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e6fff;
+            white-space: nowrap;
+        }
+
+        .slider-label.fixed {
+            color: #6b7280;
+        }
+
+        .slider-range-label {
+            position: absolute;
+            bottom: -25px;
+            font-size: 12px;
+            color: #6b7280;
+            white-space: nowrap;
+        }
+
+        /* 加载状态 */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            z-index: 100;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #1e6fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        /* Toast 提示 */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            z-index: 10000;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateX(-50%) translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* 班级选择器样式 */
+        .grade-selector-custom {
+            position: relative;
+            display: inline-block;
+        }
+
+        .grade-display {
+            padding: 8px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 160px;
+            transition: all 0.2s;
+            justify-content: space-between;
+        }
+
+        .grade-display:hover {
+            border-color: #1e6fff;
+            box-shadow: 0 0 0 3px rgba(30, 111, 255, 0.1);
+        }
+
+        .grade-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 4px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            padding: 8px;
+            z-index: 1000;
+            min-width: 160px;
+        }
+
+        .grade-option {
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .grade-option:hover {
+            background: #f0f5ff;
+            color: #1e6fff;
+        }
+
+        /* 三点图标样式 */
+        .three-dots {
+            display: inline-flex;
+            gap: 2px;
+        }
+
+        .three-dots span {
+            width: 4px;
+            height: 4px;
+            background: currentColor;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部栏 -->
+    <header class="top-header">
+        <div class="logo">
+            <div class="logo-icon">
+                <i data-lucide="sparkles" style="width: 16px; height: 16px;"></i>
+            </div>
+            <span class="logo-text">奕兆科技</span>
+        </div>
+        <div class="user-info">
+            <div class="user-avatar">
+                <i data-lucide="user"></i>
+            </div>
+            <span class="user-name">Admin</span>
+            <i data-lucide="chevron-down" class="user-dropdown-icon"></i>
+        </div>
+    </header>
+
+    <!-- 左侧导航栏 -->
+    <aside class="sidebar">
+        <nav>
+            <div class="nav-item">
+                <i data-lucide="message-square" size="18"></i>
+                <span>智能教学</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="check-square" size="18"></i>
+                <span>作业&批改</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="file-text" size="18"></i>
+                <span>智能组卷</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="trending-up" size="18"></i>
+                <span>数据分析</span>
+            </div>
+            <div class="nav-item active">
+                <i data-lucide="users" size="18"></i>
+                <span>学生管理</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="monitor" size="18"></i>
+                <span>AI创作</span>
+            </div>
+            <div class="nav-item">
+                <i data-lucide="folder" size="18"></i>
+                <span>我的资源</span>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+            <!-- 标签页和班级选择器 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('all')">全部学生</button>
+                    <button class="tab-btn" onclick="switchTab('group')">学生分组</button>
+                </div>
+                <div class="grade-selector-custom">
+                    <div class="grade-display" onclick="toggleGradeDropdown()">
+                        <span id="selectedGrade">一年级（六班）</span>
+                        <i data-lucide="chevron-down" size="16"></i>
+                    </div>
+                    <div class="grade-dropdown hidden" id="gradeDropdown">
+                        <div class="grade-option" onclick="selectGrade('一年级（六班）')">一年级（六班）</div>
+                        <div class="grade-option" onclick="selectGrade('二年级（三班）')">二年级（三班）</div>
+                        <div class="grade-option" onclick="selectGrade('三年级（一班）')">三年级（一班）</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 全部学生视图 -->
+            <div id="allStudentsView">
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+                    <!-- 学生卡片将通过 JavaScript 动态生成 -->
+                </div>
+            </div>
+
+            <!-- 学生分组视图 -->
+            <div id="groupView" class="hidden">
+                <div class="group-layout">
+                    <!-- 左侧分组方案列表 -->
+                    <div class="group-sidebar">
+                        <div style="margin-bottom: 16px;">
+                            <!-- 分组方案列表将通过 JavaScript 动态生成 -->
+                        </div>
+                        <button class="create-scheme-btn" onclick="openCreateSchemeModal()">
+                            <i data-lucide="plus" size="16"></i>
+                            <span>创建分组方案</span>
+                        </button>
+                    </div>
+
+                    <!-- 右侧小组列表 -->
+                    <div class="group-main">
+                        <!-- 小组卡片将通过 JavaScript 动态生成 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 空状态视图 -->
+            <div id="emptyView" class="hidden">
+                <div class="empty-state">
+                    <svg width="240" height="180" viewBox="0 0 240 180" fill="none">
+                        <circle cx="120" cy="90" r="60" fill="#E6F0FF"/>
+                        <path d="M120 60L140 90L120 120L100 90Z" fill="#1E6FFF" opacity="0.3"/>
+                        <circle cx="120" cy="90" r="30" fill="#1E6FFF" opacity="0.5"/>
+                        <path d="M105 85H135M105 95H135" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                    </svg>
+                    <p class="empty-state-title">当前班级没有学生，请联系管理员导入学生</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 初始化 Lucide 图标
+        lucide.createIcons();
+
+        // 模拟学生数据（包含最近5次作业成绩，满分100分）
+        const studentsData = [
+            { id: 1, name: '张铁蛋', studentId: '2024001', gender: 'male', recentScores: [85, 88, 82, 87, 90] },
+            { id: 2, name: '李雪梅', studentId: '2024002', gender: 'female', recentScores: [92, 95, 91, 94, 93] },
+            { id: 3, name: '王小明', studentId: '2024003', gender: 'male', recentScores: [58, 62, 55, 60, 59] }, // 绝对底线预警
+            { id: 4, name: '刘芳芳', studentId: '2024004', gender: 'female', recentScores: [88, 90, 87, 89, 91] },
+            { id: 5, name: '陈大壮', studentId: '2024005', gender: 'male', recentScores: [75, 78, 72, 76, 74] },
+            { id: 6, name: '赵小红', studentId: '2024006', gender: 'female', recentScores: [95, 97, 94, 96, 98] },
+            { id: 7, name: '孙建国', studentId: '2024007', gender: 'male', recentScores: [68, 70, 65, 69, 71] },
+            { id: 8, name: '周美丽', studentId: '2024008', gender: 'female', recentScores: [82, 85, 80, 84, 83] },
+            { id: 9, name: '吴大勇', studentId: '2024009', gender: 'male', recentScores: [72, 74, 70, 73, 75] },
+            { id: 10, name: '郑小花', studentId: '2024010', gender: 'female', recentScores: [55, 58, 52, 56, 54] }, // 绝对底线预警
+            { id: 11, name: '钱多多', studentId: '2024011', gender: 'male', recentScores: [78, 80, 76, 79, 77] },
+            { id: 12, name: '林晓晓', studentId: '2024012', gender: 'female', recentScores: [88, 91, 86, 90, 89] },
+            { id: 13, name: '马云飞', studentId: '2024013', gender: 'male', recentScores: [70, 72, 68, 71, 69] }, // 相对落后预警（后20%）
+        ];
+
+        // 计算学生的平均得分率
+        function calculateAverageScore(scores) {
+            if (!scores || scores.length === 0) return 0;
+            const sum = scores.reduce((acc, score) => acc + score, 0);
+            return sum / scores.length;
+        }
+
+        // 判断是否需要预警
+        function needsWarning(student) {
+            const avgScore = calculateAverageScore(student.recentScores);
+            
+            // 绝对底线预警：平均得分率低于65%
+            if (avgScore < 65) {
+                return { needsWarning: true, reason: '绝对底线预警', avgScore };
+            }
+            
+            // 相对落后预警：处于班级后20%
+            const allScores = studentsData
+                .map(s => ({
+                    id: s.id,
+                    avgScore: calculateAverageScore(s.recentScores)
+                }))
+                .sort((a, b) => b.avgScore - a.avgScore);
+            
+            const studentRank = allScores.findIndex(s => s.id === student.id) + 1;
+            const totalStudents = allScores.length;
+            const bottom20Percent = Math.ceil(totalStudents * 0.2);
+            
+            if (studentRank > totalStudents - bottom20Percent) {
+                return { needsWarning: true, reason: '相对落后预警', avgScore };
+            }
+            
+            return { needsWarning: false, avgScore };
+        }
+
+        // 男女头像 SVG
+        const maleAvatarSVG = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="50" fill="#E6F0FF"/>
+            <circle cx="50" cy="35" r="15" fill="#1E6FFF"/>
+            <path d="M25 75 Q25 55 50 55 Q75 55 75 75 L75 100 L25 100 Z" fill="#1E6FFF"/>
+        </svg>`;
+
+        const femaleAvatarSVG = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="50" fill="#FFE6F0"/>
+            <circle cx="50" cy="35" r="15" fill="#FF69B4"/>
+            <path d="M25 75 Q25 55 50 55 Q75 55 75 75 L75 100 L25 100 Z" fill="#FF69B4"/>
+        </svg>`;
+
+        const defaultAvatarSVG = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="50" fill="#F3F4F6"/>
+            <circle cx="50" cy="35" r="15" fill="#9CA3AF"/>
+            <path d="M25 75 Q25 55 50 55 Q75 55 75 75 L75 100 L25 100 Z" fill="#9CA3AF"/>
+        </svg>`;
+
+        // 获取学生头像
+        function getStudentAvatar(gender) {
+            if (gender === 'male') return maleAvatarSVG;
+            if (gender === 'female') return femaleAvatarSVG;
+            return defaultAvatarSVG;
+        }
+
+        // 分组方案数据
+        let groupSchemes = [
+            {
+                id: 1,
+                name: '课后作业分组',
+                subject: '语文',
+                assigned: 10,
+                total: 12,
+                groups: [
+                    { id: 'pending', name: '待分配', students: [1, 2] },
+                    { id: 2, name: '提升组', students: [3, 4, 5, 6, 7, 8] },
+                    { id: 3, name: '基础组', students: [9, 10, 11, 12] },
+                    { id: 4, name: '薄弱组', students: [] }
+                ]
+            },
+            {
+                id: 2,
+                name: '课后作业分组',
+                subject: '数学',
+                assigned: 12,
+                total: 12,
+                groups: [
+                    { id: 1, name: '提升组', students: [1, 2, 3, 4] },
+                    { id: 2, name: '基础组', students: [5, 6, 7, 8] },
+                    { id: 3, name: '薄弱组', students: [9, 10, 11, 12] }
+                ]
+            },
+            {
+                id: 3,
+                name: '课后作业分组',
+                subject: '英语',
+                assigned: 12,
+                total: 12,
+                groups: [
+                    { id: 1, name: '提升组', students: [1, 2, 3, 4] },
+                    { id: 2, name: '基础组', students: [5, 6, 7, 8] },
+                    { id: 3, name: '薄弱组', students: [9, 10, 11, 12] }
+                ]
+            }
+        ];
+
+        let currentSchemeId = 1;
+        let selectedStudents = new Set();
+        let currentGroupId = null;
+        let editingGroupId = null;
+
+        // 初始化页面
+        function initPage() {
+            renderAllStudents();
+            renderGroupSchemes();
+            renderGroupView();
+        }
+
+        // 获取最近5次作业得分率
+        function getRecentScoreRates(student) {
+            if (!student.recentScores || student.recentScores.length === 0) {
+                return [];
+            }
+            
+            return student.recentScores.map(score => {
+                const rate = score / 100; // 满分100分
+                let level = 'low';
+                if (rate >= 0.8) level = 'high';
+                else if (rate >= 0.6) level = 'medium';
+                return { rate, level };
+            });
+        }
+
+        // 渲染全部学生
+        function renderAllStudents() {
+            const container = document.querySelector('#allStudentsView > div');
+            
+            // 计算所有学生的得分率并排序，找出最需要提醒的3个学生
+            const studentsWithRate = studentsData.map(student => {
+                const scoreRates = getRecentScoreRates(student);
+                const avgRate = scoreRates.length > 0 
+                    ? scoreRates.reduce((sum, s) => sum + s.rate, 0) / scoreRates.length 
+                    : 1;
+                return { student, avgRate };
+            });
+            
+            // 按得分率排序，找出最低的3个
+            const lowestThree = studentsWithRate
+                .filter(item => item.avgRate < 1) // 排除没有作业记录的
+                .sort((a, b) => a.avgRate - b.avgRate)
+                .slice(0, 3)
+                .map(item => item.student.id);
+            
+            container.innerHTML = studentsData.map(student => {
+                const scoreRates = getRecentScoreRates(student);
+                const avgRate = scoreRates.length > 0 
+                    ? scoreRates.reduce((sum, s) => sum + s.rate, 0) / scoreRates.length 
+                    : 1;
+                
+                // 只显示最需要提醒的3个学生
+                const scoreBadge = lowestThree.includes(student.id) ? `
+                    <div class="score-rate-badge warning" data-tooltip="近5次作业得分率：低于70%或处于班级后20%">
+                        ${Math.round(avgRate * 100)}%
+                    </div>
+                ` : '';
+                
+                return `
+                    <div class="student-card" onclick="navigateToStudentAnalysis(${student.id})">
+                        ${scoreBadge}
+                        <div class="student-avatar">
+                            ${getStudentAvatar(student.gender)}
+                        </div>
+                        <div class="student-info">
+                            <div class="student-name">${student.name}</div>
+                            <div class="student-id">${student.studentId}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // 重新初始化图标
+            lucide.createIcons();
+        }
+
+        // 切换标签页
+        function switchTab(tab) {
+            const allView = document.getElementById('allStudentsView');
+            const groupView = document.getElementById('groupView');
+            const tabs = document.querySelectorAll('.tab-btn');
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'all') {
+                tabs[0].classList.add('active');
+                allView.classList.remove('hidden');
+                groupView.classList.add('hidden');
+            } else {
+                tabs[1].classList.add('active');
+                allView.classList.add('hidden');
+                groupView.classList.remove('hidden');
+            }
+        }
+
+        // 渲染分组方案列表
+        function renderGroupSchemes() {
+            const container = document.querySelector('.group-sidebar > div');
+            container.innerHTML = groupSchemes.map(scheme => `
+                <div class="group-scheme-item ${scheme.id === currentSchemeId ? 'active' : ''}" 
+                     onclick="selectScheme(${scheme.id})">
+                    <div class="scheme-more-dropdown">
+                        <div class="more-btn">
+                            <div class="three-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                        <div class="scheme-more-content">
+                            <div class="scheme-more-item" onclick="event.stopPropagation(); renameScheme(${scheme.id})">重命名</div>
+                            <div class="scheme-more-item" onclick="event.stopPropagation(); deleteScheme(${scheme.id})">删除</div>
+                        </div>
+                    </div>
+                    <div class="scheme-name">${scheme.name}</div>
+                    <div class="scheme-meta">${scheme.subject} | 已分 ${scheme.assigned} 人，未分 ${scheme.total - scheme.assigned} 人</div>
+                </div>
+            `).join('');
+        }
+
+        // 选择分组方案
+        function selectScheme(schemeId) {
+            currentSchemeId = schemeId;
+            selectedStudents.clear();
+            currentGroupId = null;
+            editingGroupId = null;
+            renderGroupSchemes();
+            renderGroupView();
+        }
+
+        // 渲染分组视图
+        function renderGroupView() {
+            const scheme = groupSchemes.find(s => s.id === currentSchemeId);
+            if (!scheme) return;
+
+            const container = document.querySelector('.group-main');
+            
+            // 检查是否有待分配的学生
+            const pendingGroup = scheme.groups.find(g => g.id === 'pending');
+            const hasPending = pendingGroup && pendingGroup.students.length > 0;
+
+            let html = '';
+
+            // 待分配卡片（只有当有待分配学生时才显示）
+            if (hasPending) {
+                html += renderGroupCard(pendingGroup, true);
+            }
+
+            // 智能分组和添加小组按钮（位于待分配卡片下方）
+            html += `
+                <button class="smart-group-btn" onclick="openSmartGroupModal()">
+                    <i data-lucide="sparkles" size="16"></i>
+                    <span>智能分组</span>
+                </button>
+                <button class="add-group-btn" onclick="addNewGroup()">
+                    <i data-lucide="plus" size="16"></i>
+                    <span>添加小组</span>
+                </button>
+            `;
+
+            // 其他小组（除了待分配）
+            scheme.groups.filter(g => g.id !== 'pending').forEach(group => {
+                html += renderGroupCard(group, false);
+            });
+
+            container.innerHTML = html;
+            lucide.createIcons();
+            
+            // 如果有正在编辑的小组，重新聚焦输入框
+            if (editingGroupId !== null) {
+                setTimeout(() => {
+                    const input = document.getElementById(`groupNameInput_${editingGroupId}`);
+                    if (input) {
+                        input.focus();
+                        input.select();
+                    }
+                }, 0);
+            }
+        }
+
+        // 渲染小组卡片
+        function renderGroupCard(group, isPending) {
+            const scheme = groupSchemes.find(s => s.id === currentSchemeId);
+            const students = group.students.map(id => studentsData.find(s => s.id === id)).filter(Boolean);
+            
+            const hasSelected = students.some(s => selectedStudents.has(s.id));
+            const isCurrentGroup = currentGroupId === group.id;
+            const isEditing = editingGroupId === group.id;
+
+            let actionButtons = '';
+            if (hasSelected && isCurrentGroup) {
+                let moveOptions = scheme.groups
+                    .filter(g => g.id !== group.id && g.id !== 'pending')
+                    .map(g => `<div class="move-dropdown-item" onclick="moveStudentsToGroup(${g.id})">${g.name}</div>`)
+                    .join('');
+
+                if (!isPending) {
+                    moveOptions += `<div class="move-dropdown-item" onclick="moveStudentsToGroup('pending')">待分配</div>`;
+                }
+
+                actionButtons = `
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="clearSelection()">
+                            <i data-lucide="x" size="16"></i>
+                            <span>取消选择</span>
+                        </button>
+                        <div class="move-dropdown">
+                            <button class="action-btn">
+                                <span>移动到...</span>
+                                <i data-lucide="chevron-down" size="16"></i>
+                            </button>
+                            <div class="move-dropdown-content">
+                                ${moveOptions}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // "更多"按钮 - 非待分配的小组都显示
+            const moreBtn = !isPending ? `
+                <div class="group-more-dropdown">
+                    <div class="more-btn">
+                        <div class="three-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                    <div class="group-more-content">
+                        <div class="group-more-item" onclick="event.stopPropagation(); renameGroup(${group.id})">重命名</div>
+                        <div class="group-more-item" onclick="event.stopPropagation(); deleteGroup(${group.id})">删除</div>
+                    </div>
+                </div>
+            ` : '';
+
+            // 小组标题部分 - 支持双击编辑
+            let titleHtml = '';
+            if (isPending) {
+                titleHtml = `
+                    <div class="group-title" style="cursor: default; padding: 0; margin: 0; pointer-events: none;">
+                        待分配
+                        <span class="group-count">（${students.length} 人）</span>
+                    </div>
+                `;
+            } else if (isEditing) {
+                titleHtml = `
+                    <div class="group-title">
+                        <input type="text" 
+                               class="group-title-input" 
+                               id="groupNameInput_${group.id}"
+                               value="${group.name}" 
+                               onblur="saveGroupName(${group.id})"
+                               onkeypress="handleGroupNameKeypress(event, ${group.id})"
+                               maxlength="20"
+                               autofocus>
+                        <span class="group-count">（${students.length} 人）</span>
+                    </div>
+                `;
+            } else {
+                titleHtml = `
+                    <div class="group-title" ondblclick="startEditGroupName(${group.id})">
+                        ${group.name}
+                        <span class="group-count">（${students.length} 人）</span>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="group-card ${isPending ? 'pending' : ''}" data-group-id="${group.id}">
+                    <div class="group-header">
+                        ${titleHtml}
+                        ${actionButtons}
+                        ${moreBtn}
+                    </div>
+                    <div>
+                        ${students.map(student => `
+                            <span class="student-tag ${selectedStudents.has(student.id) ? 'selected' : ''}" 
+                                  onclick="toggleStudentSelection(${student.id}, ${typeof group.id === 'number' ? group.id : "'" + group.id + "'"})">
+                                ${student.name}
+                            </span>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // 切换学生选择状态
+        function toggleStudentSelection(studentId, groupId) {
+            // 如果点击了不同小组的学生
+            if (currentGroupId !== null && currentGroupId !== groupId && selectedStudents.size > 0) {
+                showToast('请勿跨组选择学生');
+                return;
+            }
+
+            if (selectedStudents.has(studentId)) {
+                selectedStudents.delete(studentId);
+                if (selectedStudents.size === 0) {
+                    currentGroupId = null;
+                }
+            } else {
+                selectedStudents.add(studentId);
+                currentGroupId = groupId;
+            }
+
+            renderGroupView();
+        }
+
+        // 清除选择
+        function clearSelection() {
+            selectedStudents.clear();
+            currentGroupId = null;
+            renderGroupView();
+        }
+
+        // 移动学生到指定小组
+        function moveStudentsToGroup(targetGroupId) {
+            const scheme = groupSchemes.find(s => s.id === currentSchemeId);
+            if (!scheme) return;
+
+            // 从当前小组移除学生
+            const currentGroup = scheme.groups.find(g => g.id === currentGroupId);
+            if (currentGroup) {
+                currentGroup.students = currentGroup.students.filter(id => !selectedStudents.has(id));
+            }
+
+            // 添加到目标小组
+            const targetGroup = scheme.groups.find(g => g.id === targetGroupId);
+            if (targetGroup) {
+                targetGroup.students.push(...Array.from(selectedStudents));
+            }
+
+            // 更新已分配人数
+            const pendingGroup = scheme.groups.find(g => g.id === 'pending');
+            scheme.assigned = scheme.total - (pendingGroup ? pendingGroup.students.length : 0);
+
+            clearSelection();
+            renderGroupSchemes();
+            renderGroupView();
+        }
+
+        // 添加新小组
+        function addNewGroup() {
+            const scheme = groupSchemes.find(s => s.id === currentSchemeId);
+            if (!scheme) return;
+
+            const newGroupNumber = scheme.groups.filter(g => g.id !== 'pending').length + 1;
+            const newGroupId = Date.now();
+            const newGroup = {
+                id: newGroupId,
+                name: `小组${newGroupNumber}`,
+                students: []
+            };
+
+            scheme.groups.push(newGroup);
+            
+            // 设置为编辑状态
+            editingGroupId = newGroupId;
+            
+            renderGroupView();
+            
+            // 渲染后聚焦输入框
+            setTimeout(() => {
+                const input = document.getElementById(`groupNameInput_${newGroupId}`);
+                if (input) {
+                    input.focus();
+                    input.select();
+                }
+            }, 0);
+        }
+
+        // 开始编辑小组名称
+        function startEditGroupName(groupId) {
+            editingGroupId = groupId;
+            renderGroupView();
+            
+            setTimeout(() => {
+                const input = document.getElementById(`groupNameInput_${groupId}`);
+                if (input) {
+                    input.focus();
+                    input.select();
+                }
+            }, 0);
+        }
+
+        // 保存小组名称
+        function saveGroupName(groupId) {
+            const input = document.getElementById(`groupNameInput_${groupId}`);
+            if (!input) return;
+
+            const newName = input.value.trim();
+            
+            if (!newName) {
+                showToast('小组名称不能为空');
+                // 恢复原来的名称
+                editingGroupId = null;
+                renderGroupView();
+                return;
+            }
+
+            const scheme = groupSchemes.find(s => s.id === currentSchemeId);
+            if (!scheme) return;
+
+            const group = scheme.groups.find(g => g.id === groupId);
+            if (!group) return;
+
+            // 检查名称是否重复
+            const exists = scheme.groups.some(g => g.id !== groupId && g.name === newName);
+            if (exists) {
+                showToast('该小组名称已存在，请修改后重试');
+                // 保持编辑状态，不清空editingGroupId
+                return;
+            }
+
+            group.name = newName;
+            editingGroupId = null;
+            renderGroupView();
+        }
+
+        // 处理小组名称输入框按键
+        function handleGroupNameKeypress(event, groupId) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const input = document.getElementById(`groupNameInput_${groupId}`);
+                if (input) {
+                    input.blur(); // 触发 onblur 事件
+                }
+            }
+        }
+
+        // 显示方案菜单
+        function showSchemeMenu(event, schemeId) {
+            event.stopPropagation();
+            
+            // 移除现有菜单
+            const existingMenu = document.querySelector('.dropdown-menu');
+            if (existingMenu) {
+                existingMenu.remove();
+            }
+
+            const menu = document.createElement('div');
+            menu.className = 'dropdown-menu';
+            menu.style.left = event.clientX + 'px';
+            menu.style.top = event.clientY + 'px';
+            menu.innerHTML = `
+                <div class="dropdown-item" onclick="renameScheme(${schemeId})">重命名</div>
+                <div class="dropdown-item" onclick="deleteScheme(${schemeId})">删除</div>
+            `;
+            document.body.appendChild(menu);
+
+            // 点击其他地方关闭菜单
+            setTimeout(() => {
+                document.addEventListener('click', function closeMenu() {
+                    menu.remove();
+                    document.removeEventListener('click', closeMenu);
+                });
+            }, 0);
+        }
+
+        // 显示小组菜单
+        function showGroupMenu(event, groupId) {
+            event.stopPropagation();
+            
+            const existingMenu = document.querySelector('.dropdown-menu');
+            if (existingMenu) {
+                existingMenu.remove();
+            }
+
+            const menu = document.createElement('div');
+            menu.className = 'dropdown-menu';
+            menu.style.left = event.clientX + 'px';
+            menu.style.top = event.clientY + 'px';
+            menu.innerHTML = `
+                <div class="dropdown-item" onclick="renameGroup(${groupId})">重命名</div>
+                <div class="dropdown-item" onclick="deleteGroup(${groupId})">删除</div>
+            `;
+            document.body.appendChild(menu);
+
+            setTimeout(() => {
+                document.addEventListener('click', function closeMenu() {
+                    menu.remove();
+                    document.removeEventListener('click', closeMenu);
+                });
+            }, 0);
+        }
+
+        // 重命名方案
+        function renameScheme(schemeId) {
+            const scheme = groupSchemes.find(s => s.id === schemeId);
+            if (!scheme) return;
+
+            const newName = prompt('请输入新的方案名称：', scheme.name);
+            if (newName && newName.trim()) {
+                // 检查名称是否重复
+                const exists = groupSchemes.some(s => s.id !== schemeId && s.name === newName.trim() && s.subject === scheme.subject);
+                if (exists) {
+                    showToast('该方案名称已存在，请修改后重试');
+                    return;
+                }
+                scheme.name = newName.trim();
+                renderGroupSchemes();
+            }
+        }
+
+        // 删除方案
+        function deleteScheme(schemeId) {
+            const scheme = groupSchemes.find(s => s.id === schemeId);
+            if (!scheme) return;
+
+            // 检查是否是该学科的唯一方案
+            const sameSubjectSchemes = groupSchemes.filter(s => s.subject === scheme.subject);
+            if (sameSubjectSchemes.length <= 1) {
+                showToast('该学科至少需保留一个分组方案');
+                return;
+            }
+
+            if (confirm('确定要删除这个分组方案吗？')) {
+                groupSchemes = groupSchemes.filter(s => s.id !== schemeId);
+                if (currentSchemeId === schemeId) {
+                    currentSchemeId = groupSchemes[0].id;
+                }
+                renderGroupSchemes();
+                renderGroupView();
+            }
+        }
+
+        // 重命名小组（通过菜单触发）
+        function renameGroup(groupId) {
+            startEditGroupName(groupId);
+        }
+
+        // 删除小组
+        function deleteGroup(groupId) {
+            const scheme = groupSchemes.find(s => s.id === currentSchemeId);
+            if (!scheme) return;
+
+            if (confirm('确定要删除这个小组吗？小组中的学生将移回待分配。')) {
+                const group = scheme.groups.find(g => g.id === groupId);
+                if (!group) return;
+
+                // 获取或创建待分配小组
+                let pendingGroup = scheme.groups.find(g => g.id === 'pending');
+                if (!pendingGroup) {
+                    pendingGroup = { id: 'pending', name: '待分配', students: [] };
+                    scheme.groups.unshift(pendingGroup);
+                }
+
+                // 将学生移到待分配
+                pendingGroup.students.push(...group.students);
+
+                // 删除小组
+                scheme.groups = scheme.groups.filter(g => g.id !== groupId);
+
+                // 更新已分配人数
+                scheme.assigned = scheme.total - pendingGroup.students.length;
+
+                // 如果删除的是正在编辑的小组，清除编辑状态
+                if (editingGroupId === groupId) {
+                    editingGroupId = null;
+                }
+
+                renderGroupSchemes();
+                renderGroupView();
+            }
+        }
+
+        // 打开创建方案模态框
+        function openCreateSchemeModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal" onclick="event.stopPropagation()">
+                    <div class="modal-title">创建分组方案</div>
+                    <div class="form-group">
+                        <label class="form-label">方案名称：</label>
+                        <input type="text" class="form-input" id="schemeName" placeholder="请输入方案名称" maxlength="20">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">关联学科：</label>
+                        <select class="form-select" id="schemeSubject">
+                            <option value="">请选择</option>
+                            <option value="语文">语文</option>
+                            <option value="数学">数学</option>
+                            <option value="英语">英语</option>
+                        </select>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                        <button class="btn btn-primary" onclick="createScheme()">保存</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // 点击遮罩层关闭模态框
+            modal.addEventListener('click', closeModal);
+        }
+
+        // 创建分组方案
+        function createScheme() {
+            const name = document.getElementById('schemeName').value.trim();
+            const subject = document.getElementById('schemeSubject').value;
+
+            if (!name) {
+                showToast('请输入方案名称');
+                return;
+            }
+
+            if (!subject) {
+                showToast('请选择关联学科');
+                return;
+            }
+
+            // 检查名称是否重复（同一学科下）
+            const exists = groupSchemes.some(s => s.name === name && s.subject === subject);
+            if (exists) {
+                showToast('该方案名称已存在，请修改后重试');
+                return;
+            }
+
+            const timestamp = Date.now();
+            const newScheme = {
+                id: timestamp,
+                name: name,
+                subject: subject,
+                assigned: 0,
+                total: studentsData.length,
+                groups: [
+                    { id: 'pending', name: '待分配', students: studentsData.map(s => s.id) }
+                ]
+            };
+
+            groupSchemes.push(newScheme);
+            currentSchemeId = newScheme.id;
+            selectedStudents.clear();
+            currentGroupId = null;
+            editingGroupId = null;
+            renderGroupSchemes();
+            renderGroupView();
+            closeModal();
+            showToast('分组方案创建成功');
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            const modal = document.querySelector('.modal-overlay');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // 显示 Toast
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // 切换班级下拉菜单
+        function toggleGradeDropdown() {
+            const dropdown = document.getElementById('gradeDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // 选择班级
+        function selectGrade(grade) {
+            document.getElementById('selectedGrade').textContent = grade;
+            document.getElementById('gradeDropdown').classList.add('hidden');
+        }
+
+        // 点击其他地方关闭班级下拉菜单
+        document.addEventListener('click', function(event) {
+            const gradeSelector = document.querySelector('.grade-selector-custom');
+            if (!gradeSelector.contains(event.target)) {
+                document.getElementById('gradeDropdown').classList.add('hidden');
+            }
+        });
+
+        // 跳转到学生数据分析页面
+        function navigateToStudentAnalysis(studentId) {
+            const student = studentsData.find(s => s.id === studentId);
+            if (!student) return;
+
+            const currentGrade = document.getElementById('selectedGrade').textContent;
+            const currentSubject = '语文'; // 默认学科，可以根据需要调整
+            
+            // 构建跳转URL，传递学生ID、班级和学科参数
+            const url = `data-analysis.html?studentId=${studentId}&grade=${encodeURIComponent(currentGrade)}&subject=${encodeURIComponent(currentSubject)}`;
+            window.location.href = url;
+        }
+
+        // ==================== 智能分组功能 ====================
+        
+        // 智能分组配置
+        let smartGroupConfig = {
+            timePeriod: 'week', // week, month, semester, custom
+            customStartDate: null,
+            customEndDate: null,
+            groupCount: 3,
+            percentages: [0, 60, 80, 100] // 默认3组的百分比
+        };
+
+        // 默认百分比配置
+        const defaultPercentages = {
+            2: [0, 50, 100],
+            3: [0, 60, 80, 100],
+            4: [0, 40, 60, 80, 100],
+            5: [0, 30, 50, 70, 85, 100]
+        };
+
+        // 分组颜色
+        const groupColors = [
+            '#ef4444', // 红色
+            '#f59e0b', // 橙色
+            '#22c55e', // 绿色
+            '#3b82f6', // 蓝色
+            '#8b5cf6'  // 紫色
+        ];
+
+        // 打开智能分组模态框
+        function openSmartGroupModal() {
+            const scheme = groupSchemes.find(s => s.id === currentSchemeId);
+            if (!scheme) return;
+
+            // 重置配置为默认值
+            smartGroupConfig = {
+                timePeriod: 'week',
+                customStartDate: null,
+                customEndDate: null,
+                groupCount: 3,
+                percentages: [...defaultPercentages[3]]
+            };
+
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.id = 'smartGroupModal';
+            modal.innerHTML = `
+                <div class="modal smart-group-modal" onclick="event.stopPropagation()">
+                    <div class="modal-title">智能分组设置</div>
+                    
+                    <!-- 时间段选择 -->
+                    <div class="form-group">
+                        <label class="form-label">选择要统计的作业时段：</label>
+                        <div class="time-period-options">
+                            <div class="time-period-btn active" onclick="selectTimePeriod('week')">近一周</div>
+                            <div class="time-period-btn" onclick="selectTimePeriod('month')">近一个月</div>
+                            <div class="time-period-btn" onclick="selectTimePeriod('sixmonths')">近六个月</div>
+                            <div class="time-period-btn" onclick="selectTimePeriod('year')">近一年</div>
+                            <div class="time-period-btn" onclick="selectTimePeriod('all')">全部数据</div>
+                        </div>
+                    </div>
+
+                    <!-- 分组数量选择 -->
+                    <div class="form-group">
+                        <label class="form-label">选择分组数量：</label>
+                        <div class="group-count-selector">
+                            <div class="group-count-btn" onclick="selectGroupCount(2)">2</div>
+                            <div class="group-count-btn active" onclick="selectGroupCount(3)">3</div>
+                            <div class="group-count-btn" onclick="selectGroupCount(4)">4</div>
+                            <div class="group-count-btn" onclick="selectGroupCount(5)">5</div>
+                        </div>
+                    </div>
+
+                    <!-- 百分比滑块 -->
+                    <div class="form-group">
+                        <label class="form-label">调整分组区间：</label>
+                        <div style="font-size: 13px; color: #6b7280; margin-bottom: 12px; line-height: 1.6;">
+                            依据所选时间段内作业平均得分率排名<br>
+                            （0%为得分最低的学生，100%为得分最高的学生）
+                        </div>
+                        <div class="percentage-slider-container">
+                            <div id="sliderWrapper" class="slider-wrapper">
+                                <!-- 滑块将通过 JavaScript 动态生成 -->
+                            </div>
+                            <div id="rangeLabels" style="margin-top: 40px; font-size: 13px; color: #6b7280;">
+                                <!-- 区间标签将通过 JavaScript 动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                        <button class="btn btn-primary" onclick="applySmartGrouping()">确认分组</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // 点击遮罩层关闭模态框
+            modal.addEventListener('click', closeModal);
+
+            // 渲染滑块
+            renderPercentageSlider();
+        }
+
+        // 选择时间段
+        function selectTimePeriod(period) {
+            smartGroupConfig.timePeriod = period;
+            
+            // 更新UI
+            const buttons = document.querySelectorAll('.time-period-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            const periods = ['week', 'month', 'sixmonths', 'year', 'all'];
+            const index = periods.indexOf(period);
+            if (index >= 0) {
+                buttons[index].classList.add('active');
+            }
+        }
+
+        // 选择分组数量
+        function selectGroupCount(count) {
+            smartGroupConfig.groupCount = count;
+            smartGroupConfig.percentages = [...defaultPercentages[count]];
+            
+            // 更新UI
+            const buttons = document.querySelectorAll('.group-count-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            buttons[count - 2].classList.add('active');
+
+            // 重新渲染滑块
+            renderPercentageSlider();
+        }
+
+        // 渲染百分比滑块
+        function renderPercentageSlider() {
+            const wrapper = document.getElementById('sliderWrapper');
+            if (!wrapper) return;
+
+            const percentages = smartGroupConfig.percentages;
+            const groupCount = smartGroupConfig.groupCount;
+
+            let html = '<div class="slider-track"></div>';
+
+            // 渲染彩色区间段
+            for (let i = 0; i < percentages.length - 1; i++) {
+                const left = percentages[i];
+                const right = percentages[i + 1];
+                const color = groupColors[i % groupColors.length];
+                
+                html += `
+                    <div class="slider-segment" style="left: ${left}%; width: ${right - left}%; background: ${color}; opacity: 0.3;"></div>
+                `;
+            }
+
+            // 渲染滑块和标签
+            percentages.forEach((percentage, index) => {
+                const isFixed = index === 0 || index === percentages.length - 1;
+                const fixedClass = isFixed ? 'fixed' : '';
+                
+                html += `
+                    <div class="slider-handle ${fixedClass}" 
+                         data-index="${index}" 
+                         style="left: ${percentage}%;"
+                         ${!isFixed ? `onmousedown="startDragSlider(event, ${index})"` : ''}>
+                    </div>
+                    <div class="slider-label ${fixedClass}" style="left: ${percentage}%;">
+                        ${percentage}%
+                    </div>
+                `;
+            });
+
+            wrapper.innerHTML = html;
+
+            // 渲染区间标签
+            renderRangeLabels();
+        }
+
+        // 渲染区间标签
+        function renderRangeLabels() {
+            const container = document.getElementById('rangeLabels');
+            if (!container) return;
+
+            const percentages = smartGroupConfig.percentages;
+            let html = '<div style="display: flex; flex-direction: column; gap: 8px;">';
+
+            for (let i = 0; i < percentages.length - 1; i++) {
+                const start = percentages[i];
+                const end = percentages[i + 1];
+                const color = groupColors[i % groupColors.length];
+                
+                // 判断是否需要添加边界说明
+                let boundaryNote = '';
+                if (i < percentages.length - 2) {
+                    // 不是最后一组，添加"不含"说明
+                    boundaryNote = `（不含${end}%）`;
+                }
+                
+                html += `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 16px; height: 16px; background: ${color}; border-radius: 3px; opacity: 0.6;"></div>
+                        <span>第 ${i + 1} 组：${start}% ~ ${end}%${boundaryNote}</span>
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // 开始拖动滑块
+        let draggingIndex = null;
+        let sliderWrapperRect = null;
+
+        function startDragSlider(event, index) {
+            event.preventDefault();
+            draggingIndex = index;
+            
+            const wrapper = document.getElementById('sliderWrapper');
+            sliderWrapperRect = wrapper.getBoundingClientRect();
+
+            document.addEventListener('mousemove', onDragSlider);
+            document.addEventListener('mouseup', stopDragSlider);
+        }
+
+        function onDragSlider(event) {
+            if (draggingIndex === null || !sliderWrapperRect) return;
+
+            const percentages = smartGroupConfig.percentages;
+            const x = event.clientX - sliderWrapperRect.left;
+            let newPercentage = Math.round((x / sliderWrapperRect.width) * 100);
+
+            // 限制在有效范围内
+            const minValue = percentages[draggingIndex - 1] + 1;
+            const maxValue = percentages[draggingIndex + 1] - 1;
+            newPercentage = Math.max(minValue, Math.min(maxValue, newPercentage));
+
+            // 更新百分比
+            smartGroupConfig.percentages[draggingIndex] = newPercentage;
+
+            // 重新渲染
+            renderPercentageSlider();
+        }
+
+        function stopDragSlider() {
+            draggingIndex = null;
+            sliderWrapperRect = null;
+            document.removeEventListener('mousemove', onDragSlider);
+            document.removeEventListener('mouseup', stopDragSlider);
+        }
+
+        // 应用智能分组
+        function applySmartGrouping() {
+            const scheme = groupSchemes.find(s => s.id === currentSchemeId);
+            if (!scheme) return;
+
+            // 显示加载状态
+            showLoadingInModal();
+
+            // 模拟异步处理（实际应用中这里会调用API）
+            setTimeout(() => {
+                performSmartGrouping();
+                closeModal();
+                showToast('智能分组完成');
+            }, 1500);
+        }
+
+        // 显示模态框中的加载状态
+        function showLoadingInModal() {
+            const modal = document.querySelector('.smart-group-modal');
+            if (!modal) return;
+
+            const loading = document.createElement('div');
+            loading.className = 'loading-overlay';
+            loading.innerHTML = `
+                <div class="loading-spinner"></div>
+                <div class="loading-text">正在智能分组中...</div>
+            `;
+            modal.appendChild(loading);
+        }
+
+        // 执行智能分组
+        function performSmartGrouping() {
+            const scheme = groupSchemes.find(s => s.id === currentSchemeId);
+            if (!scheme) return;
+
+            // 1. 根据时间段获取要统计的成绩数量
+            let scoreCount;
+            switch(smartGroupConfig.timePeriod) {
+                case 'week':
+                    scoreCount = 1; // 近一周取1次成绩
+                    break;
+                case 'month':
+                    scoreCount = 2; // 近一个月取2次成绩
+                    break;
+                case 'sixmonths':
+                    scoreCount = 3; // 近六个月取3次成绩
+                    break;
+                case 'year':
+                    scoreCount = 4; // 近一年取4次成绩
+                    break;
+                case 'all':
+                default:
+                    scoreCount = null; // 全部数据
+                    break;
+            }
+
+            // 2. 计算每个学生的平均得分率
+            const studentScores = studentsData.map(student => {
+                // 根据时间段截取相应的成绩
+                const scores = scoreCount ? student.recentScores.slice(-scoreCount) : student.recentScores;
+                const avgScore = calculateAverageScore(scores);
+                return {
+                    id: student.id,
+                    scoreRate: avgScore // 已经是百分制
+                };
+            });
+
+            // 3. 清除所有现有小组（除了待分配）
+            scheme.groups = [{ id: 'pending', name: '待分配', students: [] }];
+
+            // 4. 根据百分比区间创建新小组并分配学生
+            const percentages = smartGroupConfig.percentages;
+            const newGroups = [];
+
+            for (let i = 0; i < percentages.length - 1; i++) {
+                const start = percentages[i];
+                const end = percentages[i + 1];
+                const groupName = `${start}%~${end}%`;
+                
+                // 找出在这个区间内的学生
+                const studentsInRange = studentScores.filter(s => {
+                    return s.scoreRate >= start && (i === percentages.length - 2 ? s.scoreRate <= end : s.scoreRate < end);
+                }).map(s => s.id);
+
+                const newGroup = {
+                    id: Date.now() + i,
+                    name: groupName,
+                    students: studentsInRange
+                };
+                
+                newGroups.push(newGroup);
+            }
+
+            // 5. 将新小组添加到方案中
+            scheme.groups.push(...newGroups);
+
+            // 6. 更新已分配人数
+            scheme.assigned = scheme.total;
+
+            // 7. 重置选择状态
+            selectedStudents.clear();
+            currentGroupId = null;
+            editingGroupId = null;
+
+            // 8. 刷新UI
+            renderGroupSchemes();
+            renderGroupView();
+        }
+
+        // 初始化页面
+        initPage();
+    </script>
+</body>
+</html>
+
