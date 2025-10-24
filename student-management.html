@@ -601,27 +601,31 @@
             color: #1e6fff;
         }
 
-        /* 添加按钮 */
+        /* 添加小组按钮 */
         .add-group-btn {
-            width: 100%;
+            flex: 1;
             padding: 12px;
-            border: 2px dashed #d1d5db;
+            border: 1px solid #bfdbfe;
             border-radius: 8px;
-            background: white;
+            background: #e6f0ff;
             color: #1e6fff;
             font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
-            margin-bottom: 20px;
         }
 
         .add-group-btn:hover {
-            border-color: #1e6fff;
-            background: #f0f5ff;
+            background: #dbeafe;
+            border-color: #93c5fd;
+        }
+
+        .add-group-btn:active {
+            background: #bfdbfe;
         }
 
         .create-scheme-btn {
@@ -928,14 +932,28 @@
             display: none !important;
         }
 
+        /* 按钮容器 - 响应式布局 */
+        .action-buttons-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        /* 小屏幕堆叠 */
+        @media (max-width: 768px) {
+            .action-buttons-container {
+                flex-direction: column;
+            }
+        }
+
         /* 智能分组按钮 */
         .smart-group-btn {
-            width: 100%;
+            flex: 1;
             padding: 12px;
-            background: linear-gradient(135deg, #1e6fff 0%, #0d4fd4 100%);
-            border: none;
+            border: 1px solid #bfdbfe;
             border-radius: 8px;
-            color: white;
+            background: #e6f0ff;
+            color: #1e6fff;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
@@ -944,14 +962,15 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 8px rgba(30, 111, 255, 0.3);
         }
 
         .smart-group-btn:hover {
-            background: linear-gradient(135deg, #0d4fd4 0%, #0a3fa3 100%);
-            box-shadow: 0 4px 12px rgba(30, 111, 255, 0.4);
-            transform: translateY(-1px);
+            background: #dbeafe;
+            border-color: #93c5fd;
+        }
+
+        .smart-group-btn:active {
+            background: #bfdbfe;
         }
 
         /* 智能分组模态框 */
@@ -1098,6 +1117,14 @@
 
         .slider-label.fixed {
             color: #6b7280;
+        }
+
+        .slider-label.edge-start {
+            transform: translateX(0);
+        }
+
+        .slider-label.edge-end {
+            transform: translateX(-100%);
         }
 
         .slider-range-label {
@@ -1291,21 +1318,34 @@
 
     <!-- 主内容区 -->
     <main class="main-content">
-            <!-- 标签页和班级选择器 -->
+            <!-- 标签页和班级/学科选择器 -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                 <div class="tabs">
                     <button class="tab-btn active" onclick="switchTab('all')">全部学生</button>
                     <button class="tab-btn" onclick="switchTab('group')">学生分组</button>
                 </div>
-                <div class="grade-selector-custom">
-                    <div class="grade-display" onclick="toggleGradeDropdown()">
-                        <span id="selectedGrade">一年级（六班）</span>
-                        <i data-lucide="chevron-down" size="16"></i>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <!-- 班级选择器 -->
+                    <div class="grade-selector-custom">
+                        <div class="grade-display" onclick="toggleGradeDropdown()">
+                            <span id="selectedGrade">一年级（六班）</span>
+                            <i data-lucide="chevron-down" size="16"></i>
+                        </div>
+                        <div class="grade-dropdown hidden" id="gradeDropdown">
+                            <div class="grade-option" onclick="selectGrade('一年级（六班）')">一年级（六班）</div>
+                            <div class="grade-option" onclick="selectGrade('二年级（三班）')">二年级（三班）</div>
+                            <div class="grade-option" onclick="selectGrade('三年级（一班）')">三年级（一班）</div>
+                        </div>
                     </div>
-                    <div class="grade-dropdown hidden" id="gradeDropdown">
-                        <div class="grade-option" onclick="selectGrade('一年级（六班）')">一年级（六班）</div>
-                        <div class="grade-option" onclick="selectGrade('二年级（三班）')">二年级（三班）</div>
-                        <div class="grade-option" onclick="selectGrade('三年级（一班）')">三年级（一班）</div>
+                    <!-- 学科选择器(动态显示/隐藏) -->
+                    <div class="grade-selector-custom" id="subjectSelectorContainer">
+                        <div class="grade-display" onclick="toggleSubjectDropdown()">
+                            <span id="selectedSubject">语文</span>
+                            <i data-lucide="chevron-down" size="16"></i>
+                        </div>
+                        <div class="grade-dropdown hidden" id="subjectDropdown">
+                            <!-- 学科选项将通过 JavaScript 动态生成 -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1357,21 +1397,110 @@
         // 初始化 Lucide 图标
         lucide.createIcons();
 
-        // 模拟学生数据（包含最近5次作业成绩，满分100分）
+        // 教师-班级-学科关联关系
+        const teacherClassSubjects = {
+            '一年级（六班）': ['语文', '数学'],  // 多学科
+            '二年级（三班）': ['英语'],          // 单学科
+            '三年级（一班）': ['数学']           // 单学科
+        };
+
+        // 当前选中的班级和学科
+        let currentGrade = '一年级（六班）';
+        let currentSubject = '语文';
+
+        // 模拟学生数据（包含按学科分开的最近5次作业成绩，满分100分）
         const studentsData = [
-            { id: 1, name: '张铁蛋', studentId: '2024001', gender: 'male', recentScores: [85, 88, 82, 87, 90] },
-            { id: 2, name: '李雪梅', studentId: '2024002', gender: 'female', recentScores: [92, 95, 91, 94, 93] },
-            { id: 3, name: '王小明', studentId: '2024003', gender: 'male', recentScores: [58, 62, 55, 60, 59] }, // 绝对底线预警
-            { id: 4, name: '刘芳芳', studentId: '2024004', gender: 'female', recentScores: [88, 90, 87, 89, 91] },
-            { id: 5, name: '陈大壮', studentId: '2024005', gender: 'male', recentScores: [75, 78, 72, 76, 74] },
-            { id: 6, name: '赵小红', studentId: '2024006', gender: 'female', recentScores: [95, 97, 94, 96, 98] },
-            { id: 7, name: '孙建国', studentId: '2024007', gender: 'male', recentScores: [68, 70, 65, 69, 71] },
-            { id: 8, name: '周美丽', studentId: '2024008', gender: 'female', recentScores: [82, 85, 80, 84, 83] },
-            { id: 9, name: '吴大勇', studentId: '2024009', gender: 'male', recentScores: [72, 74, 70, 73, 75] },
-            { id: 10, name: '郑小花', studentId: '2024010', gender: 'female', recentScores: [55, 58, 52, 56, 54] }, // 绝对底线预警
-            { id: 11, name: '钱多多', studentId: '2024011', gender: 'male', recentScores: [78, 80, 76, 79, 77] },
-            { id: 12, name: '林晓晓', studentId: '2024012', gender: 'female', recentScores: [88, 91, 86, 90, 89] },
-            { id: 13, name: '马云飞', studentId: '2024013', gender: 'male', recentScores: [70, 72, 68, 71, 69] }, // 相对落后预警（后20%）
+            { 
+                id: 1, name: '张铁蛋', studentId: '2024001', gender: 'male', 
+                scoresBySubject: {
+                    '语文': [85, 88, 82, 87, 90],
+                    '数学': [92, 95, 91, 94, 93]
+                }
+            },
+            { 
+                id: 2, name: '李雪梅', studentId: '2024002', gender: 'female', 
+                scoresBySubject: {
+                    '语文': [92, 95, 91, 94, 93],
+                    '数学': [58, 62, 55, 60, 59]  // 数学差
+                }
+            },
+            { 
+                id: 3, name: '王小明', studentId: '2024003', gender: 'male', 
+                scoresBySubject: {
+                    '语文': [58, 62, 55, 60, 59],  // 语文差 - 绝对底线预警
+                    '数学': [75, 78, 72, 76, 74]
+                }
+            },
+            { 
+                id: 4, name: '刘芳芳', studentId: '2024004', gender: 'female', 
+                scoresBySubject: {
+                    '语文': [88, 90, 87, 89, 91],
+                    '数学': [88, 90, 87, 89, 91]
+                }
+            },
+            { 
+                id: 5, name: '陈大壮', studentId: '2024005', gender: 'male', 
+                scoresBySubject: {
+                    '语文': [75, 78, 72, 76, 74],
+                    '数学': [68, 70, 65, 69, 71]
+                }
+            },
+            { 
+                id: 6, name: '赵小红', studentId: '2024006', gender: 'female', 
+                scoresBySubject: {
+                    '语文': [95, 97, 94, 96, 98],
+                    '数学': [95, 97, 94, 96, 98]
+                }
+            },
+            { 
+                id: 7, name: '孙建国', studentId: '2024007', gender: 'male', 
+                scoresBySubject: {
+                    '语文': [68, 70, 65, 69, 71],  // 语文差 - 相对落后
+                    '数学': [82, 85, 80, 84, 83]
+                }
+            },
+            { 
+                id: 8, name: '周美丽', studentId: '2024008', gender: 'female', 
+                scoresBySubject: {
+                    '语文': [82, 85, 80, 84, 83],
+                    '数学': [72, 74, 70, 73, 75]
+                }
+            },
+            { 
+                id: 9, name: '吴大勇', studentId: '2024009', gender: 'male', 
+                scoresBySubject: {
+                    '语文': [72, 74, 70, 73, 75],
+                    '数学': [55, 58, 52, 56, 54]  // 数学差 - 绝对底线预警
+                }
+            },
+            { 
+                id: 10, name: '郑小花', studentId: '2024010', gender: 'female', 
+                scoresBySubject: {
+                    '语文': [55, 58, 52, 56, 54],  // 语文差 - 绝对底线预警
+                    '数学': [78, 80, 76, 79, 77]
+                }
+            },
+            { 
+                id: 11, name: '钱多多', studentId: '2024011', gender: 'male', 
+                scoresBySubject: {
+                    '语文': [78, 80, 76, 79, 77],
+                    '数学': [88, 91, 86, 90, 89]
+                }
+            },
+            { 
+                id: 12, name: '林晓晓', studentId: '2024012', gender: 'female', 
+                scoresBySubject: {
+                    '语文': [88, 91, 86, 90, 89],
+                    '数学': [70, 72, 68, 71, 69]  // 数学差 - 相对落后
+                }
+            },
+            { 
+                id: 13, name: '马云飞', studentId: '2024013', gender: 'male', 
+                scoresBySubject: {
+                    '语文': [70, 72, 68, 71, 69],  // 语文差 - 相对落后
+                    '数学': [85, 88, 82, 87, 90]
+                }
+            },
         ];
 
         // 计算学生的平均得分率
@@ -1381,9 +1510,10 @@
             return sum / scores.length;
         }
 
-        // 判断是否需要预警
-        function needsWarning(student) {
-            const avgScore = calculateAverageScore(student.recentScores);
+        // 判断是否需要预警(按学科)
+        function needsWarning(student, subject) {
+            const scores = student.scoresBySubject[subject] || [];
+            const avgScore = calculateAverageScore(scores);
             
             // 绝对底线预警：平均得分率低于65%
             if (avgScore < 65) {
@@ -1392,10 +1522,13 @@
             
             // 相对落后预警：处于班级后20%
             const allScores = studentsData
-                .map(s => ({
-                    id: s.id,
-                    avgScore: calculateAverageScore(s.recentScores)
-                }))
+                .map(s => {
+                    const subjectScores = s.scoresBySubject[subject] || [];
+                    return {
+                        id: s.id,
+                        avgScore: calculateAverageScore(subjectScores)
+                    };
+                })
                 .sort((a, b) => b.avgScore - a.avgScore);
             
             const studentRank = allScores.findIndex(s => s.id === student.id) + 1;
@@ -1483,18 +1616,23 @@
 
         // 初始化页面
         function initPage() {
+            // 初始化学科选择器
+            updateSubjectSelector();
+            
+            // 渲染页面
             renderAllStudents();
             renderGroupSchemes();
             renderGroupView();
         }
 
-        // 获取最近5次作业得分率
-        function getRecentScoreRates(student) {
-            if (!student.recentScores || student.recentScores.length === 0) {
+        // 获取最近5次作业得分率(按学科)
+        function getRecentScoreRates(student, subject) {
+            const scores = student.scoresBySubject[subject] || [];
+            if (scores.length === 0) {
                 return [];
             }
             
-            return student.recentScores.map(score => {
+            return scores.map(score => {
                 const rate = score / 100; // 满分100分
                 let level = 'low';
                 if (rate >= 0.8) level = 'high';
@@ -1507,9 +1645,12 @@
         function renderAllStudents() {
             const container = document.querySelector('#allStudentsView > div');
             
+            // 使用当前选中的学科
+            const subject = currentSubject;
+            
             // 计算所有学生的得分率并排序，找出最需要提醒的3个学生
             const studentsWithRate = studentsData.map(student => {
-                const scoreRates = getRecentScoreRates(student);
+                const scoreRates = getRecentScoreRates(student, subject);
                 const avgRate = scoreRates.length > 0 
                     ? scoreRates.reduce((sum, s) => sum + s.rate, 0) / scoreRates.length 
                     : 1;
@@ -1524,14 +1665,14 @@
                 .map(item => item.student.id);
             
             container.innerHTML = studentsData.map(student => {
-                const scoreRates = getRecentScoreRates(student);
+                const scoreRates = getRecentScoreRates(student, subject);
                 const avgRate = scoreRates.length > 0 
                     ? scoreRates.reduce((sum, s) => sum + s.rate, 0) / scoreRates.length 
                     : 1;
                 
                 // 只显示最需要提醒的3个学生
                 const scoreBadge = lowestThree.includes(student.id) ? `
-                    <div class="score-rate-badge warning" data-tooltip="近5次作业得分率：低于70%或处于班级后20%">
+                    <div class="score-rate-badge warning" data-tooltip="${subject} - 近5次作业得分率：低于70%或处于班级后20%">
                         ${Math.round(avgRate * 100)}%
                     </div>
                 ` : '';
@@ -1626,16 +1767,18 @@
                 html += renderGroupCard(pendingGroup, true);
             }
 
-            // 智能分组和添加小组按钮（位于待分配卡片下方）
+            // 智能分组和添加小组按钮（位于待分配卡片下方）- 响应式并排布局
             html += `
-                <button class="smart-group-btn" onclick="openSmartGroupModal()">
-                    <i data-lucide="sparkles" size="16"></i>
-                    <span>智能分组</span>
-                </button>
-                <button class="add-group-btn" onclick="addNewGroup()">
-                    <i data-lucide="plus" size="16"></i>
-                    <span>添加小组</span>
-                </button>
+                <div class="action-buttons-container">
+                    <button class="add-group-btn" onclick="addNewGroup()">
+                        <i data-lucide="plus" size="16"></i>
+                        <span>添加小组</span>
+                    </button>
+                    <button class="smart-group-btn" onclick="openSmartGroupModal()">
+                        <i data-lucide="sparkles" size="16"></i>
+                        <span>智能分组</span>
+                    </button>
+                </div>
             `;
 
             // 其他小组（除了待分配）
@@ -2145,19 +2288,85 @@
         function toggleGradeDropdown() {
             const dropdown = document.getElementById('gradeDropdown');
             dropdown.classList.toggle('hidden');
+            // 关闭学科下拉菜单
+            document.getElementById('subjectDropdown').classList.add('hidden');
         }
 
         // 选择班级
         function selectGrade(grade) {
+            currentGrade = grade;
             document.getElementById('selectedGrade').textContent = grade;
+            document.getElementById('gradeDropdown').classList.add('hidden');
+            
+            // 更新学科选择器
+            updateSubjectSelector();
+            
+            // 刷新学生列表
+            renderAllStudents();
+        }
+
+        // 切换学科下拉菜单
+        function toggleSubjectDropdown() {
+            const dropdown = document.getElementById('subjectDropdown');
+            dropdown.classList.toggle('hidden');
+            // 关闭班级下拉菜单
             document.getElementById('gradeDropdown').classList.add('hidden');
         }
 
-        // 点击其他地方关闭班级下拉菜单
+        // 选择学科
+        function selectSubject(subject) {
+            currentSubject = subject;
+            document.getElementById('selectedSubject').textContent = subject;
+            document.getElementById('subjectDropdown').classList.add('hidden');
+            
+            // 刷新学生列表
+            renderAllStudents();
+        }
+
+        // 更新学科选择器(根据当前班级的学科数量动态显示/隐藏)
+        function updateSubjectSelector() {
+            const subjects = teacherClassSubjects[currentGrade] || [];
+            const subjectSelector = document.getElementById('subjectSelectorContainer');
+            const subjectDropdown = document.getElementById('subjectDropdown');
+            
+            if (subjects.length > 1) {
+                // 多学科:显示选择器
+                subjectSelector.classList.remove('hidden');
+                
+                // 渲染学科选项
+                subjectDropdown.innerHTML = subjects.map(subject => 
+                    `<div class="grade-option" onclick="selectSubject('${subject}')">${subject}</div>`
+                ).join('');
+                
+                // 设置默认学科为第一个
+                currentSubject = subjects[0];
+                document.getElementById('selectedSubject').textContent = currentSubject;
+            } else if (subjects.length === 1) {
+                // 单学科:隐藏选择器
+                subjectSelector.classList.add('hidden');
+                
+                // 自动使用唯一学科
+                currentSubject = subjects[0];
+            } else {
+                // 没有学科数据,隐藏选择器
+                subjectSelector.classList.add('hidden');
+            }
+        }
+
+        // 点击其他地方关闭下拉菜单
         document.addEventListener('click', function(event) {
-            const gradeSelector = document.querySelector('.grade-selector-custom');
-            if (!gradeSelector.contains(event.target)) {
+            const gradeSelectors = document.querySelectorAll('.grade-selector-custom');
+            let clickedInside = false;
+            
+            gradeSelectors.forEach(selector => {
+                if (selector.contains(event.target)) {
+                    clickedInside = true;
+                }
+            });
+            
+            if (!clickedInside) {
                 document.getElementById('gradeDropdown').classList.add('hidden');
+                document.getElementById('subjectDropdown').classList.add('hidden');
             }
         });
 
@@ -2166,11 +2375,11 @@
             const student = studentsData.find(s => s.id === studentId);
             if (!student) return;
 
-            const currentGrade = document.getElementById('selectedGrade').textContent;
-            const currentSubject = '语文'; // 默认学科，可以根据需要调整
+            const grade = document.getElementById('selectedGrade').textContent;
+            const subject = currentSubject; // 使用当前选中的学科
             
             // 构建跳转URL，传递学生ID、班级和学科参数
-            const url = `data-analysis.html?studentId=${studentId}&grade=${encodeURIComponent(currentGrade)}&subject=${encodeURIComponent(currentSubject)}`;
+            const url = `data-analysis.html?studentId=${studentId}&grade=${encodeURIComponent(grade)}&subject=${encodeURIComponent(subject)}`;
             window.location.href = url;
         }
 
@@ -2178,11 +2387,13 @@
         
         // 智能分组配置
         let smartGroupConfig = {
-            timePeriod: 'week', // week, month, semester, custom
+            timePeriod: 'sixmonths', // week, month, sixmonths, year, all
             customStartDate: null,
             customEndDate: null,
             groupCount: 3,
-            percentages: [0, 60, 80, 100] // 默认3组的百分比
+            percentages: [0, 60, 80, 100], // 现在表示真实得分率
+            currentStep: 1, // 1=选择参数, 2=调整区间
+            studentScores: [] // 存储计算出的学生得分率
         };
 
         // 默认百分比配置
@@ -2209,88 +2420,178 @@
 
             // 重置配置为默认值
             smartGroupConfig = {
-                timePeriod: 'week',
+                timePeriod: 'sixmonths',
                 customStartDate: null,
                 customEndDate: null,
                 groupCount: 3,
-                percentages: [...defaultPercentages[3]]
+                percentages: [...defaultPercentages[3]],
+                currentStep: 1,
+                studentScores: []
             };
+
+            renderSmartGroupModal();
+        }
+
+        // 渲染智能分组模态框
+        function renderSmartGroupModal() {
+            // 移除旧的模态框
+            const oldModal = document.getElementById('smartGroupModal');
+            if (oldModal) {
+                oldModal.remove();
+            }
 
             const modal = document.createElement('div');
             modal.className = 'modal-overlay';
             modal.id = 'smartGroupModal';
-            modal.innerHTML = `
-                <div class="modal smart-group-modal" onclick="event.stopPropagation()">
-                    <div class="modal-title">智能分组设置</div>
-                    
-                    <!-- 时间段选择 -->
-                    <div class="form-group">
-                        <label class="form-label">选择要统计的作业时段：</label>
-                        <div class="time-period-options">
-                            <div class="time-period-btn active" onclick="selectTimePeriod('week')">近一周</div>
-                            <div class="time-period-btn" onclick="selectTimePeriod('month')">近一个月</div>
-                            <div class="time-period-btn" onclick="selectTimePeriod('sixmonths')">近六个月</div>
-                            <div class="time-period-btn" onclick="selectTimePeriod('year')">近一年</div>
-                            <div class="time-period-btn" onclick="selectTimePeriod('all')">全部数据</div>
-                        </div>
-                    </div>
-
-                    <!-- 分组数量选择 -->
-                    <div class="form-group">
-                        <label class="form-label">选择分组数量：</label>
-                        <div class="group-count-selector">
-                            <div class="group-count-btn" onclick="selectGroupCount(2)">2</div>
-                            <div class="group-count-btn active" onclick="selectGroupCount(3)">3</div>
-                            <div class="group-count-btn" onclick="selectGroupCount(4)">4</div>
-                            <div class="group-count-btn" onclick="selectGroupCount(5)">5</div>
-                        </div>
-                    </div>
-
-                    <!-- 百分比滑块 -->
-                    <div class="form-group">
-                        <label class="form-label">调整分组区间：</label>
-                        <div style="font-size: 13px; color: #6b7280; margin-bottom: 12px; line-height: 1.6;">
-                            依据所选时间段内作业平均得分率排名<br>
-                            （0%为得分最低的学生，100%为得分最高的学生）
-                        </div>
-                        <div class="percentage-slider-container">
-                            <div id="sliderWrapper" class="slider-wrapper">
-                                <!-- 滑块将通过 JavaScript 动态生成 -->
-                            </div>
-                            <div id="rangeLabels" style="margin-top: 40px; font-size: 13px; color: #6b7280;">
-                                <!-- 区间标签将通过 JavaScript 动态生成 -->
+            
+            if (smartGroupConfig.currentStep === 1) {
+                // 第一步：选择参数
+                modal.innerHTML = `
+                    <div class="modal smart-group-modal" onclick="event.stopPropagation()">
+                        <div class="modal-title">智能分组设置</div>
+                        
+                        <!-- 时间段选择 -->
+                        <div class="form-group">
+                            <label class="form-label">选择参考的作业时段：</label>
+                            <div class="time-period-options">
+                                <div class="time-period-btn ${smartGroupConfig.timePeriod === 'week' ? 'active' : ''}" onclick="selectTimePeriod('week')">近一周</div>
+                                <div class="time-period-btn ${smartGroupConfig.timePeriod === 'month' ? 'active' : ''}" onclick="selectTimePeriod('month')">近一个月</div>
+                                <div class="time-period-btn ${smartGroupConfig.timePeriod === 'sixmonths' ? 'active' : ''}" onclick="selectTimePeriod('sixmonths')">近六个月</div>
+                                <div class="time-period-btn ${smartGroupConfig.timePeriod === 'year' ? 'active' : ''}" onclick="selectTimePeriod('year')">近一年</div>
+                                <div class="time-period-btn ${smartGroupConfig.timePeriod === 'all' ? 'active' : ''}" onclick="selectTimePeriod('all')">全部数据</div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="modal-actions">
-                        <button class="btn btn-secondary" onclick="closeModal()">取消</button>
-                        <button class="btn btn-primary" onclick="applySmartGrouping()">确认分组</button>
+                        <!-- 分组数量选择 -->
+                        <div class="form-group">
+                            <label class="form-label">选择分组数量：</label>
+                            <div class="group-count-selector">
+                                <div class="group-count-btn ${smartGroupConfig.groupCount === 2 ? 'active' : ''}" onclick="selectGroupCount(2)">2</div>
+                                <div class="group-count-btn ${smartGroupConfig.groupCount === 3 ? 'active' : ''}" onclick="selectGroupCount(3)">3</div>
+                                <div class="group-count-btn ${smartGroupConfig.groupCount === 4 ? 'active' : ''}" onclick="selectGroupCount(4)">4</div>
+                                <div class="group-count-btn ${smartGroupConfig.groupCount === 5 ? 'active' : ''}" onclick="selectGroupCount(5)">5</div>
+                            </div>
+                        </div>
+
+                        <div class="modal-actions">
+                            <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                            <button class="btn btn-primary" onclick="goToStep2()">下一步</button>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            } else {
+                // 第二步：调整区间
+                modal.innerHTML = `
+                    <div class="modal smart-group-modal" onclick="event.stopPropagation()">
+                        <div class="modal-title">智能分组设置</div>
+                        
+                        <!-- 百分比滑块 -->
+                        <div class="form-group">
+                            <label class="form-label">根据得分率划分小组</label>
+                            <div style="font-size: 13px; color: #6b7280; margin-bottom: 12px;">
+                                拖动滑块设置分界点，下方显示各组人数
+                            </div>
+                            <div class="percentage-slider-container">
+                                <div id="sliderWrapper" class="slider-wrapper">
+                                    <!-- 滑块将通过 JavaScript 动态生成 -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 各组人数显示 -->
+                        <div class="form-group">
+                            <label class="form-label">各组人数</label>
+                            <div id="groupPreview" style="margin-top: 12px;">
+                                <!-- 动态生成 -->
+                            </div>
+                        </div>
+
+                        <div class="modal-actions">
+                            <button class="btn btn-secondary" onclick="goToStep1()">上一步</button>
+                            <button class="btn btn-primary" onclick="applySmartGrouping()">确认分组</button>
+                        </div>
+                    </div>
+                `;
+            }
+            
             document.body.appendChild(modal);
             
             // 点击遮罩层关闭模态框
             modal.addEventListener('click', closeModal);
 
-            // 渲染滑块
-            renderPercentageSlider();
+            // 如果是第二步，渲染滑块和预览
+            if (smartGroupConfig.currentStep === 2) {
+                renderPercentageSlider();
+                updateGroupPreview();
+            }
         }
 
         // 选择时间段
         function selectTimePeriod(period) {
             smartGroupConfig.timePeriod = period;
             
-            // 更新UI
-            const buttons = document.querySelectorAll('.time-period-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            
-            const periods = ['week', 'month', 'sixmonths', 'year', 'all'];
-            const index = periods.indexOf(period);
-            if (index >= 0) {
-                buttons[index].classList.add('active');
+            // 只更新按钮状态，不重新渲染整个模态框
+            document.querySelectorAll('.time-period-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // 进入第二步
+        function goToStep2() {
+            // 原型设计：如果选择"近一周"，显示提示
+            if (smartGroupConfig.timePeriod === 'week') {
+                showToast('该时段无评分作业，请更换时段');
+                return;
             }
+
+            const scheme = groupSchemes.find(s => s.id === currentSchemeId);
+            if (!scheme) return;
+
+            const subject = scheme.subject;
+
+            // 1. 根据时间段获取要统计的成绩数量
+            let scoreCount;
+            switch(smartGroupConfig.timePeriod) {
+                case 'week':
+                    scoreCount = 1;
+                    break;
+                case 'month':
+                    scoreCount = 2;
+                    break;
+                case 'sixmonths':
+                    scoreCount = 3;
+                    break;
+                case 'year':
+                    scoreCount = 4;
+                    break;
+                case 'all':
+                default:
+                    scoreCount = null;
+                    break;
+            }
+
+            // 3. 计算每个学生的平均得分率
+            smartGroupConfig.studentScores = studentsData.map(student => {
+                const allScores = student.scoresBySubject[subject] || [];
+                const scores = scoreCount ? allScores.slice(-scoreCount) : allScores;
+                const avgScore = calculateAverageScore(scores);
+                return {
+                    id: student.id,
+                    name: student.name,
+                    scoreRate: avgScore
+                };
+            });
+
+            // 4. 切换到第二步
+            smartGroupConfig.currentStep = 2;
+            renderSmartGroupModal();
+        }
+
+        // 返回第一步
+        function goToStep1() {
+            smartGroupConfig.currentStep = 1;
+            renderSmartGroupModal();
         }
 
         // 选择分组数量
@@ -2298,13 +2599,54 @@
             smartGroupConfig.groupCount = count;
             smartGroupConfig.percentages = [...defaultPercentages[count]];
             
-            // 更新UI
-            const buttons = document.querySelectorAll('.group-count-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            buttons[count - 2].classList.add('active');
+            // 只更新按钮状态，不重新渲染整个模态框
+            document.querySelectorAll('.group-count-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
 
-            // 重新渲染滑块
-            renderPercentageSlider();
+        // 更新各组人数预览
+        function updateGroupPreview() {
+            const previewContainer = document.getElementById('groupPreview');
+            if (!previewContainer) return;
+
+            const percentages = smartGroupConfig.percentages;
+            const studentScores = smartGroupConfig.studentScores;
+            
+            let html = '<div style="display: flex; flex-direction: column; gap: 10px;">';
+            
+            for (let i = 0; i < percentages.length - 1; i++) {
+                const start = percentages[i];
+                const end = percentages[i + 1];
+                
+                // 统计在这个得分率区间内的学生数量
+                const studentsInRange = studentScores.filter(s => {
+                    return s.scoreRate >= start && (i === percentages.length - 2 ? s.scoreRate <= end : s.scoreRate < end);
+                });
+                
+                const count = studentsInRange.length;
+                const color = groupColors[i] || '#6b7280';
+                
+                // 判断是否是最后一组（最后一组需要包含100%）
+                const isLastGroup = (i === percentages.length - 2);
+                const rangeText = isLastGroup ? `${start}% ~ ${end}%` : `${start}% ~ ${end}%（不含${end}%）`;
+                
+                html += `
+                    <div style="display: flex; align-items: center; padding: 12px; background: #f9fafb; border-radius: 8px; border-left: 4px solid ${color};">
+                        <div style="flex: 1;">
+                            <span style="font-weight: 600; color: #111827;">第${i + 1}组：</span>
+                            <span style="color: #6b7280;">${rangeText}</span>
+                        </div>
+                        <div style="font-size: 18px; font-weight: 700; color: ${color};">
+                            ${count}<span style="font-size: 14px; font-weight: 400; color: #6b7280; margin-left: 2px;">人</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            html += '</div>';
+            previewContainer.innerHTML = html;
         }
 
         // 渲染百分比滑块
@@ -2333,54 +2675,24 @@
                 const isFixed = index === 0 || index === percentages.length - 1;
                 const fixedClass = isFixed ? 'fixed' : '';
                 
+                // 为首尾标签添加特殊的edge类
+                let edgeClass = '';
+                if (index === 0) edgeClass = ' edge-start';
+                if (index === percentages.length - 1) edgeClass = ' edge-end';
+                
                 html += `
                     <div class="slider-handle ${fixedClass}" 
                          data-index="${index}" 
                          style="left: ${percentage}%;"
                          ${!isFixed ? `onmousedown="startDragSlider(event, ${index})"` : ''}>
                     </div>
-                    <div class="slider-label ${fixedClass}" style="left: ${percentage}%;">
+                    <div class="slider-label ${fixedClass}${edgeClass}" style="left: ${percentage}%;">
                         ${percentage}%
                     </div>
                 `;
             });
 
             wrapper.innerHTML = html;
-
-            // 渲染区间标签
-            renderRangeLabels();
-        }
-
-        // 渲染区间标签
-        function renderRangeLabels() {
-            const container = document.getElementById('rangeLabels');
-            if (!container) return;
-
-            const percentages = smartGroupConfig.percentages;
-            let html = '<div style="display: flex; flex-direction: column; gap: 8px;">';
-
-            for (let i = 0; i < percentages.length - 1; i++) {
-                const start = percentages[i];
-                const end = percentages[i + 1];
-                const color = groupColors[i % groupColors.length];
-                
-                // 判断是否需要添加边界说明
-                let boundaryNote = '';
-                if (i < percentages.length - 2) {
-                    // 不是最后一组，添加"不含"说明
-                    boundaryNote = `（不含${end}%）`;
-                }
-                
-                html += `
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <div style="width: 16px; height: 16px; background: ${color}; border-radius: 3px; opacity: 0.6;"></div>
-                        <span>第 ${i + 1} 组：${start}% ~ ${end}%${boundaryNote}</span>
-                    </div>
-                `;
-            }
-
-            html += '</div>';
-            container.innerHTML = html;
         }
 
         // 开始拖动滑块
@@ -2413,8 +2725,9 @@
             // 更新百分比
             smartGroupConfig.percentages[draggingIndex] = newPercentage;
 
-            // 重新渲染
+            // 重新渲染滑块和组预览
             renderPercentageSlider();
+            updateGroupPreview();
         }
 
         function stopDragSlider() {
@@ -2434,9 +2747,19 @@
 
             // 模拟异步处理（实际应用中这里会调用API）
             setTimeout(() => {
-                performSmartGrouping();
-                closeModal();
-                showToast('智能分组完成');
+                const success = performSmartGrouping();
+                // 只有成功时才关闭模态框
+                if (success) {
+                    closeModal();
+                    showToast('智能分组完成');
+                } else {
+                    // 失败时移除加载状态，让用户可以重新选择
+                    const modal = document.querySelector('.smart-group-modal');
+                    const loading = modal?.querySelector('.loading-overlay');
+                    if (loading) {
+                        loading.remove();
+                    }
+                }
             }, 1500);
         }
 
@@ -2457,80 +2780,61 @@
         // 执行智能分组
         function performSmartGrouping() {
             const scheme = groupSchemes.find(s => s.id === currentSchemeId);
-            if (!scheme) return;
+            if (!scheme) return false;
 
-            // 1. 根据时间段获取要统计的成绩数量
-            let scoreCount;
-            switch(smartGroupConfig.timePeriod) {
-                case 'week':
-                    scoreCount = 1; // 近一周取1次成绩
-                    break;
-                case 'month':
-                    scoreCount = 2; // 近一个月取2次成绩
-                    break;
-                case 'sixmonths':
-                    scoreCount = 3; // 近六个月取3次成绩
-                    break;
-                case 'year':
-                    scoreCount = 4; // 近一年取4次成绩
-                    break;
-                case 'all':
-                default:
-                    scoreCount = null; // 全部数据
-                    break;
+            // 使用已经计算好的学生得分率数据
+            const studentScores = smartGroupConfig.studentScores;
+            
+            if (!studentScores || studentScores.length === 0) {
+                showToast('没有学生数据', 'warning');
+                return false;
             }
 
-            // 2. 计算每个学生的平均得分率
-            const studentScores = studentsData.map(student => {
-                // 根据时间段截取相应的成绩
-                const scores = scoreCount ? student.recentScores.slice(-scoreCount) : student.recentScores;
-                const avgScore = calculateAverageScore(scores);
-                return {
-                    id: student.id,
-                    scoreRate: avgScore // 已经是百分制
-                };
-            });
-
-            // 3. 清除所有现有小组（除了待分配）
+            // 1. 清除所有现有小组（除了待分配）
             scheme.groups = [{ id: 'pending', name: '待分配', students: [] }];
 
-            // 4. 根据百分比区间创建新小组并分配学生
+            // 2. 根据得分率区间创建新小组并分配学生（按真实得分率，非排名）
             const percentages = smartGroupConfig.percentages;
             const newGroups = [];
 
             for (let i = 0; i < percentages.length - 1; i++) {
                 const start = percentages[i];
                 const end = percentages[i + 1];
-                const groupName = `${start}%~${end}%`;
                 
-                // 找出在这个区间内的学生
+                // 找出在这个得分率区间内的学生
                 const studentsInRange = studentScores.filter(s => {
                     return s.scoreRate >= start && (i === percentages.length - 2 ? s.scoreRate <= end : s.scoreRate < end);
-                }).map(s => s.id);
+                });
+                
+                const studentsInGroup = studentsInRange.map(s => s.id);
+                const groupName = `第${i + 1}组 (得分率${start}%~${end}%, ${studentsInGroup.length}人)`;
 
                 const newGroup = {
                     id: Date.now() + i,
                     name: groupName,
-                    students: studentsInRange
+                    students: studentsInGroup
                 };
                 
                 newGroups.push(newGroup);
             }
 
-            // 5. 将新小组添加到方案中
+            // 3. 将新小组添加到方案中
             scheme.groups.push(...newGroups);
 
-            // 6. 更新已分配人数
+            // 4. 更新已分配人数
             scheme.assigned = scheme.total;
 
-            // 7. 重置选择状态
+            // 5. 重置选择状态
             selectedStudents.clear();
             currentGroupId = null;
             editingGroupId = null;
 
-            // 8. 刷新UI
+            // 6. 刷新UI
             renderGroupSchemes();
             renderGroupView();
+            
+            // 返回成功状态
+            return true;
         }
 
         // 初始化页面

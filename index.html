@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生管理系统原型 - 项目入口</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .card {
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        .logo-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mx-auto px-4 py-12">
+        <!-- 头部 -->
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold text-white mb-4">学生管理系统原型</h1>
+        </div>
+
+        <!-- 主要内容区 -->
+        <div class="max-w-6xl mx-auto">
+            <!-- 欢迎信息 -->
+            <div class="bg-white rounded-2xl shadow-2xl p-8 mb-8">
+                <div class="flex items-center mb-4">
+                    <i data-lucide="info" class="w-6 h-6 text-blue-600 mr-3"></i>
+                    <h2 class="text-2xl font-bold text-gray-800">项目说明</h2>
+                </div>
+                <p class="text-gray-600 leading-relaxed">
+                    欢迎访问学生管理系统原型！本项目是一个功能完整的学生管理原型系统，展示了学生信息管理、分组管理。
+                    你可以通过下方的入口查看详细的需求文档，或直接进入页面原型进行交互体验。
+                </p>
+            </div>
+
+            <!-- 功能卡片区 -->
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- 需求文档卡片 -->
+                <div class="card bg-white rounded-2xl shadow-xl p-8 cursor-pointer" onclick="window.open('https://365.kdocs.cn/l/cpUHt0vTduCV', '_blank')">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                            <i data-lucide="file-text" class="w-10 h-10 text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-3">查看需求文档</h3>
+                        <p class="text-gray-600 mb-6">
+                            详细的功能需求说明、流程图、交互规则和技术要求。包含完整的PRD文档和原型设计说明。
+                        </p>
+                        <div class="flex items-center text-blue-600 font-semibold">
+                            <span class="mr-2">在线文档（金山文档）</span>
+                            <i data-lucide="external-link" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 学生管理卡片 -->
+                <div class="card bg-white rounded-2xl shadow-xl p-8 cursor-pointer" onclick="window.open('student-management.html', '_blank')">
+                    <div class="flex flex-col items-center text-center">
+                        <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                            <i data-lucide="users" class="w-10 h-10 text-white"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-3">学生管理</h3>
+                        <p class="text-gray-600 mb-6">
+                            学生信息管理、智能分组、小组管理等核心功能。
+                        </p>
+                        <div class="flex items-center text-purple-600 font-semibold">
+                            <span class="mr-2">开始体验</span>
+                            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <div class="text-center mt-12 text-white/80">
+            <p>&copy; 2025 奕兆科技. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        // 初始化 Lucide 图标
+        lucide.createIcons();
+    </script>
+</body>
+</html>
+
