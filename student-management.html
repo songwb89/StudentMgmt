@@ -430,15 +430,23 @@
             top: 12px;
         }
 
-        .scheme-more-dropdown .more-btn {
-            position: static;
+        /* Keep hover active while moving from button to menu */
+        .scheme-more-dropdown::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 0;
+            left: -140px; /* span towards menu width */
+            height: 12px; /* bridge gap with buffer */
+            background: transparent;
         }
 
         .scheme-more-content {
             position: absolute;
             top: 100%;
             right: 0;
-            margin-top: 4px;
+            margin-top: 0;
+            transform: translateY(4px);
             background: white;
             border-radius: 8px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
@@ -446,6 +454,17 @@
             z-index: 1000;
             min-width: 120px;
             display: none;
+        }
+
+        /* Bridge the 4px gap so hover doesn't break on re-entry */
+        .scheme-more-content::before {
+            content: '';
+            position: absolute;
+            top: -8px; /* cover margin-top gap with extra buffer */
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: transparent;
         }
 
         .scheme-more-dropdown:hover .scheme-more-content {
@@ -476,17 +495,23 @@
             position: relative;
         }
 
-        .group-more-dropdown .more-btn {
-            position: static;
-            width: 24px;
-            height: 24px;
+        /* Keep hover active while moving from button to menu */
+        .group-more-dropdown::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 0;
+            left: -140px; /* span towards menu width */
+            height: 12px; /* bridge gap with buffer */
+            background: transparent;
         }
 
         .group-more-content {
             position: absolute;
             top: 100%;
             right: 0;
-            margin-top: 4px;
+            margin-top: 0;
+            transform: translateY(4px);
             background: white;
             border-radius: 8px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
@@ -494,6 +519,17 @@
             z-index: 1000;
             min-width: 120px;
             display: none;
+        }
+
+        /* Bridge the 4px gap so hover doesn't break on re-entry */
+        .group-more-content::before {
+            content: '';
+            position: absolute;
+            top: -8px; /* cover margin-top gap with extra buffer */
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: transparent;
         }
 
         .group-more-dropdown:hover .group-more-content {
@@ -683,6 +719,17 @@
             min-width: 120px;
         }
 
+        /* 使用伪元素填充按钮和菜单之间的间隙，防止鼠标移动时菜单消失 */
+        .dropdown-menu::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: transparent;
+        }
+
         .dropdown-item {
             padding: 8px 12px;
             border-radius: 4px;
@@ -777,6 +824,13 @@
             outline: none;
             border-color: #1e6fff;
             box-shadow: 0 0 0 3px rgba(30, 111, 255, 0.1);
+        }
+
+        .form-select:disabled {
+            background: #f3f4f6;
+            color: #6b7280;
+            cursor: not-allowed;
+            border-color: #e5e7eb;
         }
 
         .modal-actions {
@@ -1173,29 +1227,60 @@
         }
 
         /* Toast 提示 */
+        /* Toast提示 - 支持多种类型 */
         .toast {
             position: fixed;
             top: 80px;
             left: 50%;
             transform: translateX(-50%);
-            background: #1f2937;
             color: white;
             padding: 12px 24px;
-            border-radius: 8px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             z-index: 10000;
-            animation: slideDown 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
         }
 
-        @keyframes slideDown {
-            from {
-                transform: translateX(-50%) translateY(-20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(-50%) translateY(0);
-                opacity: 1;
-            }
+        /* Toast显示状态 */
+        .toast.show {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Toast隐藏状态 */
+        .toast.hide {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-8px);
+        }
+
+        /* Toast类型样式 */
+        .toast.toast-success {
+            background: #10b981;
+        }
+
+        .toast.toast-error {
+            background: #f59e0b; /* 琥珀色更友好 */
+        }
+
+        .toast.toast-info {
+            background: #3b82f6;
+        }
+
+        .toast.toast-warning {
+            background: #f59e0b;
+        }
+
+        /* Toast图标 */
+        .toast i {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
         }
 
         /* 班级选择器样式 */
@@ -1717,7 +1802,10 @@
         // 渲染分组方案列表
         function renderGroupSchemes() {
             const container = document.querySelector('.group-sidebar > div');
-            container.innerHTML = groupSchemes.map(scheme => `
+            // 只显示与当前选中学科关联的分组方案
+            const filteredSchemes = groupSchemes.filter(scheme => scheme.subject === currentSubject);
+            
+            container.innerHTML = filteredSchemes.map(scheme => `
                 <div class="group-scheme-item ${scheme.id === currentSchemeId ? 'active' : ''}" 
                      onclick="selectScheme(${scheme.id})">
                     <div class="scheme-more-dropdown">
@@ -1912,7 +2000,7 @@
         function toggleStudentSelection(studentId, groupId) {
             // 如果点击了不同小组的学生
             if (currentGroupId !== null && currentGroupId !== groupId && selectedStudents.size > 0) {
-                showToast('请勿跨组选择学生');
+                showToast('请勿跨组选择学生', 'warning');
                 return;
             }
 
@@ -2014,7 +2102,7 @@
             const newName = input.value.trim();
             
             if (!newName) {
-                showToast('小组名称不能为空');
+                showToast('小组名称不能为空', 'warning');
                 // 恢复原来的名称
                 editingGroupId = null;
                 renderGroupView();
@@ -2030,7 +2118,7 @@
             // 检查名称是否重复
             const exists = scheme.groups.some(g => g.id !== groupId && g.name === newName);
             if (exists) {
-                showToast('该小组名称已存在，请修改后重试');
+                showToast('该小组名称已存在，请修改后重试', 'warning');
                 // 保持编辑状态，不清空editingGroupId
                 return;
             }
@@ -2063,20 +2151,44 @@
 
             const menu = document.createElement('div');
             menu.className = 'dropdown-menu';
-            menu.style.left = event.clientX + 'px';
-            menu.style.top = event.clientY + 'px';
+            
+            // 计算菜单位置：紧贴按钮下方，减少间隙
+            const buttonRect = event.currentTarget.getBoundingClientRect();
+            menu.style.left = buttonRect.right - 120 + 'px'; // 右对齐
+            menu.style.top = (buttonRect.bottom + 4) + 'px'; // 按钮下方4px
+            
             menu.innerHTML = `
                 <div class="dropdown-item" onclick="renameScheme(${schemeId})">重命名</div>
                 <div class="dropdown-item" onclick="deleteScheme(${schemeId})">删除</div>
             `;
             document.body.appendChild(menu);
 
+            // 鼠标移出菜单时延迟关闭，给用户时间移回
+            let closeTimeout;
+            const handleMouseLeave = () => {
+                closeTimeout = setTimeout(() => {
+                    menu.remove();
+                    document.removeEventListener('click', handleClickOutside);
+                }, 200); // 200ms 延迟
+            };
+
+            const handleMouseEnter = () => {
+                clearTimeout(closeTimeout);
+            };
+
+            const handleClickOutside = (e) => {
+                if (!menu.contains(e.target)) {
+                    menu.remove();
+                    document.removeEventListener('click', handleClickOutside);
+                }
+            };
+
+            menu.addEventListener('mouseenter', handleMouseEnter);
+            menu.addEventListener('mouseleave', handleMouseLeave);
+
             // 点击其他地方关闭菜单
             setTimeout(() => {
-                document.addEventListener('click', function closeMenu() {
-                    menu.remove();
-                    document.removeEventListener('click', closeMenu);
-                });
+                document.addEventListener('click', handleClickOutside);
             }, 0);
         }
 
@@ -2091,59 +2203,97 @@
 
             const menu = document.createElement('div');
             menu.className = 'dropdown-menu';
-            menu.style.left = event.clientX + 'px';
-            menu.style.top = event.clientY + 'px';
+            
+            // 计算菜单位置：紧贴按钮下方，减少间隙
+            const buttonRect = event.currentTarget.getBoundingClientRect();
+            menu.style.left = buttonRect.right - 120 + 'px'; // 右对齐
+            menu.style.top = (buttonRect.bottom + 4) + 'px'; // 按钮下方4px
+            
             menu.innerHTML = `
                 <div class="dropdown-item" onclick="renameGroup(${groupId})">重命名</div>
                 <div class="dropdown-item" onclick="deleteGroup(${groupId})">删除</div>
             `;
             document.body.appendChild(menu);
 
-            setTimeout(() => {
-                document.addEventListener('click', function closeMenu() {
+            // 鼠标移出菜单时延迟关闭，给用户时间移回
+            let closeTimeout;
+            const handleMouseLeave = () => {
+                closeTimeout = setTimeout(() => {
                     menu.remove();
-                    document.removeEventListener('click', closeMenu);
-                });
+                    document.removeEventListener('click', handleClickOutside);
+                }, 200); // 200ms 延迟
+            };
+
+            const handleMouseEnter = () => {
+                clearTimeout(closeTimeout);
+            };
+
+            const handleClickOutside = (e) => {
+                if (!menu.contains(e.target)) {
+                    menu.remove();
+                    document.removeEventListener('click', handleClickOutside);
+                }
+            };
+
+            menu.addEventListener('mouseenter', handleMouseEnter);
+            menu.addEventListener('mouseleave', handleMouseLeave);
+
+            setTimeout(() => {
+                document.addEventListener('click', handleClickOutside);
             }, 0);
         }
 
         // 重命名方案
-        function renameScheme(schemeId) {
+        async function renameScheme(schemeId) {
             const scheme = groupSchemes.find(s => s.id === schemeId);
             if (!scheme) return;
 
-            const newName = prompt('请输入新的方案名称：', scheme.name);
+            const newName = await showPromptDialog(
+                '重命名方案',
+                '请输入新的方案名称：',
+                scheme.name,
+                '请输入方案名称'
+            );
+            
             if (newName && newName.trim()) {
                 // 检查名称是否重复
                 const exists = groupSchemes.some(s => s.id !== schemeId && s.name === newName.trim() && s.subject === scheme.subject);
                 if (exists) {
-                    showToast('该方案名称已存在，请修改后重试');
+                    showToast('该方案名称已存在，请修改后重试', 'warning');
                     return;
                 }
                 scheme.name = newName.trim();
                 renderGroupSchemes();
+                showToast('方案已重命名', 'success');
             }
         }
 
         // 删除方案
-        function deleteScheme(schemeId) {
+        async function deleteScheme(schemeId) {
             const scheme = groupSchemes.find(s => s.id === schemeId);
             if (!scheme) return;
 
             // 检查是否是该学科的唯一方案
             const sameSubjectSchemes = groupSchemes.filter(s => s.subject === scheme.subject);
             if (sameSubjectSchemes.length <= 1) {
-                showToast('该学科至少需保留一个分组方案');
+                showToast('该学科至少需保留一个分组方案', 'warning');
                 return;
             }
 
-            if (confirm('确定要删除这个分组方案吗？')) {
+            const confirmed = await showConfirmDialog(
+                '删除分组方案',
+                '确定要删除这个分组方案吗？',
+                '删除'
+            );
+            
+            if (confirmed) {
                 groupSchemes = groupSchemes.filter(s => s.id !== schemeId);
                 if (currentSchemeId === schemeId) {
                     currentSchemeId = groupSchemes[0].id;
                 }
                 renderGroupSchemes();
                 renderGroupView();
+                showToast('分组方案已删除', 'success');
             }
         }
 
@@ -2153,11 +2303,17 @@
         }
 
         // 删除小组
-        function deleteGroup(groupId) {
+        async function deleteGroup(groupId) {
             const scheme = groupSchemes.find(s => s.id === currentSchemeId);
             if (!scheme) return;
 
-            if (confirm('确定要删除这个小组吗？小组中的学生将移回待分配。')) {
+            const confirmed = await showConfirmDialog(
+                '删除小组',
+                '确定要删除这个小组吗？\n小组中的学生将移回待分配。',
+                '删除'
+            );
+            
+            if (confirmed) {
                 const group = scheme.groups.find(g => g.id === groupId);
                 if (!group) return;
 
@@ -2184,6 +2340,7 @@
 
                 renderGroupSchemes();
                 renderGroupView();
+                showToast('小组已删除', 'success');
             }
         }
 
@@ -2200,11 +2357,8 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">关联学科：</label>
-                        <select class="form-select" id="schemeSubject">
-                            <option value="">请选择</option>
-                            <option value="语文">语文</option>
-                            <option value="数学">数学</option>
-                            <option value="英语">英语</option>
+                        <select class="form-select" id="schemeSubject" disabled>
+                            <option value="${currentSubject}" selected>${currentSubject}</option>
                         </select>
                     </div>
                     <div class="modal-actions">
@@ -2225,19 +2379,19 @@
             const subject = document.getElementById('schemeSubject').value;
 
             if (!name) {
-                showToast('请输入方案名称');
+                showToast('请输入方案名称', 'warning');
                 return;
             }
 
             if (!subject) {
-                showToast('请选择关联学科');
+                showToast('请选择关联学科', 'warning');
                 return;
             }
 
             // 检查名称是否重复（同一学科下）
             const exists = groupSchemes.some(s => s.name === name && s.subject === subject);
             if (exists) {
-                showToast('该方案名称已存在，请修改后重试');
+                showToast('该方案名称已存在，请修改后重试', 'warning');
                 return;
             }
 
@@ -2261,7 +2415,7 @@
             renderGroupSchemes();
             renderGroupView();
             closeModal();
-            showToast('分组方案创建成功');
+            showToast('分组方案创建成功', 'success');
         }
 
         // 关闭模态框
@@ -2273,15 +2427,232 @@
         }
 
         // 显示 Toast
-        function showToast(message) {
+        /**
+         * 显示Toast提示
+         * @param {string} message - 提示消息
+         * @param {string} type - 类型：'success' | 'error' | 'info' | 'warning'
+         */
+        function showToast(message, type = 'success') {
             const toast = document.createElement('div');
             toast.className = 'toast';
-            toast.textContent = message;
+            
+            // 根据类型设置不同的颜色和图标
+            let iconName;
+            if (type === 'success') {
+                toast.classList.add('toast-success');
+                iconName = 'check-circle';
+            } else if (type === 'error') {
+                toast.classList.add('toast-error');
+                iconName = 'alert-circle';
+            } else if (type === 'info') {
+                toast.classList.add('toast-info');
+                iconName = 'info';
+            } else if (type === 'warning') {
+                toast.classList.add('toast-warning');
+                iconName = 'alert-triangle';
+            } else {
+                toast.classList.add('toast-success');
+                iconName = 'check-circle';
+            }
+            
+            // 创建图标和文本
+            toast.innerHTML = `
+                <i data-lucide="${iconName}"></i>
+                <span>${message}</span>
+            `;
+            
             document.body.appendChild(toast);
-
+            
+            // 初始化图标
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+            
+            // 显示Toast
             setTimeout(() => {
-                toast.remove();
+                toast.classList.add('show');
+            }, 10);
+            
+            // 3秒后隐藏并移除
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.classList.add('hide');
+                
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
             }, 3000);
+        }
+
+        // 自定义确认对话框
+        function showConfirmDialog(title, message, confirmText = '确定', cancelText = '取消') {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirmDialog');
+                const dialog = document.getElementById('confirmDialogInner');
+                const titleEl = document.getElementById('confirmDialogTitle');
+                const messageEl = document.getElementById('confirmDialogMessage');
+                const cancelBtn = document.getElementById('confirmDialogCancel');
+                const confirmBtn = document.getElementById('confirmDialogConfirm');
+
+                // 设置内容
+                titleEl.textContent = title;
+                messageEl.textContent = message;
+                confirmBtn.textContent = confirmText;
+                cancelBtn.textContent = cancelText;
+
+                // 显示对话框
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    dialog.classList.remove('scale-95', 'opacity-0');
+                    dialog.classList.add('scale-100', 'opacity-100');
+                }, 10);
+
+                lucide.createIcons();
+
+                // 处理确认
+                const handleConfirm = () => {
+                    dialog.classList.add('scale-95', 'opacity-0');
+                    dialog.classList.remove('scale-100', 'opacity-100');
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                        cleanup();
+                        resolve(true);
+                    }, 200);
+                };
+
+                // 处理取消
+                const handleCancel = () => {
+                    dialog.classList.add('scale-95', 'opacity-0');
+                    dialog.classList.remove('scale-100', 'opacity-100');
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                        cleanup();
+                        resolve(false);
+                    }, 200);
+                };
+
+                // 清理事件监听器
+                const cleanup = () => {
+                    confirmBtn.removeEventListener('click', handleConfirm);
+                    cancelBtn.removeEventListener('click', handleCancel);
+                    modal.removeEventListener('click', handleBackdropClick);
+                    document.removeEventListener('keydown', handleEscape);
+                };
+
+                // 点击背景关闭
+                const handleBackdropClick = (e) => {
+                    if (e.target === modal) {
+                        handleCancel();
+                    }
+                };
+
+                // ESC键关闭
+                const handleEscape = (e) => {
+                    if (e.key === 'Escape') {
+                        handleCancel();
+                    }
+                };
+
+                // 绑定事件
+                confirmBtn.addEventListener('click', handleConfirm);
+                cancelBtn.addEventListener('click', handleCancel);
+                modal.addEventListener('click', handleBackdropClick);
+                document.addEventListener('keydown', handleEscape);
+            });
+        }
+
+        // 自定义输入对话框
+        function showPromptDialog(title, message, defaultValue = '', placeholder = '请输入...') {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('promptDialog');
+                const dialog = document.getElementById('promptDialogInner');
+                const titleEl = document.getElementById('promptDialogTitle');
+                const messageEl = document.getElementById('promptDialogMessage');
+                const inputEl = document.getElementById('promptDialogInput');
+                const cancelBtn = document.getElementById('promptDialogCancel');
+                const confirmBtn = document.getElementById('promptDialogConfirm');
+
+                // 设置内容
+                titleEl.textContent = title;
+                messageEl.textContent = message;
+                inputEl.value = defaultValue;
+                inputEl.placeholder = placeholder;
+
+                // 显示对话框
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    dialog.classList.remove('scale-95', 'opacity-0');
+                    dialog.classList.add('scale-100', 'opacity-100');
+                    // 聚焦输入框并选中默认值
+                    inputEl.focus();
+                    if (defaultValue) {
+                        inputEl.select();
+                    }
+                }, 10);
+
+                lucide.createIcons();
+
+                // 处理确认
+                const handleConfirm = () => {
+                    const value = inputEl.value.trim();
+                    dialog.classList.add('scale-95', 'opacity-0');
+                    dialog.classList.remove('scale-100', 'opacity-100');
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                        cleanup();
+                        resolve(value || null);
+                    }, 200);
+                };
+
+                // 处理取消
+                const handleCancel = () => {
+                    dialog.classList.add('scale-95', 'opacity-0');
+                    dialog.classList.remove('scale-100', 'opacity-100');
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                        cleanup();
+                        resolve(null);
+                    }, 200);
+                };
+
+                // 清理事件监听器
+                const cleanup = () => {
+                    confirmBtn.removeEventListener('click', handleConfirm);
+                    cancelBtn.removeEventListener('click', handleCancel);
+                    modal.removeEventListener('click', handleBackdropClick);
+                    inputEl.removeEventListener('keydown', handleEnter);
+                    document.removeEventListener('keydown', handleEscape);
+                };
+
+                // 点击背景关闭
+                const handleBackdropClick = (e) => {
+                    if (e.target === modal) {
+                        handleCancel();
+                    }
+                };
+
+                // 回车键确认
+                const handleEnter = (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleConfirm();
+                    }
+                };
+
+                // ESC键关闭
+                const handleEscape = (e) => {
+                    if (e.key === 'Escape') {
+                        handleCancel();
+                    }
+                };
+
+                // 绑定事件
+                confirmBtn.addEventListener('click', handleConfirm);
+                cancelBtn.addEventListener('click', handleCancel);
+                modal.addEventListener('click', handleBackdropClick);
+                inputEl.addEventListener('keydown', handleEnter);
+                document.addEventListener('keydown', handleEscape);
+            });
         }
 
         // 切换班级下拉菜单
@@ -2321,6 +2692,9 @@
             
             // 刷新学生列表
             renderAllStudents();
+            
+            // 刷新分组方案列表（只显示当前学科的方案）
+            renderGroupSchemes();
         }
 
         // 更新学科选择器(根据当前班级的学科数量动态显示/隐藏)
@@ -2541,7 +2915,7 @@
         function goToStep2() {
             // 原型设计：如果选择"近一周"，显示提示
             if (smartGroupConfig.timePeriod === 'week') {
-                showToast('该时段无评分作业，请更换时段');
+                showToast('该时段无评分作业，请更换时段', 'warning');
                 return;
             }
 
@@ -2751,7 +3125,7 @@
                 // 只有成功时才关闭模态框
                 if (success) {
                     closeModal();
-                    showToast('智能分组完成');
+                    showToast('智能分组完成', 'success');
                 } else {
                     // 失败时移除加载状态，让用户可以重新选择
                     const modal = document.querySelector('.smart-group-modal');
@@ -2840,6 +3214,57 @@
         // 初始化页面
         initPage();
     </script>
+
+    <!-- 确认对话框 -->
+    <div id="confirmDialog" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200] hidden flex items-center justify-center">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all scale-95 opacity-0" id="confirmDialogInner">
+            <div class="p-6">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="alert-circle" class="w-6 h-6 text-amber-600"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2" id="confirmDialogTitle">确认操作</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed whitespace-pre-line" id="confirmDialogMessage">确定要执行此操作吗？</p>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-100 p-4 flex gap-3 justify-end">
+                <button id="confirmDialogCancel" class="px-5 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-all">
+                    取消
+                </button>
+                <button id="confirmDialogConfirm" class="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-all">
+                    确定
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 输入对话框 -->
+    <div id="promptDialog" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200] hidden flex items-center justify-center">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all scale-95 opacity-0" id="promptDialogInner">
+            <div class="p-6">
+                <div class="flex items-start gap-4 mb-4">
+                    <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="edit-3" class="w-6 h-6 text-blue-600"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2" id="promptDialogTitle">输入信息</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed" id="promptDialogMessage">请输入内容</p>
+                    </div>
+                </div>
+                <input type="text" id="promptDialogInput" class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-all" placeholder="请输入...">
+            </div>
+            <div class="border-t border-gray-100 p-4 flex gap-3 justify-end">
+                <button id="promptDialogCancel" class="px-5 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-all">
+                    取消
+                </button>
+                <button id="promptDialogConfirm" class="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-all">
+                    确定
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
 
