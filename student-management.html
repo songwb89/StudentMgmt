@@ -1027,6 +1027,78 @@
             background: #bfdbfe;
         }
 
+        /* 智能分组信息图标 */
+        .smart-group-info-icon {
+            color: #60a5fa;
+            cursor: help;
+            position: relative;
+            margin-left: 6px;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .smart-group-info-icon svg {
+            width: 14px;
+            height: 14px;
+            stroke-width: 2;
+        }
+
+        /* Tooltip 箭头 */
+        .smart-group-info-icon::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(8px);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid #1f2937;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 10001;
+        }
+
+        /* Tooltip 内容 */
+        .smart-group-info-icon::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-4px);
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            margin-bottom: 2px;
+        }
+
+        /* 悬停时显示 tooltip 和箭头 */
+        .smart-group-info-icon:hover::before {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(2px);
+        }
+
+        .smart-group-info-icon:hover::after {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-10px);
+        }
+
         /* 智能分组模态框 */
         .smart-group-modal {
             max-width: 600px;
@@ -1865,6 +1937,7 @@
                     <button class="smart-group-btn" onclick="openSmartGroupModal()">
                         <i data-lucide="sparkles" size="16"></i>
                         <span>智能分组</span>
+                        <span class="smart-group-info-icon" data-tooltip="基于作业得分率分组，可手动调整。" title="基于作业得分率分组，可手动调整。"><i data-lucide="info" size="14"></i></span>
                     </button>
                 </div>
             `;
@@ -2880,6 +2953,9 @@
                             </div>
                         </div>
 
+                        <!-- 提示信息 -->
+                        <p class="text-danger" style="margin-top: 16px; margin-bottom: 12px;"><i data-lucide="alert-triangle" size="16"></i> 注意：确认分组将覆盖当前方案下的现有分组。请谨慎操作。</p>
+
                         <div class="modal-actions">
                             <button class="btn btn-secondary" onclick="goToStep1()">上一步</button>
                             <button class="btn btn-primary" onclick="applySmartGrouping()">确认分组</button>
@@ -2922,44 +2998,105 @@
             const scheme = groupSchemes.find(s => s.id === currentSchemeId);
             if (!scheme) return;
 
-            const subject = scheme.subject;
+            // 显示加载状态
+            showLoadingTransition();
 
-            // 1. 根据时间段获取要统计的成绩数量
-            let scoreCount;
-            switch(smartGroupConfig.timePeriod) {
-                case 'week':
-                    scoreCount = 1;
-                    break;
-                case 'month':
-                    scoreCount = 2;
-                    break;
-                case 'sixmonths':
-                    scoreCount = 3;
-                    break;
-                case 'year':
-                    scoreCount = 4;
-                    break;
-                case 'all':
-                default:
-                    scoreCount = null;
-                    break;
+            // 模拟计算延迟，给用户更好的反馈体验（原型演示用，延长时间让开发看清）
+            setTimeout(() => {
+                const subject = scheme.subject;
+
+                // 1. 根据时间段获取要统计的成绩数量
+                let scoreCount;
+                switch(smartGroupConfig.timePeriod) {
+                    case 'week':
+                        scoreCount = 1;
+                        break;
+                    case 'month':
+                        scoreCount = 2;
+                        break;
+                    case 'sixmonths':
+                        scoreCount = 3;
+                        break;
+                    case 'year':
+                        scoreCount = 4;
+                        break;
+                    case 'all':
+                    default:
+                        scoreCount = null;
+                        break;
+                }
+
+                // 3. 计算每个学生的平均得分率
+                smartGroupConfig.studentScores = studentsData.map(student => {
+                    const allScores = student.scoresBySubject[subject] || [];
+                    const scores = scoreCount ? allScores.slice(-scoreCount) : allScores;
+                    const avgScore = calculateAverageScore(scores);
+                    return {
+                        id: student.id,
+                        name: student.name,
+                        scoreRate: avgScore
+                    };
+                });
+
+                // 4. 切换到第二步
+                smartGroupConfig.currentStep = 2;
+                renderSmartGroupModal();
+            }, 1500); // 1.5秒 延迟，原型演示让开发看清过渡效果
+        }
+
+        // 显示加载过渡动画
+        function showLoadingTransition() {
+            const modal = document.getElementById('smartGroupModal');
+            if (!modal) return;
+
+            const modalContent = modal.querySelector('.modal');
+            if (!modalContent) return;
+
+            // 移除可能存在的旧加载层
+            const oldOverlay = document.getElementById('loadingOverlay');
+            if (oldOverlay) {
+                oldOverlay.remove();
             }
 
-            // 3. 计算每个学生的平均得分率
-            smartGroupConfig.studentScores = studentsData.map(student => {
-                const allScores = student.scoresBySubject[subject] || [];
-                const scores = scoreCount ? allScores.slice(-scoreCount) : allScores;
-                const avgScore = calculateAverageScore(scores);
-                return {
-                    id: student.id,
-                    name: student.name,
-                    scoreRate: avgScore
-                };
-            });
+            // 创建加载层
+            const loadingOverlay = document.createElement('div');
+            loadingOverlay.id = 'loadingOverlay';
+            loadingOverlay.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(255, 255, 255, 0.95);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+                border-radius: 12px;
+                animation: fadeIn 0.5s ease-out;
+            `;
 
-            // 4. 切换到第二步
-            smartGroupConfig.currentStep = 2;
-            renderSmartGroupModal();
+            loadingOverlay.innerHTML = `
+                <div style="text-align: center;">
+                    <div class="loading-spinner" style="
+                        width: 48px;
+                        height: 48px;
+                        border: 4px solid #e5e7eb;
+                        border-top: 4px solid #3b82f6;
+                        border-radius: 50%;
+                        animation: spin 0.8s linear infinite;
+                        margin: 0 auto 16px;
+                    "></div>
+                    <div style="color: #6b7280; font-size: 14px; font-weight: 500;">正在计算最优分组方案...</div>
+                </div>
+            `;
+
+            // 确保模态框有相对定位
+            if (!modalContent.style.position || modalContent.style.position === 'static') {
+                modalContent.style.position = 'relative';
+            }
+            modalContent.appendChild(loadingOverlay);
         }
 
         // 返回第一步
