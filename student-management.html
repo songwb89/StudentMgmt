@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -163,35 +164,40 @@
             padding: 32px 40px;
         }
 
-        /* 标签页切换 */
+        /* 标签页切换 - 下划线风格 */
         .tabs {
             display: flex;
-            gap: 0;
-            background: #f3f4f6;
-            border-radius: 8px;
-            padding: 4px;
+            gap: 32px;
+            background: transparent;
+            padding: 0;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 0;
         }
 
         .tab-btn {
-            padding: 8px 24px;
-            border-radius: 6px;
+            padding: 12px 4px;
             border: none;
             background: transparent;
             color: #6b7280;
-            font-size: 14px;
+            font-size: 15px;
             cursor: pointer;
             transition: all 0.2s;
             font-weight: 500;
+            position: relative;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            /* 让边框盖住容器的底边框 */
         }
 
         .tab-btn:hover:not(.active) {
-            color: #1e6fff;
+            color: #1f2937;
         }
 
         .tab-btn.active {
-            background: #1e6fff;
-            color: white;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            background: transparent;
+            color: #1e6fff;
+            border-bottom-color: #1e6fff;
+            box-shadow: none;
         }
 
         /* 学生卡片 */
@@ -436,8 +442,10 @@
             position: absolute;
             top: 100%;
             right: 0;
-            left: -140px; /* span towards menu width */
-            height: 12px; /* bridge gap with buffer */
+            left: -140px;
+            /* span towards menu width */
+            height: 12px;
+            /* bridge gap with buffer */
             background: transparent;
         }
 
@@ -460,7 +468,8 @@
         .scheme-more-content::before {
             content: '';
             position: absolute;
-            top: -8px; /* cover margin-top gap with extra buffer */
+            top: -8px;
+            /* cover margin-top gap with extra buffer */
             left: 0;
             right: 0;
             height: 12px;
@@ -501,8 +510,10 @@
             position: absolute;
             top: 100%;
             right: 0;
-            left: -140px; /* span towards menu width */
-            height: 12px; /* bridge gap with buffer */
+            left: -140px;
+            /* span towards menu width */
+            height: 12px;
+            /* bridge gap with buffer */
             background: transparent;
         }
 
@@ -525,7 +536,8 @@
         .group-more-content::before {
             content: '';
             position: absolute;
-            top: -8px; /* cover margin-top gap with extra buffer */
+            top: -8px;
+            /* cover margin-top gap with extra buffer */
             left: 0;
             right: 0;
             height: 12px;
@@ -761,6 +773,7 @@
             from {
                 opacity: 0;
             }
+
             to {
                 opacity: 1;
             }
@@ -809,6 +822,13 @@
             box-shadow: 0 0 0 3px rgba(30, 111, 255, 0.1);
         }
 
+        .form-input:disabled {
+            background: #f9fafb;
+            color: #374151;
+            /* 保持深色文字，方便阅读 */
+            cursor: not-allowed;
+        }
+
         .form-select {
             width: 100%;
             padding: 10px 12px;
@@ -837,7 +857,17 @@
             display: flex;
             gap: 12px;
             justify-content: flex-end;
+            align-items: center;
             margin-top: 24px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #e5e7eb;
         }
 
         .btn {
@@ -848,6 +878,11 @@
             cursor: pointer;
             transition: all 0.2s;
             border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            line-height: 1.5;
         }
 
         .btn-secondary {
@@ -866,6 +901,65 @@
 
         .btn-primary:hover {
             background: #0d4fd4;
+        }
+
+        .btn:disabled {
+            background-color: #e5e7eb;
+            color: #9ca3af;
+            cursor: not-allowed;
+            opacity: 1;
+            pointer-events: none;
+        }
+
+        /* 禁用按钮的提示容器 */
+        .btn-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .btn-wrapper .tooltip {
+            visibility: hidden;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            /* 改为右对齐 */
+            left: auto;
+            /* 取消左对齐 */
+            transform: none;
+            /* 取消居中变换 */
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: #1f2937;
+            color: white;
+            font-size: 13px;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            z-index: 9999;
+            /* 提高层级 */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .btn-wrapper .tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            right: 20px;
+            /* 箭头位置调整到右侧 */
+            left: auto;
+            /* 取消左对齐 */
+            transform: none;
+            /* 取消居中变换 */
+            border: 5px solid transparent;
+            border-bottom-color: #1f2937;
+            /* 箭头颜色改为底部颜色 */
+        }
+
+        .btn-wrapper:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
         }
 
         /* 年级选择器 */
@@ -1337,7 +1431,8 @@
         }
 
         .toast.toast-error {
-            background: #f59e0b; /* 琥珀色更友好 */
+            background: #f59e0b;
+            /* 琥珀色更友好 */
         }
 
         .toast.toast-info {
@@ -1419,8 +1514,575 @@
             background: currentColor;
             border-radius: 50%;
         }
+
+        /* 复选框样式 */
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+        }
+
+        .checkbox:hover {
+            border-color: #1e6fff;
+            background: #f0f5ff;
+        }
+
+        .checkbox.checked {
+            background: #1e6fff;
+            border-color: #1e6fff;
+        }
+
+        .checkbox.checked::after {
+            content: '';
+            width: 10px;
+            height: 6px;
+            border-left: 2px solid white;
+            border-bottom: 2px solid white;
+            transform: rotate(-45deg);
+            margin-bottom: 2px;
+        }
+
+        /* 评语模块样式 */
+        .comment-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 180px);
+            overflow: hidden;
+        }
+
+        .comment-toolbar {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+        }
+
+        .comment-table-container {
+            flex: 1;
+            overflow: auto;
+        }
+
+        .comment-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .comment-table th {
+            background: #f9fafb;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: break-word;
+        }
+
+        .comment-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 14px;
+            color: #374151;
+            vertical-align: middle;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: break-word;
+        }
+
+        .comment-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .comment-table tr.selected {
+            background: #eff6ff;
+        }
+
+        .student-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .count-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            height: 28px;
+            border-radius: 14px;
+            background: #f3f4f6;
+            color: #1e6fff;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .count-badge:hover {
+            background: #dbeafe;
+            border-color: #bfdbfe;
+            transform: scale(1.05);
+        }
+
+        .count-badge.zero {
+
+.comment-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-right: 6px;
+    font-weight: 500;
+}
+
+.comment-tag.daily {
+    background: #ecfdf5;
+    color: #059669;
+}
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 6px;
+            font-weight: 500;
+        }
+
+        .comment-tag.daily {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .comment-tag.term {
+            background: #f5f3ff;
+            color: #7c3aed;
+        }
+
+        /* 自定义 Tooltip */
+        .custom-tooltip {
+            position: fixed;
+            background: rgba(31, 41, 55, 0.95);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            line-height: 1.5;
+            max-width: 300px;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(4px);
+        }
+
+        .custom-tooltip.show {
+            opacity: 1;
+        }
+
+        /* AI 评价弹窗样式 */
+        .ai-modal {
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .type-switch-btn.active {
+            background: white !important;
+            color: #1e6fff !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .ai-dimension-group {
+            margin-bottom: 20px;
+        }
+
+        .dimension-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dimension-warning {
+            color: #ef4444;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 8px;
+            display: none;
+        }
+
+        .dimension-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .dimension-option {
+            padding: 6px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #4b5563;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .dimension-option:hover {
+            border-color: #d1d5db;
+            background: #f9fafb;
+        }
+
+        .dimension-option.active {
+            background: #eff6ff;
+            border-color: #1e6fff;
+            color: #1e6fff;
+            font-weight: 500;
+        }
+
+        .ai-result-area {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+            display: none;
+        }
+
+        .ai-result-area.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ai-generating {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 32px;
+            color: #1e6fff;
+            font-weight: 500;
+        }
+
+        /* 历史记录抽屉 */
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .drawer-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .drawer {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            bottom: 0;
+            width: 400px;
+            background: white;
+            box-shadow: -4px 0 16px rgba(0, 0, 0, 0.1);
+            z-index: 2001;
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .drawer.show {
+            right: 0;
+        }
+
+        .drawer-header {
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .drawer-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .drawer-close {
+            cursor: pointer;
+            color: #9ca3af;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .drawer-close:hover {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .drawer-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f9fafb;
+        }
+
+        /* 复选框样式 */
+        .custom-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .custom-checkbox.checked {
+            background: #1e6fff;
+            border-color: #1e6fff;
+        }
+
+        .custom-checkbox.checked::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 2px;
+            width: 4px;
+            height: 8px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        /* 历史记录操作菜单 */
+        .history-item-card {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .history-item-card:hover {
+            border-color: #d1d5db;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .history-item-actions {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: block;
+            /* 始终显示 */
+        }
+
+        /* 移除悬停显示的规则，因为已经始终显示了 */
+        /* .history-item-card:hover .history-item-actions {
+            display: block; 
+        } */
+        /* 悬停显示 */
+
+        .history-menu-btn {
+            padding: 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #9ca3af;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .history-menu-btn:hover {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .history-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            min-width: 100px;
+            /* 增加宽度 */
+            display: none;
+            overflow: hidden;
+        }
+
+        .history-dropdown.show {
+            display: block;
+        }
+
+        .history-dropdown-item {
+            padding: 8px 12px;
+            font-size: 13px;
+            color: #374151;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            /* 增加间距 */
+            transition: all 0.1s;
+            white-space: nowrap;
+            /* 防止换行 */
+        }
+
+        .history-dropdown-item:hover {
+            background: #f9fafb;
+        }
+
+        .history-dropdown-item.delete {
+            color: #ef4444;
+        }
+
+        .history-dropdown-item.delete:hover {
+            background: #fef2f2;
+        }
+
+        .history-edit-area {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #1e6fff;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #374151;
+            resize: vertical;
+            min-height: 80px;
+            margin-bottom: 8px;
+            outline: none;
+            background: #f0f5ff;
+        }
+
+        .history-edit-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        /* 删除确认弹窗 */
+        .confirm-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 3000;
+            /* 比抽屉层级高 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
+        }
+
+        .confirm-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .confirm-modal {
+            background: white;
+            border-radius: 12px;
+            width: 360px;
+            padding: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            transform: scale(0.95);
+            transition: all 0.2s;
+        }
+
+        .confirm-overlay.show .confirm-modal {
+            transform: scale(1);
+        }
+
+        .confirm-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .confirm-message {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .confirm-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
     </style>
 </head>
+
 <body>
     <!-- 顶部栏 -->
     <header class="top-header">
@@ -1475,80 +2137,293 @@
 
     <!-- 主内容区 -->
     <main class="main-content">
-            <!-- 标签页和班级/学科选择器 -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                <div class="tabs">
-                    <button class="tab-btn active" onclick="switchTab('all')">全部学生</button>
-                    <button class="tab-btn" onclick="switchTab('group')">学生分组</button>
-                </div>
-                <div style="display: flex; gap: 12px; align-items: center;">
-                    <!-- 班级选择器 -->
-                    <div class="grade-selector-custom">
-                        <div class="grade-display" onclick="toggleGradeDropdown()">
-                            <span id="selectedGrade">一年级（六班）</span>
-                            <i data-lucide="chevron-down" size="16"></i>
-                        </div>
-                        <div class="grade-dropdown hidden" id="gradeDropdown">
-                            <div class="grade-option" onclick="selectGrade('一年级（六班）')">一年级（六班）</div>
-                            <div class="grade-option" onclick="selectGrade('二年级（三班）')">二年级（三班）</div>
-                            <div class="grade-option" onclick="selectGrade('三年级（一班）')">三年级（一班）</div>
-                        </div>
-                    </div>
-                    <!-- 学科选择器(动态显示/隐藏) -->
-                    <div class="grade-selector-custom" id="subjectSelectorContainer">
-                        <div class="grade-display" onclick="toggleSubjectDropdown()">
-                            <span id="selectedSubject">语文</span>
-                            <i data-lucide="chevron-down" size="16"></i>
-                        </div>
-                        <div class="grade-dropdown hidden" id="subjectDropdown">
-                            <!-- 学科选项将通过 JavaScript 动态生成 -->
-                        </div>
-                    </div>
-                </div>
+        <!-- 标签页和班级/学科选择器 -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('all')">全部学生</button>
+                <button class="tab-btn" onclick="switchTab('group')">学生分组</button>
+                <button class="tab-btn" onclick="switchTab('comment')">综合评价</button>
             </div>
-
-            <!-- 全部学生视图 -->
-            <div id="allStudentsView">
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
-                    <!-- 学生卡片将通过 JavaScript 动态生成 -->
-                </div>
-            </div>
-
-            <!-- 学生分组视图 -->
-            <div id="groupView" class="hidden">
-                <div class="group-layout">
-                    <!-- 左侧分组方案列表 -->
-                    <div class="group-sidebar">
-                        <div style="margin-bottom: 16px;">
-                            <!-- 分组方案列表将通过 JavaScript 动态生成 -->
-                        </div>
-                        <button class="create-scheme-btn" onclick="openCreateSchemeModal()">
-                            <i data-lucide="plus" size="16"></i>
-                            <span>创建分组方案</span>
-                        </button>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <!-- 班级选择器 -->
+                <div class="grade-selector-custom">
+                    <div class="grade-display" onclick="toggleGradeDropdown()">
+                        <span id="selectedGrade">一年级（六班）</span>
+                        <i data-lucide="chevron-down" size="16"></i>
                     </div>
-
-                    <!-- 右侧小组列表 -->
-                    <div class="group-main">
-                        <!-- 小组卡片将通过 JavaScript 动态生成 -->
+                    <div class="grade-dropdown hidden" id="gradeDropdown">
+                        <div class="grade-option" onclick="selectGrade('一年级（六班）')">一年级（六班）</div>
+                        <div class="grade-option" onclick="selectGrade('二年级（三班）')">二年级（三班）</div>
+                        <div class="grade-option" onclick="selectGrade('三年级（一班）')">三年级（一班）</div>
                     </div>
                 </div>
-            </div>
-
-            <!-- 空状态视图 -->
-            <div id="emptyView" class="hidden">
-                <div class="empty-state">
-                    <svg width="240" height="180" viewBox="0 0 240 180" fill="none">
-                        <circle cx="120" cy="90" r="60" fill="#E6F0FF"/>
-                        <path d="M120 60L140 90L120 120L100 90Z" fill="#1E6FFF" opacity="0.3"/>
-                        <circle cx="120" cy="90" r="30" fill="#1E6FFF" opacity="0.5"/>
-                        <path d="M105 85H135M105 95H135" stroke="white" stroke-width="3" stroke-linecap="round"/>
-                    </svg>
-                    <p class="empty-state-title">当前班级没有学生，请联系管理员导入学生</p>
+                <!-- 学科选择器(动态显示/隐藏) -->
+                <div class="grade-selector-custom" id="subjectSelectorContainer">
+                    <div class="grade-display" onclick="toggleSubjectDropdown()">
+                        <span id="selectedSubject">语文</span>
+                        <i data-lucide="chevron-down" size="16"></i>
+                    </div>
+                    <div class="grade-dropdown hidden" id="subjectDropdown">
+                        <!-- 学科选项将通过 JavaScript 动态生成 -->
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- 全部学生视图 -->
+        <div id="allStudentsView">
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+                <!-- 学生卡片将通过 JavaScript 动态生成 -->
+            </div>
+        </div>
+
+        <!-- 学生分组视图 -->
+        <div id="groupView" class="hidden">
+            <div class="group-layout">
+                <!-- 左侧分组方案列表 -->
+                <div class="group-sidebar">
+                    <div style="margin-bottom: 16px;">
+                        <!-- 分组方案列表将通过 JavaScript 动态生成 -->
+                    </div>
+                    <button class="create-scheme-btn" onclick="openCreateSchemeModal()">
+                        <i data-lucide="plus" size="16"></i>
+                        <span>创建分组方案</span>
+                    </button>
+                </div>
+
+                <!-- 右侧小组列表 -->
+                <div class="group-main">
+                    <!-- 小组卡片将通过 JavaScript 动态生成 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 学生评价视图 -->
+        <div id="commentView" class="hidden">
+            <div class="comment-container">
+                <!-- 顶部工具栏 -->
+                <div class="comment-toolbar">
+                    <div style="display: flex; gap: 16px; align-items: center;">
+                        <div class="grade-selector-custom">
+                            <div class="grade-display" onclick="toggleSemesterDropdown()">
+                                <i data-lucide="calendar" size="16"></i>
+                                <span id="selectedSemester">2024年下学期</span>
+                                <i data-lucide="chevron-down" size="16"></i>
+                            </div>
+                            <div class="grade-dropdown hidden" id="semesterDropdown">
+                                <!-- 选项将通过 JS 动态生成 -->
+                            </div>
+                        </div>
+
+                        <div style="position: relative;">
+                            <i data-lucide="search"
+                                style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: #9ca3af;"></i>
+                            <input type="text" placeholder="搜索学生..." class="form-input"
+                                style="padding-left: 32px; width: 200px;" oninput="filterCommentTable(this.value)">
+                        </div>
+                    </div>
+
+                    <div class="btn-wrapper">
+                        <button class="btn btn-primary" id="batchCommentBtn" disabled onclick="openAiCommentModal()"
+                            style="display: flex; align-items: center; gap: 6px;">
+                            批量评价 <span id="selectedCountBadge"
+                                style="display: none; background: rgba(255,255,255,0.2); padding: 0 6px; border-radius: 10px; font-size: 12px;">0</span>
+                        </button>
+                        <span class="tooltip" id="batchBtnTooltip">请先在下方列表中勾选学生</span>
+                    </div>
+                </div>
+
+                <!-- 评价列表表格 -->
+                <div class="comment-table-container">
+                    <table class="comment-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">
+                                    <div class="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll()"></div>
+                                </th>
+                                <th style="width: 150px;">学生信息</th>
+                                <th style="width: 100px;">评价记录</th>
+                                <th style="width: auto;">最新评价</th>
+                                <th style="width: 160px;">最新评价时间</th>
+                                <th style="width: 100px;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="commentTableBody">
+                            <!-- 表格内容将通过 JS 生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 历史记录抽屉 -->
+        <div class="drawer-overlay" id="historyDrawerOverlay" onclick="closeHistoryDrawer()"></div>
+        <div class="drawer" id="historyDrawer">
+            <div class="drawer-header">
+                <div class="drawer-title">评价记录</div>
+                <div class="drawer-close" onclick="closeHistoryDrawer()">
+                    <i data-lucide="x" size="20"></i>
+                </div>
+            </div>
+            <div class="drawer-content">
+                <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #e5e7eb;">
+                    <div style="font-weight: 600; font-size: 16px;" id="drawerName">学生姓名</div>
+                    <div style="color: #6b7280; font-size: 13px; margin-top: 4px;">学号: <span
+                            id="drawerId">2023001</span></div>
+                </div>
+                <div id="drawerHistoryList">
+                    <!-- 历史记录列表 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- AI 评价模态框 -->
+        <div class="modal-overlay hidden" id="aiCommentModal">
+            <div class="modal ai-modal">
+                <div class="modal-header">
+                    <div class="modal-title" style="margin-bottom: 16px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i data-lucide="sparkles" class="text-blue-600"></i>
+                            AI 智能评价
+                        </div>
+                    </div>
+                    <div class="text-gray-500 text-sm mb-4" id="aiModalStudentName">正在为 张铁蛋 生成评价</div>
+
+                    <!-- 评价类型选择 -->
+                    <div
+                        style="display: flex; gap: 12px; margin-bottom: 20px; padding: 4px; background: #f3f4f6; border-radius: 8px; width: fit-content;">
+                        <button class="type-switch-btn active" id="typeDailyBtn" onclick="switchCommentType('daily')"
+                            style="padding: 6px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s;">
+                            日常记录
+                        </button>
+                        <button class="type-switch-btn" id="typeTermBtn" onclick="switchCommentType('term')"
+                            style="padding: 6px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s; color: #6b7280; background: transparent;">
+                            期末评语
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-body" id="aiStep1">
+                    <div class="ai-dimension-group">
+                        <div class="dimension-title"><i data-lucide="presentation" size="16"></i> 课堂表现<span
+                                class="dimension-warning">请选择一项</span></div>
+                        <div class="dimension-options">
+                            <div class="dimension-option" onclick="toggleDimension(this)">听讲专注</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">积极举手</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">思维活跃</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">容易走神</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">小动作多</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">略显懈怠</div>
+                        </div>
+                    </div>
+
+                    <div class="ai-dimension-group">
+                        <div class="dimension-title"><i data-lucide="pen-tool" size="16"></i> 作业完成<span
+                                class="dimension-warning">请选择一项</span></div>
+                        <div class="dimension-options">
+                            <div class="dimension-option" onclick="toggleDimension(this)">书写工整</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">正确率高</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">按时完成</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">字迹潦草</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">经常拖拉</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">敷衍应付</div>
+                        </div>
+                    </div>
+
+                    <div class="ai-dimension-group">
+                        <div class="dimension-title"><i data-lucide="brain" size="16"></i> 学科能力<span
+                                class="dimension-warning">请选择一项</span></div>
+                        <div class="dimension-options">
+                            <div class="dimension-option" onclick="toggleDimension(this)">基础扎实</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">逻辑清晰</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">举一反三</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">概念模糊</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">理解吃力</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">思路狭窄</div>
+                        </div>
+                    </div>
+
+                    <div class="ai-dimension-group">
+                        <div class="dimension-title"><i data-lucide="notebook" size="16"></i> 学习习惯<span
+                                class="dimension-warning">请选择一项</span></div>
+                        <div class="dimension-options">
+                            <div class="dimension-option" onclick="toggleDimension(this)">笔记详实</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">善于纠错</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">准备充分</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">缺乏条理</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">被动拖延</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">方法单一</div>
+                        </div>
+                    </div>
+
+                    <div class="ai-dimension-group">
+                        <div class="dimension-title"><i data-lucide="award" size="16"></i> 品行纪律<span
+                                class="dimension-warning">请选择一项</span></div>
+                        <div class="dimension-options">
+                            <div class="dimension-option" onclick="toggleDimension(this)">遵守纪律</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">礼貌待人</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">乐于助人</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">纪律散漫</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">言行失当</div>
+                            <div class="dimension-option" onclick="toggleDimension(this)">缺乏合作</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">补充关键点（选填，最多200字）</label>
+                        <textarea class="form-input" rows="2" placeholder="例如：需要加强时间管理，作业完成情况有待改进..."
+                            id="aiCustomInput" maxlength="200"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeAiCommentModal()">取消</button>
+                        <button class="btn btn-primary" onclick="generateAiComment()"
+                            style="display: flex; align-items: center; gap: 6px;">
+                            <i data-lucide="zap" size="16"></i>
+                            生成评价
+                        </button>
+                    </div>
+                </div>
+
+                <div id="aiResultStep" class="ai-result-area">
+                    <div class="form-group">
+                        <label class="form-label">生成结果（可编辑，最多500字）</label>
+                        <textarea class="form-input" rows="4" id="aiResultText" maxlength="500"></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-secondary" onclick="resetAiStep()">返回重试</button>
+                        <button class="btn btn-primary" onclick="saveAiComment()">保存评价</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 空状态视图 -->
+        <div id="emptyView" class="hidden">
+            <div class="empty-state">
+                <svg width="240" height="180" viewBox="0 0 240 180" fill="none">
+                    <circle cx="120" cy="90" r="60" fill="#E6F0FF" />
+                    <path d="M120 60L140 90L120 120L100 90Z" fill="#1E6FFF" opacity="0.3" />
+                    <circle cx="120" cy="90" r="30" fill="#1E6FFF" opacity="0.5" />
+                    <path d="M105 85H135M105 95H135" stroke="white" stroke-width="3" stroke-linecap="round" />
+                </svg>
+                <p class="empty-state-title">当前班级没有学生，请联系管理员导入学生</p>
+            </div>
+        </div>
+        </div>
     </main>
+
+    <!-- 删除确认弹窗 -->
+    <div class="confirm-overlay" id="deleteConfirmOverlay">
+        <div class="confirm-modal">
+            <div class="confirm-title">确认删除</div>
+            <div class="confirm-message">确定要删除这条评价记录吗？此操作不可恢复。</div>
+            <div class="confirm-actions">
+                <button class="btn btn-secondary" onclick="closeDeleteConfirmModal()">取消</button>
+                <button class="btn btn-danger" onclick="confirmDeleteHistoryItem()">删除</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // 初始化 Lucide 图标
@@ -1567,92 +2442,92 @@
 
         // 模拟学生数据（包含按学科分开的最近5次作业成绩，满分100分）
         const studentsData = [
-            { 
-                id: 1, name: '张铁蛋', studentId: '2024001', gender: 'male', 
+            {
+                id: 1, name: '张铁蛋', studentId: '2024001', gender: 'male',
                 scoresBySubject: {
                     '语文': [85, 88, 82, 87, 90],
                     '数学': [92, 95, 91, 94, 93]
                 }
             },
-            { 
-                id: 2, name: '李雪梅', studentId: '2024002', gender: 'female', 
+            {
+                id: 2, name: '李雪梅', studentId: '2024002', gender: 'female',
                 scoresBySubject: {
                     '语文': [92, 95, 91, 94, 93],
                     '数学': [58, 62, 55, 60, 59]  // 数学差
                 }
             },
-            { 
-                id: 3, name: '王小明', studentId: '2024003', gender: 'male', 
+            {
+                id: 3, name: '王小明', studentId: '2024003', gender: 'male',
                 scoresBySubject: {
                     '语文': [58, 62, 55, 60, 59],  // 语文差 - 绝对底线预警
                     '数学': [75, 78, 72, 76, 74]
                 }
             },
-            { 
-                id: 4, name: '刘芳芳', studentId: '2024004', gender: 'female', 
+            {
+                id: 4, name: '刘芳芳', studentId: '2024004', gender: 'female',
                 scoresBySubject: {
                     '语文': [88, 90, 87, 89, 91],
                     '数学': [88, 90, 87, 89, 91]
                 }
             },
-            { 
-                id: 5, name: '陈大壮', studentId: '2024005', gender: 'male', 
+            {
+                id: 5, name: '陈大壮', studentId: '2024005', gender: 'male',
                 scoresBySubject: {
                     '语文': [75, 78, 72, 76, 74],
                     '数学': [68, 70, 65, 69, 71]
                 }
             },
-            { 
-                id: 6, name: '赵小红', studentId: '2024006', gender: 'female', 
+            {
+                id: 6, name: '赵小红', studentId: '2024006', gender: 'female',
                 scoresBySubject: {
                     '语文': [95, 97, 94, 96, 98],
                     '数学': [95, 97, 94, 96, 98]
                 }
             },
-            { 
-                id: 7, name: '孙建国', studentId: '2024007', gender: 'male', 
+            {
+                id: 7, name: '孙建国', studentId: '2024007', gender: 'male',
                 scoresBySubject: {
                     '语文': [68, 70, 65, 69, 71],  // 语文差 - 相对落后
                     '数学': [82, 85, 80, 84, 83]
                 }
             },
-            { 
-                id: 8, name: '周美丽', studentId: '2024008', gender: 'female', 
+            {
+                id: 8, name: '周美丽', studentId: '2024008', gender: 'female',
                 scoresBySubject: {
                     '语文': [82, 85, 80, 84, 83],
                     '数学': [72, 74, 70, 73, 75]
                 }
             },
-            { 
-                id: 9, name: '吴大勇', studentId: '2024009', gender: 'male', 
+            {
+                id: 9, name: '吴大勇', studentId: '2024009', gender: 'male',
                 scoresBySubject: {
                     '语文': [72, 74, 70, 73, 75],
                     '数学': [55, 58, 52, 56, 54]  // 数学差 - 绝对底线预警
                 }
             },
-            { 
-                id: 10, name: '郑小花', studentId: '2024010', gender: 'female', 
+            {
+                id: 10, name: '郑小花', studentId: '2024010', gender: 'female',
                 scoresBySubject: {
                     '语文': [55, 58, 52, 56, 54],  // 语文差 - 绝对底线预警
                     '数学': [78, 80, 76, 79, 77]
                 }
             },
-            { 
-                id: 11, name: '钱多多', studentId: '2024011', gender: 'male', 
+            {
+                id: 11, name: '钱多多', studentId: '2024011', gender: 'male',
                 scoresBySubject: {
                     '语文': [78, 80, 76, 79, 77],
                     '数学': [88, 91, 86, 90, 89]
                 }
             },
-            { 
-                id: 12, name: '林晓晓', studentId: '2024012', gender: 'female', 
+            {
+                id: 12, name: '林晓晓', studentId: '2024012', gender: 'female',
                 scoresBySubject: {
                     '语文': [88, 91, 86, 90, 89],
                     '数学': [70, 72, 68, 71, 69]  // 数学差 - 相对落后
                 }
             },
-            { 
-                id: 13, name: '马云飞', studentId: '2024013', gender: 'male', 
+            {
+                id: 13, name: '马云飞', studentId: '2024013', gender: 'male',
                 scoresBySubject: {
                     '语文': [70, 72, 68, 71, 69],  // 语文差 - 相对落后
                     '数学': [85, 88, 82, 87, 90]
@@ -1671,12 +2546,12 @@
         function needsWarning(student, subject) {
             const scores = student.scoresBySubject[subject] || [];
             const avgScore = calculateAverageScore(scores);
-            
+
             // 绝对底线预警：平均得分率低于65%
             if (avgScore < 65) {
                 return { needsWarning: true, reason: '绝对底线预警', avgScore };
             }
-            
+
             // 相对落后预警：处于班级后20%
             const allScores = studentsData
                 .map(s => {
@@ -1687,15 +2562,15 @@
                     };
                 })
                 .sort((a, b) => b.avgScore - a.avgScore);
-            
+
             const studentRank = allScores.findIndex(s => s.id === student.id) + 1;
             const totalStudents = allScores.length;
             const bottom20Percent = Math.ceil(totalStudents * 0.2);
-            
+
             if (studentRank > totalStudents - bottom20Percent) {
                 return { needsWarning: true, reason: '相对落后预警', avgScore };
             }
-            
+
             return { needsWarning: false, avgScore };
         }
 
@@ -1775,7 +2650,7 @@
         function initPage() {
             // 初始化学科选择器
             updateSubjectSelector();
-            
+
             // 渲染页面
             renderAllStudents();
             renderGroupSchemes();
@@ -1788,7 +2663,7 @@
             if (scores.length === 0) {
                 return [];
             }
-            
+
             return scores.map(score => {
                 const rate = score / 100; // 满分100分
                 let level = 'low';
@@ -1801,39 +2676,39 @@
         // 渲染全部学生
         function renderAllStudents() {
             const container = document.querySelector('#allStudentsView > div');
-            
+
             // 使用当前选中的学科
             const subject = currentSubject;
-            
+
             // 计算所有学生的得分率并排序，找出最需要提醒的3个学生
             const studentsWithRate = studentsData.map(student => {
                 const scoreRates = getRecentScoreRates(student, subject);
-                const avgRate = scoreRates.length > 0 
-                    ? scoreRates.reduce((sum, s) => sum + s.rate, 0) / scoreRates.length 
+                const avgRate = scoreRates.length > 0
+                    ? scoreRates.reduce((sum, s) => sum + s.rate, 0) / scoreRates.length
                     : 1;
                 return { student, avgRate };
             });
-            
+
             // 按得分率排序，找出最低的3个
             const lowestThree = studentsWithRate
                 .filter(item => item.avgRate < 1) // 排除没有作业记录的
                 .sort((a, b) => a.avgRate - b.avgRate)
                 .slice(0, 3)
                 .map(item => item.student.id);
-            
+
             container.innerHTML = studentsData.map(student => {
                 const scoreRates = getRecentScoreRates(student, subject);
-                const avgRate = scoreRates.length > 0 
-                    ? scoreRates.reduce((sum, s) => sum + s.rate, 0) / scoreRates.length 
+                const avgRate = scoreRates.length > 0
+                    ? scoreRates.reduce((sum, s) => sum + s.rate, 0) / scoreRates.length
                     : 1;
-                
+
                 // 只显示最需要提醒的3个学生
                 const scoreBadge = lowestThree.includes(student.id) ? `
-                    <div class="score-rate-badge warning" data-tooltip="${subject} - 近5次作业得分率：低于70%或处于班级后20%">
+                    <div class="score-rate-badge warning" data-tooltip="近5次作业得分率：低于70%">
                         ${Math.round(avgRate * 100)}%
                     </div>
                 ` : '';
-                
+
                 return `
                     <div class="student-card" onclick="navigateToStudentAnalysis(${student.id})">
                         ${scoreBadge}
@@ -1847,7 +2722,7 @@
                     </div>
                 `;
             }).join('');
-            
+
             // 重新初始化图标
             lucide.createIcons();
         }
@@ -1857,9 +2732,9 @@
             const allView = document.getElementById('allStudentsView');
             const groupView = document.getElementById('groupView');
             const tabs = document.querySelectorAll('.tab-btn');
-            
+
             tabs.forEach(t => t.classList.remove('active'));
-            
+
             if (tab === 'all') {
                 tabs[0].classList.add('active');
                 allView.classList.remove('hidden');
@@ -1876,7 +2751,7 @@
             const container = document.querySelector('.group-sidebar > div');
             // 只显示与当前选中学科关联的分组方案
             const filteredSchemes = groupSchemes.filter(scheme => scheme.subject === currentSubject);
-            
+
             container.innerHTML = filteredSchemes.map(scheme => `
                 <div class="group-scheme-item ${scheme.id === currentSchemeId ? 'active' : ''}" 
                      onclick="selectScheme(${scheme.id})">
@@ -1915,7 +2790,7 @@
             if (!scheme) return;
 
             const container = document.querySelector('.group-main');
-            
+
             // 检查是否有待分配的学生
             const pendingGroup = scheme.groups.find(g => g.id === 'pending');
             const hasPending = pendingGroup && pendingGroup.students.length > 0;
@@ -1949,7 +2824,7 @@
 
             container.innerHTML = html;
             lucide.createIcons();
-            
+
             // 如果有正在编辑的小组，重新聚焦输入框
             if (editingGroupId !== null) {
                 setTimeout(() => {
@@ -1966,7 +2841,7 @@
         function renderGroupCard(group, isPending) {
             const scheme = groupSchemes.find(s => s.id === currentSchemeId);
             const students = group.students.map(id => studentsData.find(s => s.id === id)).filter(Boolean);
-            
+
             const hasSelected = students.some(s => selectedStudents.has(s.id));
             const isCurrentGroup = currentGroupId === group.id;
             const isEditing = editingGroupId === group.id;
@@ -2137,12 +3012,12 @@
             };
 
             scheme.groups.push(newGroup);
-            
+
             // 设置为编辑状态
             editingGroupId = newGroupId;
-            
+
             renderGroupView();
-            
+
             // 渲染后聚焦输入框
             setTimeout(() => {
                 const input = document.getElementById(`groupNameInput_${newGroupId}`);
@@ -2157,7 +3032,7 @@
         function startEditGroupName(groupId) {
             editingGroupId = groupId;
             renderGroupView();
-            
+
             setTimeout(() => {
                 const input = document.getElementById(`groupNameInput_${groupId}`);
                 if (input) {
@@ -2173,7 +3048,7 @@
             if (!input) return;
 
             const newName = input.value.trim();
-            
+
             if (!newName) {
                 showToast('小组名称不能为空', 'warning');
                 // 恢复原来的名称
@@ -2215,7 +3090,7 @@
         // 显示方案菜单
         function showSchemeMenu(event, schemeId) {
             event.stopPropagation();
-            
+
             // 移除现有菜单
             const existingMenu = document.querySelector('.dropdown-menu');
             if (existingMenu) {
@@ -2224,12 +3099,12 @@
 
             const menu = document.createElement('div');
             menu.className = 'dropdown-menu';
-            
+
             // 计算菜单位置：紧贴按钮下方，减少间隙
             const buttonRect = event.currentTarget.getBoundingClientRect();
             menu.style.left = buttonRect.right - 120 + 'px'; // 右对齐
             menu.style.top = (buttonRect.bottom + 4) + 'px'; // 按钮下方4px
-            
+
             menu.innerHTML = `
                 <div class="dropdown-item" onclick="renameScheme(${schemeId})">重命名</div>
                 <div class="dropdown-item" onclick="deleteScheme(${schemeId})">删除</div>
@@ -2268,7 +3143,7 @@
         // 显示小组菜单
         function showGroupMenu(event, groupId) {
             event.stopPropagation();
-            
+
             const existingMenu = document.querySelector('.dropdown-menu');
             if (existingMenu) {
                 existingMenu.remove();
@@ -2276,12 +3151,12 @@
 
             const menu = document.createElement('div');
             menu.className = 'dropdown-menu';
-            
+
             // 计算菜单位置：紧贴按钮下方，减少间隙
             const buttonRect = event.currentTarget.getBoundingClientRect();
             menu.style.left = buttonRect.right - 120 + 'px'; // 右对齐
             menu.style.top = (buttonRect.bottom + 4) + 'px'; // 按钮下方4px
-            
+
             menu.innerHTML = `
                 <div class="dropdown-item" onclick="renameGroup(${groupId})">重命名</div>
                 <div class="dropdown-item" onclick="deleteGroup(${groupId})">删除</div>
@@ -2327,7 +3202,7 @@
                 scheme.name,
                 '请输入方案名称'
             );
-            
+
             if (newName && newName.trim()) {
                 // 检查名称是否重复
                 const exists = groupSchemes.some(s => s.id !== schemeId && s.name === newName.trim() && s.subject === scheme.subject);
@@ -2358,7 +3233,7 @@
                 '确定要删除这个分组方案吗？',
                 '删除'
             );
-            
+
             if (confirmed) {
                 groupSchemes = groupSchemes.filter(s => s.id !== schemeId);
                 if (currentSchemeId === schemeId) {
@@ -2385,7 +3260,7 @@
                 '确定要删除这个小组吗？\n小组中的学生将移回待分配。',
                 '删除'
             );
-            
+
             if (confirmed) {
                 const group = scheme.groups.find(g => g.id === groupId);
                 if (!group) return;
@@ -2441,7 +3316,7 @@
                 </div>
             `;
             document.body.appendChild(modal);
-            
+
             // 点击遮罩层关闭模态框
             modal.addEventListener('click', closeModal);
         }
@@ -2508,7 +3383,7 @@
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
             toast.className = 'toast';
-            
+
             // 根据类型设置不同的颜色和图标
             let iconName;
             if (type === 'success') {
@@ -2527,30 +3402,30 @@
                 toast.classList.add('toast-success');
                 iconName = 'check-circle';
             }
-            
+
             // 创建图标和文本
             toast.innerHTML = `
                 <i data-lucide="${iconName}"></i>
                 <span>${message}</span>
             `;
-            
+
             document.body.appendChild(toast);
-            
+
             // 初始化图标
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
-            
+
             // 显示Toast
             setTimeout(() => {
                 toast.classList.add('show');
             }, 10);
-            
+
             // 3秒后隐藏并移除
             setTimeout(() => {
                 toast.classList.remove('show');
                 toast.classList.add('hide');
-                
+
                 setTimeout(() => {
                     toast.remove();
                 }, 300);
@@ -2741,10 +3616,10 @@
             currentGrade = grade;
             document.getElementById('selectedGrade').textContent = grade;
             document.getElementById('gradeDropdown').classList.add('hidden');
-            
+
             // 更新学科选择器
             updateSubjectSelector();
-            
+
             // 刷新学生列表
             renderAllStudents();
         }
@@ -2762,10 +3637,10 @@
             currentSubject = subject;
             document.getElementById('selectedSubject').textContent = subject;
             document.getElementById('subjectDropdown').classList.add('hidden');
-            
+
             // 刷新学生列表
             renderAllStudents();
-            
+
             // 刷新分组方案列表（只显示当前学科的方案）
             renderGroupSchemes();
         }
@@ -2775,23 +3650,23 @@
             const subjects = teacherClassSubjects[currentGrade] || [];
             const subjectSelector = document.getElementById('subjectSelectorContainer');
             const subjectDropdown = document.getElementById('subjectDropdown');
-            
+
             if (subjects.length > 1) {
                 // 多学科:显示选择器
                 subjectSelector.classList.remove('hidden');
-                
+
                 // 渲染学科选项
-                subjectDropdown.innerHTML = subjects.map(subject => 
+                subjectDropdown.innerHTML = subjects.map(subject =>
                     `<div class="grade-option" onclick="selectSubject('${subject}')">${subject}</div>`
                 ).join('');
-                
+
                 // 设置默认学科为第一个
                 currentSubject = subjects[0];
                 document.getElementById('selectedSubject').textContent = currentSubject;
             } else if (subjects.length === 1) {
                 // 单学科:隐藏选择器
                 subjectSelector.classList.add('hidden');
-                
+
                 // 自动使用唯一学科
                 currentSubject = subjects[0];
             } else {
@@ -2801,16 +3676,16 @@
         }
 
         // 点击其他地方关闭下拉菜单
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             const gradeSelectors = document.querySelectorAll('.grade-selector-custom');
             let clickedInside = false;
-            
+
             gradeSelectors.forEach(selector => {
                 if (selector.contains(event.target)) {
                     clickedInside = true;
                 }
             });
-            
+
             if (!clickedInside) {
                 document.getElementById('gradeDropdown').classList.add('hidden');
                 document.getElementById('subjectDropdown').classList.add('hidden');
@@ -2824,14 +3699,14 @@
 
             const grade = document.getElementById('selectedGrade').textContent;
             const subject = currentSubject; // 使用当前选中的学科
-            
+
             // 构建跳转URL，传递学生ID、班级和学科参数
             const url = `data-analysis.html?studentId=${studentId}&grade=${encodeURIComponent(grade)}&subject=${encodeURIComponent(subject)}`;
             window.location.href = url;
         }
 
         // ==================== 智能分组功能 ====================
-        
+
         // 智能分组配置
         let smartGroupConfig = {
             timePeriod: 'sixmonths', // week, month, sixmonths, year, all
@@ -2890,7 +3765,7 @@
             const modal = document.createElement('div');
             modal.className = 'modal-overlay';
             modal.id = 'smartGroupModal';
-            
+
             if (smartGroupConfig.currentStep === 1) {
                 // 第一步：选择参数
                 modal.innerHTML = `
@@ -2963,9 +3838,9 @@
                     </div>
                 `;
             }
-            
+
             document.body.appendChild(modal);
-            
+
             // 点击遮罩层关闭模态框
             modal.addEventListener('click', closeModal);
 
@@ -2979,7 +3854,7 @@
         // 选择时间段
         function selectTimePeriod(period) {
             smartGroupConfig.timePeriod = period;
-            
+
             // 只更新按钮状态，不重新渲染整个模态框
             document.querySelectorAll('.time-period-btn').forEach(btn => {
                 btn.classList.remove('active');
@@ -3007,7 +3882,7 @@
 
                 // 1. 根据时间段获取要统计的成绩数量
                 let scoreCount;
-                switch(smartGroupConfig.timePeriod) {
+                switch (smartGroupConfig.timePeriod) {
                     case 'week':
                         scoreCount = 1;
                         break;
@@ -3109,7 +3984,7 @@
         function selectGroupCount(count) {
             smartGroupConfig.groupCount = count;
             smartGroupConfig.percentages = [...defaultPercentages[count]];
-            
+
             // 只更新按钮状态，不重新渲染整个模态框
             document.querySelectorAll('.group-count-btn').forEach(btn => {
                 btn.classList.remove('active');
@@ -3124,25 +3999,25 @@
 
             const percentages = smartGroupConfig.percentages;
             const studentScores = smartGroupConfig.studentScores;
-            
+
             let html = '<div style="display: flex; flex-direction: column; gap: 10px;">';
-            
+
             for (let i = 0; i < percentages.length - 1; i++) {
                 const start = percentages[i];
                 const end = percentages[i + 1];
-                
+
                 // 统计在这个得分率区间内的学生数量
                 const studentsInRange = studentScores.filter(s => {
                     return s.scoreRate >= start && (i === percentages.length - 2 ? s.scoreRate <= end : s.scoreRate < end);
                 });
-                
+
                 const count = studentsInRange.length;
                 const color = groupColors[i] || '#6b7280';
-                
+
                 // 判断是否是最后一组（最后一组需要包含100%）
                 const isLastGroup = (i === percentages.length - 2);
                 const rangeText = isLastGroup ? `${start}% ~ ${end}%` : `${start}% ~ ${end}%（不含${end}%）`;
-                
+
                 html += `
                     <div style="display: flex; align-items: center; padding: 12px; background: #f9fafb; border-radius: 8px; border-left: 4px solid ${color};">
                         <div style="flex: 1;">
@@ -3155,7 +4030,7 @@
                     </div>
                 `;
             }
-            
+
             html += '</div>';
             previewContainer.innerHTML = html;
         }
@@ -3175,7 +4050,7 @@
                 const left = percentages[i];
                 const right = percentages[i + 1];
                 const color = groupColors[i % groupColors.length];
-                
+
                 html += `
                     <div class="slider-segment" style="left: ${left}%; width: ${right - left}%; background: ${color}; opacity: 0.3;"></div>
                 `;
@@ -3185,12 +4060,12 @@
             percentages.forEach((percentage, index) => {
                 const isFixed = index === 0 || index === percentages.length - 1;
                 const fixedClass = isFixed ? 'fixed' : '';
-                
+
                 // 为首尾标签添加特殊的edge类
                 let edgeClass = '';
                 if (index === 0) edgeClass = ' edge-start';
                 if (index === percentages.length - 1) edgeClass = ' edge-end';
-                
+
                 html += `
                     <div class="slider-handle ${fixedClass}" 
                          data-index="${index}" 
@@ -3213,7 +4088,7 @@
         function startDragSlider(event, index) {
             event.preventDefault();
             draggingIndex = index;
-            
+
             const wrapper = document.getElementById('sliderWrapper');
             sliderWrapperRect = wrapper.getBoundingClientRect();
 
@@ -3295,7 +4170,7 @@
 
             // 使用已经计算好的学生得分率数据
             const studentScores = smartGroupConfig.studentScores;
-            
+
             if (!studentScores || studentScores.length === 0) {
                 showToast('没有学生数据', 'warning');
                 return false;
@@ -3311,12 +4186,12 @@
             for (let i = 0; i < percentages.length - 1; i++) {
                 const start = percentages[i];
                 const end = percentages[i + 1];
-                
+
                 // 找出在这个得分率区间内的学生
                 const studentsInRange = studentScores.filter(s => {
                     return s.scoreRate >= start && (i === percentages.length - 2 ? s.scoreRate <= end : s.scoreRate < end);
                 });
-                
+
                 const studentsInGroup = studentsInRange.map(s => s.id);
                 const groupName = `第${i + 1}组 (得分率${start}%~${end}%, ${studentsInGroup.length}人)`;
 
@@ -3325,7 +4200,7 @@
                     name: groupName,
                     students: studentsInGroup
                 };
-                
+
                 newGroups.push(newGroup);
             }
 
@@ -3343,18 +4218,946 @@
             // 6. 刷新UI
             renderGroupSchemes();
             renderGroupView();
-            
+
             // 返回成功状态
             return true;
         }
 
         // 初始化页面
         initPage();
+        // --- 评语模块逻辑 ---
+
+        // 模拟评语数据结构: { studentId: [ { id, type, content, date, semester } ] }
+        let commentsData = {};
+        let currentSemester = ''; // 将在初始化时自动设置
+        let selectedStudentIds = new Set();
+
+        // 动态生成学期选项
+        function initSemesterDropdown() {
+            const startYear = 2023; // 项目开始年份
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth() + 1; // 1-12
+
+            const semesters = [];
+
+            // 从当前年份倒推到开始年份
+            for (let y = currentYear; y >= startYear; y--) {
+                // 如果是当前年份，且还没到下半年（7月），则不显示下学期
+                // 逻辑：1-6月只显示上学期；7-12月显示上下学期
+                if (y === currentYear && currentMonth < 7) {
+                    // 还没到下半年，只推上学期
+                    semesters.push(`${y}年上学期`);
+                } else {
+                    // 其他情况（过去年份，或当前年份已过半），上下都推
+                    semesters.push(`${y}年下学期`);
+                    semesters.push(`${y}年上学期`);
+                }
+            }
+
+            const container = document.getElementById('semesterDropdown');
+            container.innerHTML = semesters.map(s =>
+                `<div class="grade-option" onclick="selectSemester('${s}')">${s}</div>`
+            ).join('');
+
+            // 确定默认选中项
+            // 1. 优先尝试从缓存读取
+            const cachedSemester = localStorage.getItem('student_mgmt_semester');
+
+            if (cachedSemester && semesters.includes(cachedSemester)) {
+                selectSemester(cachedSemester, false); // false 表示不重复写入缓存
+            } else {
+                // 2. 如果没有缓存，计算默认值
+                // 规则：1-6月 = 上学期，7-12月 = 下学期
+                let defaultSemester = '';
+                if (currentMonth >= 7) {
+                    defaultSemester = `${currentYear}年下学期`;
+                } else {
+                    defaultSemester = `${currentYear}年上学期`;
+                }
+
+                // 确保默认值在列表里（防止极端边界情况）
+                if (semesters.includes(defaultSemester)) {
+                    selectSemester(defaultSemester);
+                } else if (semesters.length > 0) {
+                    selectSemester(semesters[0]);
+                }
+            }
+        }
+
+        // 初始化模拟数据
+        function initMockComments() {
+            // 确保 currentSemester 已设置
+            if (!currentSemester) initSemesterDropdown();
+
+            const dailyComments = [
+                '课堂表现积极，主动回答问题，思维敏捷，能够快速理解新知识。建议继续保持这种学习热情。',
+                '作业完成质量高，书写工整，解题步骤清晰。最近的数学练习特别出色，继续加油。',
+                '上课认真听讲，笔记记录详细，复习时能够快速回顾。这种良好的学习习惯值得表扬。',
+                '积极参与小组讨论，团队协作能力强，能够倾听他人意见。是班级中的好榜样。',
+                '最近学习态度有所进步，作业按时完成，课堂纪律也有改善。希望继续保持这个势头。',
+                '需要加强课堂纪律，减少开小差，提高课堂效率。建议家长在家督促学习。',
+                '作业有拖延现象，需要改进时间管理。希望能够制定学习计划，按时完成任务。',
+                '语文练习题完成出色，解题思路清晰，文字表达能力强。是班级语文学习的标兵。',
+                '语文阅读理解能力有待提高，建议多阅读课外书籍，积累词汇和表达方式。',
+                '上课表现优秀，能力突出，是老师的得力助手。希望再接再厉，争取更大进步。'
+            ];
+
+            const termComments = [
+                '该生本学期学习态度端正，成绩优异，特别是语文进步明显。希望假期多阅读课外书籍。',
+                '学习认真刻苦，各科成绩均衡发展。建议加强体育锻炼，注意劳逸结合。',
+                '性格开朗，乐于助人，深受同学喜爱。学习上需要更加专注，减少粗心错误。',
+                '本学期进步显著，从班级中游提升至前列。希望继续保持良好的学习习惯。',
+                '该生聪明活泼，但学习主动性不足。希望下学期能够更加自律，充分发挥潜力。',
+                '各科发展均衡，是一名全面发展的好学生。建议多参加课外活动，拓宽视野。',
+                '学习态度有待改进，上课容易分心。希望家长配合督促，帮助孩子养成良好习惯。',
+                '本学期担任班干部，工作认真负责。学习成绩稳定，是老师的好帮手。'
+            ];
+
+            studentsData.forEach((student, index) => {
+                commentsData[student.id] = [];
+
+                // 1. 生成日常评价 (2-5条)
+                const dailyCommentCount = Math.floor(Math.random() * 4) + 2;
+
+                for (let i = 0; i < dailyCommentCount; i++) {
+                    const daysAgo = Math.floor(Math.random() * 60) + 1; // 1-60天前
+                    const date = new Date();
+                    date.setDate(date.getDate() - daysAgo);
+                    // 随机时间 8:00 - 18:00
+                    date.setHours(Math.floor(Math.random() * 10) + 8);
+                    date.setMinutes(Math.floor(Math.random() * 60));
+                    const dateStr = date.toISOString().replace('T', ' ').substring(0, 16); // yyyy-mm-dd HH:mm
+
+                    commentsData[student.id].push({
+                        id: Date.now() + Math.random() + i,
+                        type: '日常',
+                        content: dailyComments[Math.floor(Math.random() * dailyComments.length)],
+                        date: dateStr,
+                        semester: currentSemester
+                    });
+                }
+
+                // 2. 为前2个学生添加今天的日常评价（用于测试"今天"显示效果）
+                if (index < 2) {
+                    const date = new Date();
+                    // 随机时间
+                    date.setHours(Math.floor(Math.random() * 10) + 8);
+                    date.setMinutes(Math.floor(Math.random() * 60));
+                    const today = date.toISOString().replace('T', ' ').substring(0, 16);
+                    
+                    commentsData[student.id].push({
+                        id: Date.now() + Math.random() + 1000,
+                        type: '日常',
+                        content: dailyComments[Math.floor(Math.random() * dailyComments.length)],
+                        date: today,
+                        semester: currentSemester
+                    });
+                }
+
+                // 3. 生成本学期期末评价 (前2个学生有期末评价)
+                if (index < 2) {
+                    const date = new Date();
+                    date.setHours(Math.floor(Math.random() * 10) + 8);
+                    date.setMinutes(Math.floor(Math.random() * 60));
+                    // 期末评价日期通常在日常评价之后，设为今天
+                    const termDate = date.toISOString().replace('T', ' ').substring(0, 16);
+                    
+                    // 确保期末评价比日常评价更新，通过使用更大的id或者更晚的时间
+                    commentsData[student.id].push({
+                        id: Date.now() + Math.random() + 9999,
+                        type: '期末',
+                        content: termComments[Math.floor(Math.random() * termComments.length)],
+                        date: termDate,
+                        semester: currentSemester
+                    });
+                }
+
+                // 4. 历史学期评价 (不影响当前学期显示)
+                if (Math.random() > 0.5) {
+                    commentsData[student.id].push({
+                        id: Date.now() + Math.random() + 200,
+                        type: '期末',
+                        content: termComments[Math.floor(Math.random() * termComments.length)],
+                        date: '2024-07-05',
+                        semester: '2024年上学期'
+                    });
+                }
+
+                // 按日期倒序排列
+                commentsData[student.id].sort((a, b) => new Date(b.date) - new Date(a.date));
+            });
+        }
+
+
+        // 切换学期下拉框
+        function toggleSemesterDropdown() {
+            document.getElementById('semesterDropdown').classList.toggle('hidden');
+        }
+
+        // 选择学期
+        function selectSemester(semester, saveToCache = true) {
+            currentSemester = semester;
+            document.getElementById('selectedSemester').innerText = semester;
+            document.getElementById('semesterDropdown').classList.add('hidden');
+
+            if (saveToCache) {
+                localStorage.setItem('student_mgmt_semester', semester);
+            }
+
+            renderCommentTable(); // 重新渲染表格
+        }
+
+        // 渲染评语表格
+        function renderCommentTable() {
+            const tbody = document.getElementById('commentTableBody');
+            const filterText = document.querySelector('.comment-toolbar input').value.toLowerCase();
+
+            // 格式化日期时间：今天显示"今天 HH:mm"，当年显示"mm-dd HH:mm"，其他年份显示"yyyy-mm-dd HH:mm"
+            const formatDateTime = (dateStr) => {
+                const commentDate = new Date(dateStr);
+                const today = new Date();
+                const timeStr = dateStr.substring(11, 16); // 提取 HH:mm
+                const dateOnly = dateStr.substring(0, 10); // 提取 yyyy-mm-dd
+
+                // 判断是否为今天
+                if (commentDate.getFullYear() === today.getFullYear() &&
+                    commentDate.getMonth() === today.getMonth() &&
+                    commentDate.getDate() === today.getDate()) {
+                    return `<span style="color: #1e6fff; font-weight: 600;">今天 ${timeStr}</span>`;
+                }
+
+                // 判断是否为当年
+                if (commentDate.getFullYear() === today.getFullYear()) {
+                    // 当年：显示 mm-dd HH:mm
+                    return dateStr.substring(5, 10) + ' ' + timeStr; // MM-DD HH:mm
+                }
+
+                // 其他年份：显示 yyyy-mm-dd HH:mm
+                return dateStr.substring(0, 16);
+            };
+
+            tbody.innerHTML = studentsData
+                .filter(s => s.name.includes(filterText) || s.studentId.includes(filterText))
+                .map(student => {
+                    const studentComments = commentsData[student.id] || [];
+                    // 过滤出当前学期的评语
+                    const currentTermComments = studentComments.filter(c => c.semester === currentSemester);
+                    const count = currentTermComments.length;
+
+                    // 获取本学期最新的评语（任何类型）
+                    const latestComment = currentTermComments
+                        .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+
+                    const isSelected = selectedStudentIds.has(student.id);
+
+                    // 截取评语内容（最多150字）
+                    const truncate = (text, maxLen = 150) => {
+                        return text.length > maxLen ? text.substring(0, maxLen) + '...' : text;
+                    };
+
+                    // 获取评语类型标签样式（只有期末才显示标记）
+                    const getTypeTag = (type) => {
+                        if (type === '期末') {
+                            return '<span style="color: #f59e0b; font-weight: 600; margin-right: 6px;">[期末]</span>';
+                        }
+                        return '';
+                    };
+
+                    return `
+                        <tr class="${isSelected ? 'selected' : ''}">
+                            <td onclick="event.stopPropagation(); toggleStudentSelection(${student.id})">
+                                <div class="checkbox ${isSelected ? 'checked' : ''}"></div>
+                            </td>
+                            <td>
+                                <div>
+                                    <div style="font-weight: 500;">${student.name}</div>
+                                    <div style="font-size: 12px; color: #6b7280;">${student.studentId}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="count-badge ${count === 0 ? 'zero' : ''}" onclick="event.stopPropagation(); openHistoryDrawer(${student.id})">
+                                    ${count}
+                                </div>
+                            </td>
+                            <td>
+                                ${latestComment
+                            ? `<div style="display: flex; align-items: flex-start; gap: 6px;">
+                                        ${getTypeTag(latestComment.type)}
+                                        <div class="recent-comment-preview">${truncate(latestComment.content)}</div>
+                                    </div>`
+                            : '<span style="color: #9ca3af;">--</span>'
+                        }
+                            </td>
+                            <td>
+                                ${latestComment
+                                    ? `<span style="color: #6b7280; font-size: 13px;">${formatDateTime(latestComment.date)}</span>`
+                                    : '<span style="color: #9ca3af;">--</span>'
+                                }
+                            </td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 4px 12px; height: 28px; font-size: 12px;" onclick="event.stopPropagation(); openAiCommentModal(${student.id})">
+                                    写评价
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+            updateBatchBtnState();
+            lucide.createIcons();
+        }
+
+        // 过滤表格
+        function filterCommentTable(value) {
+            renderCommentTable();
+        }
+
+        // 切换学生选中状态
+        function toggleStudentSelection(studentId) {
+            if (selectedStudentIds.has(studentId)) {
+                selectedStudentIds.delete(studentId);
+            } else {
+                selectedStudentIds.add(studentId);
+            }
+            renderCommentTable();
+        }
+
+        // 全选/反选
+        function toggleSelectAll() {
+            const allIds = studentsData.map(s => s.id);
+            const isAllSelected = allIds.every(id => selectedStudentIds.has(id));
+
+            if (isAllSelected) {
+                selectedStudentIds.clear();
+                document.getElementById('selectAllCheckbox').classList.remove('checked');
+            } else {
+                allIds.forEach(id => selectedStudentIds.add(id));
+                document.getElementById('selectAllCheckbox').classList.add('checked');
+            }
+            renderCommentTable();
+        }
+
+        // 更新批量按钮状态
+        function updateBatchBtnState() {
+            const btn = document.getElementById('batchCommentBtn');
+            const badge = document.getElementById('selectedCountBadge');
+            const tooltip = document.getElementById('batchBtnTooltip');
+            const count = selectedStudentIds.size;
+
+            if (count > 0) {
+                btn.disabled = false;
+                if (tooltip) tooltip.style.display = 'none'; // 隐藏提示
+                badge.style.display = 'inline-block';
+                badge.innerText = count;
+            } else {
+                btn.disabled = true;
+                if (tooltip) tooltip.style.display = 'block'; // 显示提示
+                badge.style.display = 'none';
+            }
+        }
+
+        // --- 历史记录抽屉逻辑 ---
+        function openHistoryDrawer(studentId) {
+            const student = studentsData.find(s => s.id === studentId);
+            if (!student) return;
+
+            document.getElementById('drawerName').innerText = student.name;
+            document.getElementById('drawerId').innerText = student.studentId;
+
+            renderHistoryList(studentId);
+
+            document.getElementById('historyDrawer').classList.add('show');
+            document.getElementById('historyDrawerOverlay').classList.add('show');
+        }
+
+        function renderHistoryList(studentId) {
+            const list = document.getElementById('drawerHistoryList');
+            const comments = (commentsData[studentId] || []).filter(c => c.semester === currentSemester);
+
+            if (comments.length === 0) {
+                list.innerHTML = '<div class="empty-state" style="padding: 40px 0;">暂无本学期评价记录</div>';
+            } else {
+                // 给每个评论添加原始索引，以便后续操作
+                const commentsWithIndex = comments.map((c, idx) => ({ ...c, originalIndex: idx }));
+                const sortedComments = commentsWithIndex.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                list.innerHTML = sortedComments.map((c, index) => {
+                    const isLast = index === sortedComments.length - 1;
+                    const uniqueId = `${studentId}_${c.originalIndex}`;
+
+                    // 处理类型显示和样式
+                    const isDaily = c.type === 'daily' || c.type === '日常';
+                    const typeClass = isDaily ? 'daily' : 'term';
+                    const typeText = isDaily ? '日常' : '期末';
+                    const dotColor = isDaily ? '#10b981' : '#8b5cf6';
+
+                    return `
+                    <div style="margin-bottom: ${isLast ? '0' : '20px'}; padding-left: 16px; position: relative;" id="historyItem_${uniqueId}">
+                        ${isLast ? '' : '<div style="position: absolute; left: -1px; top: 6px; bottom: -20px; width: 2px; background: #e5e7eb;"></div>'}
+                        <div style="position: absolute; left: -7px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: white; border: 2px solid ${dotColor}; z-index: 1;"></div>
+                        
+                        <div class="history-item-card">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px;">
+                                <div>
+                                    <span class="comment-tag ${typeClass}">${typeText}</span>
+                                    <span style="color: #9ca3af;">${c.date}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="history-content-display" id="content_${uniqueId}" style="font-size: 14px; color: #374151; line-height: 1.5;">${c.content}</div>
+                            
+                            <div class="history-item-actions">
+                                <button class="history-menu-btn" onclick="event.stopPropagation(); toggleHistoryMenu('${uniqueId}')">
+                                    <i data-lucide="more-vertical" size="14"></i>
+                                </button>
+                                <div class="history-dropdown" id="menu_${uniqueId}">
+                                    <div class="history-dropdown-item" onclick="editHistoryItem('${uniqueId}')">
+                                        <i data-lucide="pencil" size="12"></i> 编辑
+                                    </div>
+                                    <div class="history-dropdown-item delete" onclick="deleteHistoryItem('${uniqueId}')">
+                                        <i data-lucide="trash-2" size="12"></i> 删除
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                }).join('');
+
+                lucide.createIcons();
+            }
+        }
+
+        // 切换历史记录菜单
+        function toggleHistoryMenu(uniqueId) {
+            // 关闭其他所有菜单
+            document.querySelectorAll('.history-dropdown.show').forEach(el => {
+                if (el.id !== `menu_${uniqueId}`) el.classList.remove('show');
+            });
+
+            const menu = document.getElementById(`menu_${uniqueId}`);
+            if (menu) {
+                menu.classList.toggle('show');
+            }
+
+            // 点击其他地方关闭菜单
+            document.addEventListener('click', function closeMenu(e) {
+                if (!e.target.closest('.history-item-actions')) {
+                    document.querySelectorAll('.history-dropdown.show').forEach(el => el.classList.remove('show'));
+                    document.removeEventListener('click', closeMenu);
+                }
+            });
+        }
+
+        // 编辑历史记录
+        function editHistoryItem(uniqueId) {
+            const contentDiv = document.getElementById(`content_${uniqueId}`);
+            const currentContent = contentDiv.innerText;
+            const itemCard = contentDiv.closest('.history-item-card');
+
+            // 隐藏原始内容和操作菜单
+            contentDiv.style.display = 'none';
+            itemCard.querySelector('.history-item-actions').style.display = 'none'; // 编辑时隐藏菜单按钮
+
+            // 创建编辑区域
+            const editDiv = document.createElement('div');
+            editDiv.className = 'history-edit-container';
+            editDiv.innerHTML = `
+                <textarea class="history-edit-area">${currentContent}</textarea>
+                <div class="history-edit-actions">
+                    <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 12px;" onclick="cancelEditHistoryItem('${uniqueId}', '${currentContent.replace(/'/g, "\\'")}')">取消</button>
+                    <button class="btn btn-primary" style="padding: 4px 12px; font-size: 12px;" onclick="saveHistoryItem('${uniqueId}')">保存</button>
+                </div>
+            `;
+
+            itemCard.appendChild(editDiv);
+
+            // 聚焦并自动调整高度
+            const textarea = editDiv.querySelector('textarea');
+            textarea.focus();
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+
+        // 取消编辑
+        function cancelEditHistoryItem(uniqueId) {
+            const contentDiv = document.getElementById(`content_${uniqueId}`);
+            const itemCard = contentDiv.closest('.history-item-card');
+
+            // 移除编辑区域
+            const editDiv = itemCard.querySelector('.history-edit-container');
+            if (editDiv) editDiv.remove();
+
+            // 显示原始内容
+            contentDiv.style.display = 'block';
+            itemCard.querySelector('.history-item-actions').style.display = ''; // 恢复菜单按钮显示（依赖CSS hover）
+        }
+
+        // 保存历史记录
+        function saveHistoryItem(uniqueId) {
+            const [studentId, indexStr] = uniqueId.split('_');
+            const index = parseInt(indexStr);
+            const itemCard = document.getElementById(`historyItem_${uniqueId}`).querySelector('.history-item-card');
+            const newContent = itemCard.querySelector('textarea').value.trim();
+
+            if (!newContent) {
+                alert('评价内容不能为空');
+                return;
+            }
+
+            // 更新数据
+            if (commentsData[studentId] && commentsData[studentId][index]) {
+                commentsData[studentId][index].content = newContent;
+
+                // 如果是最近的一条，可能需要更新主列表显示（这里简单起见，重新渲染整个列表）
+                renderCommentTable();
+
+                // 重新渲染历史列表
+                renderHistoryList(parseInt(studentId));
+
+                // 显示提示
+                showToast('评价已更新');
+            }
+        }
+
+        // 删除历史记录
+        let itemToDeleteId = null;
+
+        function deleteHistoryItem(uniqueId) {
+            // 关闭下拉菜单
+            document.querySelectorAll('.history-dropdown.show').forEach(el => el.classList.remove('show'));
+
+            itemToDeleteId = uniqueId;
+            document.getElementById('deleteConfirmOverlay').classList.add('show');
+        }
+
+        function confirmDeleteHistoryItem() {
+            if (!itemToDeleteId) return;
+
+            const uniqueId = itemToDeleteId;
+            const [studentId, indexStr] = uniqueId.split('_');
+            const index = parseInt(indexStr);
+
+            // 删除数据
+            if (commentsData[studentId]) {
+                commentsData[studentId].splice(index, 1);
+
+                // 更新主列表
+                renderCommentTable();
+
+                // 重新渲染历史列表
+                renderHistoryList(parseInt(studentId));
+
+                showToast('评价已删除');
+            }
+
+            closeDeleteConfirmModal();
+        }
+
+        function closeDeleteConfirmModal() {
+            document.getElementById('deleteConfirmOverlay').classList.remove('show');
+            itemToDeleteId = null;
+        }
+
+        function closeHistoryDrawer() {
+            document.getElementById('historyDrawer').classList.remove('show');
+            document.getElementById('historyDrawerOverlay').classList.remove('show');
+        }
+
+        // --- AI 评价模态框逻辑 ---
+        let currentCommentType = 'daily'; // daily 或 term
+
+        // 打开 AI 评价模态框
+        function openAiCommentModal(studentId = null) {
+            const modal = document.getElementById('aiCommentModal');
+            const nameEl = document.getElementById('aiModalStudentName');
+
+            // 重置状态
+            resetAiStep();
+            currentCommentType = 'daily';
+            switchCommentType('daily');
+
+            if (studentId) {
+                // 单个评价
+                const student = studentsData.find(s => s.id === studentId);
+                nameEl.innerText = `正在为 ${student.name} 生成评价`;
+                selectedStudentIds.clear();
+                selectedStudentIds.add(studentId);
+            } else {
+                // 批量评价
+                const names = Array.from(selectedStudentIds).map(id => {
+                    const s = studentsData.find(s => s.id === id);
+                    return s ? s.name : '';
+                }).join('、');
+                nameEl.innerText = `正在为 ${names} 生成评价`;
+            }
+
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeAiCommentModal() {
+            document.getElementById('aiCommentModal').classList.add('hidden');
+        }
+
+        // 切换评价类型
+        function switchCommentType(type) {
+            currentCommentType = type;
+            const dailyBtn = document.getElementById('typeDailyBtn');
+            const termBtn = document.getElementById('typeTermBtn');
+
+            if (type === 'daily') {
+                dailyBtn.classList.add('active');
+                termBtn.classList.remove('active');
+                termBtn.style.background = 'transparent';
+                termBtn.style.color = '#6b7280';
+            } else {
+                termBtn.classList.add('active');
+                dailyBtn.classList.remove('active');
+                dailyBtn.style.background = 'transparent';
+                dailyBtn.style.color = '#6b7280';
+            }
+        }
+
+        function toggleDimension(el) {
+            // 单选逻辑：同组互斥
+            const siblings = el.parentElement.children;
+            for (let sib of siblings) {
+                sib.classList.remove('active');
+            }
+            el.classList.add('active');
+
+            // 隐藏该维度的警告提示
+            const group = el.closest('.ai-dimension-group');
+            const warning = group.querySelector('.dimension-warning');
+            if (warning) {
+                warning.style.display = 'none';
+            }
+        }
+
+        function resetAiStep() {
+            document.getElementById('aiStep1').style.display = 'block';
+            document.getElementById('aiResultStep').classList.remove('show');
+        }
+
+        function generateAiComment() {
+            // 收集选项
+            const selectedOptions = Array.from(document.querySelectorAll('.dimension-option.active')).map(el => el.innerText);
+            const customInput = document.getElementById('aiCustomInput').value;
+
+            // 检查每个维度是否都至少选了一个选项（必须5个维度全选）
+            const dimensionGroups = document.querySelectorAll('#aiStep1 .ai-dimension-group');
+            let hasError = false;
+
+            dimensionGroups.forEach((group) => {
+                const hasSelected = group.querySelector('.dimension-option.active') !== null;
+                const warning = group.querySelector('.dimension-warning');
+
+                if (!hasSelected) {
+                    warning.style.display = 'inline';
+                    hasError = true;
+                } else {
+                    warning.style.display = 'none';
+                }
+            });
+
+            if (hasError) {
+                return;
+            }
+
+            // 模拟 AI 生成过程
+            const btn = document.querySelector('#aiStep1 .btn-primary');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i> 正在思考...';
+            btn.disabled = true;
+
+            // 预先构建评语内容
+            let comment = "该生在校表现";
+
+            // 课堂表现
+            const classPerformance = selectedOptions.filter(opt =>
+                ['听讲专注', '积极举手', '思维活跃', '回答精彩'].includes(opt)
+            );
+            const classIssues = selectedOptions.filter(opt =>
+                ['容易走神', '小动作多'].includes(opt)
+            );
+            if (classPerformance.length > 0) {
+                comment += "课堂表现优秀，";
+                if (classPerformance.includes('听讲专注')) comment += "听课专注认真，";
+                if (classPerformance.includes('积极举手')) comment += "积极参与课堂互动，";
+                if (classPerformance.includes('思维活跃')) comment += "思维活跃敏捷，";
+                if (classPerformance.includes('回答精彩')) comment += "回答问题精彩，";
+            }
+            if (classIssues.length > 0) {
+                comment += "课堂表现";
+                if (classIssues.includes('容易走神')) comment += "注意力需要加强，";
+                if (classIssues.includes('小动作多')) comment += "需要提高自控能力，";
+            }
+
+            // 作业完成
+            const homeworkGood = selectedOptions.filter(opt =>
+                ['书写工整', '正确率高', '按时完成'].includes(opt)
+            );
+            const homeworkIssues = selectedOptions.filter(opt =>
+                ['字迹潦草', '经常拖拉', '敷衍应付'].includes(opt)
+            );
+            if (homeworkGood.length > 0) {
+                comment += "作业完成";
+                if (homeworkGood.includes('书写工整')) comment += "字迹工整，";
+                if (homeworkGood.includes('正确率高')) comment += "正确率较高，";
+                if (homeworkGood.includes('按时完成')) comment += "能够按时完成，";
+            }
+            if (homeworkIssues.length > 0) {
+                comment += "作业方面";
+                if (homeworkIssues.includes('字迹潦草')) comment += "字迹需要改进，";
+                if (homeworkIssues.includes('经常拖拉')) comment += "需要提高完成效率，";
+                if (homeworkIssues.includes('敷衍应付')) comment += "需要端正作业态度，";
+            }
+
+            // 学科能力
+            const abilityGood = selectedOptions.filter(opt =>
+                ['基础扎实', '逻辑清晰', '举一反三', '进步很大'].includes(opt)
+            );
+            const abilityIssues = selectedOptions.filter(opt =>
+                ['偏科明显', '理解吃力'].includes(opt)
+            );
+            if (abilityGood.length > 0) {
+                comment += "学科能力";
+                if (abilityGood.includes('基础扎实')) comment += "基础扎实，";
+                if (abilityGood.includes('逻辑清晰')) comment += "逻辑思维清晰，";
+                if (abilityGood.includes('举一反三')) comment += "能够举一反三，";
+                if (abilityGood.includes('进步很大')) comment += "进步明显，";
+            }
+            if (abilityIssues.length > 0) {
+                comment += "学科能力方面";
+                if (abilityIssues.includes('偏科明显')) comment += "存在偏科现象，";
+                if (abilityIssues.includes('理解吃力')) comment += "需要加强理解能力，";
+            }
+
+            // 学习习惯
+            const habitGood = selectedOptions.filter(opt =>
+                ['笔记详实', '善于纠错', '准备充分'].includes(opt)
+            );
+            const habitIssues = selectedOptions.filter(opt =>
+                ['缺乏条理', '被动拖延', '方法单一'].includes(opt)
+            );
+            if (habitGood.length > 0) {
+                comment += "学习习惯";
+                if (habitGood.includes('笔记详实')) comment += "笔记记录详实，";
+                if (habitGood.includes('善于纠错')) comment += "善于总结纠错，";
+                if (habitGood.includes('准备充分')) comment += "课前准备充分，";
+            }
+            if (habitIssues.length > 0) {
+                comment += "学习习惯方面";
+                if (habitIssues.includes('缺乏条理')) comment += "需要提高条理性，";
+                if (habitIssues.includes('被动拖延')) comment += "需要改善拖延习惯，";
+                if (habitIssues.includes('方法单一')) comment += "需要丰富学习方法，";
+            }
+
+            // 品行纪律
+            const conductGood = selectedOptions.filter(opt =>
+                ['遵守纪律', '礼貌待人', '乐于助人'].includes(opt)
+            );
+            const conductIssues = selectedOptions.filter(opt =>
+                ['纪律散漫', '言行失当', '缺乏合作'].includes(opt)
+            );
+            if (conductGood.length > 0) {
+                comment += "品行方面";
+                if (conductGood.includes('遵守纪律')) comment += "遵守纪律，";
+                if (conductGood.includes('礼貌待人')) comment += "礼貌待人，";
+                if (conductGood.includes('乐于助人')) comment += "乐于助人，";
+            }
+            if (conductIssues.length > 0) {
+                comment += "品行纪律方面";
+                if (conductIssues.includes('纪律散漫')) comment += "需要加强纪律意识，";
+                if (conductIssues.includes('言行失当')) comment += "需要注意言行举止，";
+                if (conductIssues.includes('缺乏合作')) comment += "需要培养合作精神，";
+            }
+
+            // 如果没有任何正面评价，使用默认表述
+            if (comment === "该生在校表现") {
+                comment += "良好。";
+            } else {
+                comment = comment.replace(/，$/, "。");
+            }
+
+            if (customInput) {
+                comment += " " + customInput;
+            }
+
+            // 模拟思考延迟后开始流式输出
+            setTimeout(() => {
+                // 切换视图
+                document.getElementById('aiStep1').style.display = 'none';
+                document.getElementById('aiResultStep').classList.add('show');
+
+                // 准备流式输出
+                const resultTextarea = document.getElementById('aiResultText');
+                resultTextarea.value = ''; // 清空内容
+                resultTextarea.disabled = true; // 禁止编辑
+
+                // 禁用结果页面的按钮
+                const backBtn = document.querySelector('#aiResultStep .btn-secondary');
+                const saveBtn = document.querySelector('#aiResultStep .btn-primary');
+                const originalSaveText = '保存评价';
+
+                backBtn.disabled = true;
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i> AI正在撰写...';
+                lucide.createIcons(); // 刷新图标
+
+                // 开始打字机效果
+                let i = 0;
+                function typeWriter() {
+                    if (i < comment.length) {
+                        resultTextarea.value += comment.charAt(i);
+                        resultTextarea.scrollTop = resultTextarea.scrollHeight; // 自动滚动到底部
+                        i++;
+                        // 随机打字速度，模拟真实感 (30ms - 80ms)
+                        setTimeout(typeWriter, 30 + Math.random() * 50);
+                    } else {
+                        // 输出完成，恢复按钮状态
+                        backBtn.disabled = false;
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = originalSaveText;
+
+                        // 恢复文本域编辑
+                        resultTextarea.disabled = false;
+                        resultTextarea.focus();
+
+                        // 恢复第一步的按钮状态（以便下次使用）
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }
+                }
+
+                typeWriter();
+
+            }, 800); // 800ms 思考时间
+        }
+
+        // 保存评价
+        function saveAiComment() {
+            const content = document.getElementById('aiResultText').value.trim();
+            
+            // 验证生成结果不能为空
+            if (!content) {
+                showToast('生成结果不能为空', 'error');
+                return;
+            }
+
+            const now = new Date();
+            const date = now.toISOString().replace('T', ' ').substring(0, 16); // yyyy-mm-dd HH:mm
+
+            selectedStudentIds.forEach(id => {
+                if (!commentsData[id]) commentsData[id] = [];
+
+                commentsData[id].unshift({
+                    id: Date.now() + Math.random(),
+                    type: currentCommentType === 'daily' ? '日常' : '期末',
+                    content: content,
+                    date: date,
+                    semester: currentSemester
+                });
+            });
+
+            closeAiCommentModal();
+            renderCommentTable();
+            showToast('评价已保存', 'success');
+
+            // 如果是批量操作，清空选择
+            if (selectedStudentIds.size > 1) {
+                selectedStudentIds.clear();
+                document.getElementById('selectAllCheckbox').classList.remove('checked');
+                updateBatchBtnState();
+            }
+        }
+
+        // 初始化
+        initMockComments();
+
+        // --- 自定义 Tooltip 逻辑 ---
+        const tooltipEl = document.createElement('div');
+        tooltipEl.className = 'custom-tooltip';
+        document.body.appendChild(tooltipEl);
+
+        let tooltipTarget = null;
+
+        document.addEventListener('mouseover', (e) => {
+            const target = e.target.closest('[data-tooltip]');
+            if (target) {
+                tooltipTarget = target;
+                tooltipEl.textContent = target.dataset.tooltip;
+                tooltipEl.classList.add('show');
+                updateTooltipPosition(e);
+            }
+        });
+
+        document.addEventListener('mouseout', (e) => {
+            const target = e.target.closest('[data-tooltip]');
+            if (target) {
+                tooltipTarget = null;
+                tooltipEl.classList.remove('show');
+            }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (tooltipTarget) {
+                updateTooltipPosition(e);
+            }
+        });
+
+        function updateTooltipPosition(e) {
+            const offset = 12;
+            let left = e.clientX + offset;
+            let top = e.clientY + offset;
+
+            // 边界检查
+            const rect = tooltipEl.getBoundingClientRect();
+            if (left + rect.width > window.innerWidth) {
+                left = e.clientX - rect.width - offset;
+            }
+            if (top + rect.height > window.innerHeight) {
+                top = e.clientY - rect.height - offset;
+            }
+
+            tooltipEl.style.left = `${left}px`;
+            tooltipEl.style.top = `${top}px`;
+        }
+        // -------------------------
+        // 扩展 switchTab 以支持 comment
+        const originalSwitchTab = switchTab;
+        switchTab = function (tab) {
+            const allView = document.getElementById('allStudentsView');
+            const groupView = document.getElementById('groupView');
+            const commentView = document.getElementById('commentView');
+            const tabs = document.querySelectorAll('.tab-btn');
+
+            tabs.forEach(t => t.classList.remove('active'));
+
+            allView.classList.add('hidden');
+            groupView.classList.add('hidden');
+            commentView.classList.add('hidden');
+
+            if (tab === 'all') {
+                tabs[0].classList.add('active');
+                allView.classList.remove('hidden');
+            } else if (tab === 'group') {
+                tabs[1].classList.add('active');
+                groupView.classList.remove('hidden');
+            } else if (tab === 'comment') {
+                tabs[2].classList.add('active');
+                commentView.classList.remove('hidden');
+                renderCommentTable();
+            }
+        };
     </script>
 
     <!-- 确认对话框 -->
-    <div id="confirmDialog" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200] hidden flex items-center justify-center">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all scale-95 opacity-0" id="confirmDialogInner">
+    <div id="confirmDialog"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200] hidden flex items-center justify-center">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all scale-95 opacity-0"
+            id="confirmDialogInner">
             <div class="p-6">
                 <div class="flex items-start gap-4">
                     <div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
@@ -3362,15 +5165,18 @@
                     </div>
                     <div class="flex-1">
                         <h3 class="text-lg font-semibold text-gray-900 mb-2" id="confirmDialogTitle">确认操作</h3>
-                        <p class="text-gray-600 text-sm leading-relaxed whitespace-pre-line" id="confirmDialogMessage">确定要执行此操作吗？</p>
+                        <p class="text-gray-600 text-sm leading-relaxed whitespace-pre-line" id="confirmDialogMessage">
+                            确定要执行此操作吗？</p>
                     </div>
                 </div>
             </div>
             <div class="border-t border-gray-100 p-4 flex gap-3 justify-end">
-                <button id="confirmDialogCancel" class="px-5 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-all">
+                <button id="confirmDialogCancel"
+                    class="px-5 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-all">
                     取消
                 </button>
-                <button id="confirmDialogConfirm" class="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-all">
+                <button id="confirmDialogConfirm"
+                    class="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-all">
                     确定
                 </button>
             </div>
@@ -3378,8 +5184,10 @@
     </div>
 
     <!-- 输入对话框 -->
-    <div id="promptDialog" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200] hidden flex items-center justify-center">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all scale-95 opacity-0" id="promptDialogInner">
+    <div id="promptDialog"
+        class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[200] hidden flex items-center justify-center">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all scale-95 opacity-0"
+            id="promptDialogInner">
             <div class="p-6">
                 <div class="flex items-start gap-4 mb-4">
                     <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
@@ -3390,18 +5198,34 @@
                         <p class="text-gray-600 text-sm leading-relaxed" id="promptDialogMessage">请输入内容</p>
                     </div>
                 </div>
-                <input type="text" id="promptDialogInput" class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-all" placeholder="请输入...">
+                <input type="text" id="promptDialogInput"
+                    class="w-full px-4 py-2.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 transition-all"
+                    placeholder="请输入...">
             </div>
             <div class="border-t border-gray-100 p-4 flex gap-3 justify-end">
-                <button id="promptDialogCancel" class="px-5 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-all">
+                <button id="promptDialogCancel"
+                    class="px-5 py-2.5 border-2 border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-all">
                     取消
                 </button>
-                <button id="promptDialogConfirm" class="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-all">
+                <button id="promptDialogConfirm"
+                    class="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-all">
                     确定
                 </button>
             </div>
         </div>
     </div>
+    <script src="daily-performance.js"></script>
+    <script>
+        // 初始化日常表现组件
+        window.addEventListener('load', () => {
+            if (typeof DailyPerformanceModal !== 'undefined' && typeof studentsData !== 'undefined') {
+                // 延迟一点初始化以确保其他逻辑完成
+                setTimeout(() => {
+                    window.dailyPerfModal = new DailyPerformanceModal(studentsData);
+                }, 500);
+            }
+        });
+    </script>
 </body>
-</html>
 
+</html>
