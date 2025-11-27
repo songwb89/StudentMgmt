@@ -476,7 +476,7 @@
             background: transparent;
         }
 
-        .scheme-more-dropdown:hover .scheme-more-content {
+        .scheme-more-dropdown.open .scheme-more-content {
             display: block;
         }
 
@@ -1679,17 +1679,19 @@
             position: fixed;
             background: rgba(31, 41, 55, 0.95);
             color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
+            padding: 10px 14px;
+            border-radius: 8px;
             font-size: 13px;
-            line-height: 1.5;
-            max-width: 300px;
+            line-height: 1.6;
+            max-width: 400px;
             z-index: 9999;
             pointer-events: none;
             opacity: 0;
             transition: opacity 0.15s;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             backdrop-filter: blur(4px);
+            word-break: break-word;
+            white-space: pre-wrap;
         }
 
         .custom-tooltip.show {
@@ -2080,6 +2082,369 @@
         .btn-danger:hover {
             background: #dc2626;
         }
+
+        /* 评价方案模块样式 */
+        .eval-layout {
+            display: flex;
+            gap: 24px;
+            height: calc(100vh - 180px);
+        }
+
+        .eval-sidebar {
+            width: 320px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            flex-shrink: 0;
+        }
+
+        .eval-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .eval-scheme-item {
+            background: #f0f5ff;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .eval-scheme-item:hover {
+            background: #e6f0ff;
+        }
+
+        .eval-scheme-item.active {
+            background: #1e6fff;
+            color: white;
+        }
+
+        .eval-scheme-item.active .scheme-meta {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .eval-scheme-item.active .scheme-type-tag {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .scheme-type-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        .scheme-type-tag.daily {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .scheme-type-tag.mid {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .scheme-type-tag.term {
+            background: #f5f3ff;
+            color: #7c3aed;
+        }
+
+        /* 评价状态标签 */
+        .eval-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .eval-status.empty {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .eval-status.draft {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .eval-status.published {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        /* 发布开关 */
+        .publish-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: #e5e7eb;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .publish-switch.on {
+            background: #10b981;
+        }
+
+        .publish-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .publish-switch.on::after {
+            left: 22px;
+        }
+
+        .publish-switch.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 评价内容预览 */
+        .eval-content-preview {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #374151;
+            font-size: 14px;
+            cursor: default;
+        }
+
+        .eval-table td.eval-content-cell {
+            max-width: 0;
+            width: 100%;
+        }
+
+        .eval-content-preview.empty {
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        /* 批量操作栏 */
+        .eval-batch-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #eff6ff;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .eval-batch-bar .selected-count {
+            font-weight: 600;
+            color: #1e6fff;
+        }
+
+        /* 评价表格容器 */
+        .eval-table-container {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .eval-table-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+        }
+
+        .eval-table-scroll {
+            flex: 1;
+            overflow: auto;
+        }
+
+        .eval-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .eval-table th {
+            background: #f9fafb;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .eval-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 14px;
+            color: #374151;
+            vertical-align: middle;
+        }
+
+        .eval-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .eval-table tr.selected {
+            background: #eff6ff;
+        }
+
+        /* 进度条 */
+        .eval-progress {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .eval-progress-bar {
+            flex: 1;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .eval-progress-fill {
+            height: 100%;
+            background: #10b981;
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+
+        .eval-progress-text {
+            font-size: 12px;
+            color: #6b7280;
+            white-space: nowrap;
+        }
+
+        .eval-scheme-item.active .eval-progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .eval-scheme-item.active .eval-progress-fill {
+            background: white;
+        }
+
+        .eval-scheme-item.active .eval-progress-text {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* 创建评价方案按钮 */
+        .create-scheme-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px;
+            background: white;
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            color: #6b7280;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .create-scheme-btn:hover {
+            border-color: #1e6fff;
+            color: #1e6fff;
+            background: #f0f5ff;
+        }
+
+        /* 方案名称样式 */
+        .scheme-name {
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding-right: 24px;
+        }
+
+        .scheme-meta {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #1e6fff;
+            box-shadow: 0 0 0 3px rgba(30, 111, 255, 0.1);
+        }
+
+        .form-select:invalid {
+            color: #9ca3af;
+        }
+
+        .form-select option {
+            color: #374151;
+        }
+
+        .form-select option:disabled {
+            color: #9ca3af;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
     </style>
 </head>
 
@@ -2198,60 +2563,74 @@
             </div>
         </div>
 
-        <!-- 学生评价视图 -->
+        <!-- 专项评价视图 -->
         <div id="commentView" class="hidden">
-            <div class="comment-container">
-                <!-- 顶部工具栏 -->
-                <div class="comment-toolbar">
-                    <div style="display: flex; gap: 16px; align-items: center;">
-                        <div class="grade-selector-custom">
-                            <div class="grade-display" onclick="toggleSemesterDropdown()">
-                                <i data-lucide="calendar" size="16"></i>
-                                <span id="selectedSemester">2024年下学期</span>
-                                <i data-lucide="chevron-down" size="16"></i>
-                            </div>
-                            <div class="grade-dropdown hidden" id="semesterDropdown">
-                                <!-- 选项将通过 JS 动态生成 -->
-                            </div>
-                        </div>
-
-                        <div style="position: relative;">
-                            <i data-lucide="search"
-                                style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: #9ca3af;"></i>
-                            <input type="text" placeholder="搜索学生..." class="form-input"
-                                style="padding-left: 32px; width: 200px;" oninput="filterCommentTable(this.value)">
-                        </div>
+            <div class="eval-layout">
+                <!-- 左侧评价方案列表 -->
+                <div class="eval-sidebar">
+                    <div id="evalSchemeList">
+                        <!-- 方案列表将通过 JavaScript 动态生成 -->
                     </div>
-
-                    <div class="btn-wrapper">
-                        <button class="btn btn-primary" id="batchCommentBtn" disabled onclick="openAiCommentModal()"
-                            style="display: flex; align-items: center; gap: 6px;">
-                            批量评价 <span id="selectedCountBadge"
-                                style="display: none; background: rgba(255,255,255,0.2); padding: 0 6px; border-radius: 10px; font-size: 12px;">0</span>
-                        </button>
-                        <span class="tooltip" id="batchBtnTooltip">请先在下方列表中勾选学生</span>
-                    </div>
+                    <button class="create-scheme-btn" onclick="openCreateEvalSchemeModal()">
+                        <i data-lucide="plus" size="16"></i>
+                        <span>创建评价方案</span>
+                    </button>
                 </div>
 
-                <!-- 评价列表表格 -->
-                <div class="comment-table-container">
-                    <table class="comment-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 50px;">
-                                    <div class="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll()"></div>
-                                </th>
-                                <th style="width: 150px;">学生信息</th>
-                                <th style="width: 100px;">评价记录</th>
-                                <th style="width: auto;">最新评价</th>
-                                <th style="width: 160px;">最新评价时间</th>
-                                <th style="width: 100px;">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="commentTableBody">
-                            <!-- 表格内容将通过 JS 生成 -->
-                        </tbody>
-                    </table>
+                <!-- 右侧评价列表 -->
+                <div class="eval-main">
+                    <!-- 批量操作栏（有选中时显示） -->
+                    <div class="eval-batch-bar hidden" id="evalBatchBar">
+                        <span>已选择 <span class="selected-count" id="evalSelectedCount">0</span> 名学生</span>
+                        <button class="btn btn-primary" style="padding: 6px 16px; font-size: 13px;" onclick="openAiCommentModal()">
+                            <i data-lucide="edit-3" size="14"></i> 批量写评价
+                        </button>
+                        <button class="btn btn-secondary" style="padding: 6px 16px; font-size: 13px;" onclick="batchPublishEval(true)">
+                            <i data-lucide="eye" size="14"></i> 批量发布
+                        </button>
+                        <button class="btn btn-secondary" style="padding: 6px 16px; font-size: 13px;" onclick="batchPublishEval(false)">
+                            <i data-lucide="eye-off" size="14"></i> 批量隐藏
+                        </button>
+                        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 13px;" onclick="clearEvalSelection()">
+                            取消选择
+                        </button>
+                    </div>
+
+                    <!-- 评价表格容器 -->
+                    <div class="eval-table-container">
+                        <div class="eval-table-header">
+                            <div style="display: flex; gap: 16px; align-items: center;">
+                                <div style="font-weight: 600; font-size: 16px;" id="currentEvalSchemeName">请选择评价方案</div>
+                            </div>
+                            <div style="display: flex; gap: 12px; align-items: center;">
+                                <div style="position: relative;">
+                                    <i data-lucide="search"
+                                        style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: #9ca3af;"></i>
+                                    <input type="text" placeholder="搜索学生..." class="form-input" id="evalSearchInput"
+                                        style="padding-left: 32px; width: 180px;" oninput="filterEvalTable(this.value)">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="eval-table-scroll">
+                            <table class="eval-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px;">
+                                            <div class="checkbox" id="evalSelectAllCheckbox" onclick="toggleEvalSelectAll()"></div>
+                                        </th>
+                                        <th style="width: 140px;">学生信息</th>
+                                        <th style="width: 100px;">状态</th>
+                                        <th style="width: auto;">评价内容</th>
+                                        <th style="width: 80px;">发布</th>
+                                        <th style="width: 100px;">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="evalTableBody">
+                                    <!-- 表格内容将通过 JS 生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2288,19 +2667,6 @@
                         </div>
                     </div>
                     <div class="text-gray-500 text-sm mb-4" id="aiModalStudentName">正在为 张铁蛋 生成评价</div>
-
-                    <!-- 评价类型选择 -->
-                    <div
-                        style="display: flex; gap: 12px; margin-bottom: 20px; padding: 4px; background: #f3f4f6; border-radius: 8px; width: fit-content;">
-                        <button class="type-switch-btn active" id="typeDailyBtn" onclick="switchCommentType('daily')"
-                            style="padding: 6px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s;">
-                            日常记录
-                        </button>
-                        <button class="type-switch-btn" id="typeTermBtn" onclick="switchCommentType('term')"
-                            style="padding: 6px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s; color: #6b7280; background: transparent;">
-                            期末评语
-                        </button>
-                    </div>
                 </div>
 
                 <div class="modal-body" id="aiStep1">
@@ -2387,11 +2753,11 @@
 
                 <div id="aiResultStep" class="ai-result-area">
                     <div class="form-group">
-                        <label class="form-label">生成结果（可编辑，最多500字）</label>
+                        <label class="form-label" id="aiResultLabel">生成结果（可编辑，最多500字）</label>
                         <textarea class="form-input" rows="4" id="aiResultText" maxlength="500"></textarea>
                     </div>
                     <div class="modal-actions">
-                        <button class="btn btn-secondary" onclick="resetAiStep()">返回重试</button>
+                        <button class="btn btn-secondary" id="aiRetryBtn" onclick="resetAiStep()">重新生成</button>
                         <button class="btn btn-primary" onclick="saveAiComment()">保存评价</button>
                     </div>
                 </div>
@@ -2746,6 +3112,33 @@
             }
         }
 
+        // 方案卡片更多菜单控制
+        function toggleSchemeMenu(btn) {
+            const dropdown = btn.closest('.scheme-more-dropdown');
+            const isOpen = dropdown.classList.contains('open');
+            
+            // 先关闭所有菜单
+            closeSchemeMenus();
+            
+            // 如果之前是关闭的，则打开当前菜单
+            if (!isOpen) {
+                dropdown.classList.add('open');
+            }
+        }
+
+        function closeSchemeMenus() {
+            document.querySelectorAll('.scheme-more-dropdown.open').forEach(el => {
+                el.classList.remove('open');
+            });
+        }
+
+        // 点击页面其他地方关闭菜单
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.scheme-more-dropdown')) {
+                closeSchemeMenus();
+            }
+        });
+
         // 渲染分组方案列表
         function renderGroupSchemes() {
             const container = document.querySelector('.group-sidebar > div');
@@ -2756,7 +3149,7 @@
                 <div class="group-scheme-item ${scheme.id === currentSchemeId ? 'active' : ''}" 
                      onclick="selectScheme(${scheme.id})">
                     <div class="scheme-more-dropdown">
-                        <div class="more-btn">
+                        <div class="more-btn" onclick="event.stopPropagation(); toggleSchemeMenu(this)">
                             <div class="three-dots">
                                 <span></span>
                                 <span></span>
@@ -2764,8 +3157,8 @@
                             </div>
                         </div>
                         <div class="scheme-more-content">
-                            <div class="scheme-more-item" onclick="event.stopPropagation(); renameScheme(${scheme.id})">重命名</div>
-                            <div class="scheme-more-item" onclick="event.stopPropagation(); deleteScheme(${scheme.id})">删除</div>
+                            <div class="scheme-more-item" onclick="event.stopPropagation(); closeSchemeMenus(); renameScheme(${scheme.id})">重命名</div>
+                            <div class="scheme-more-item" onclick="event.stopPropagation(); closeSchemeMenus(); deleteScheme(${scheme.id})">删除</div>
                         </div>
                     </div>
                     <div class="scheme-name">${scheme.name}</div>
@@ -4225,7 +4618,508 @@
 
         // 初始化页面
         initPage();
-        // --- 评语模块逻辑 ---
+        
+        // --- 专项评价模块逻辑 ---
+
+        // 评价方案数据结构
+        let evalSchemes = [
+            {
+                id: 1,
+                name: '2025年上学期期末评语',
+                semester: '2025年上学期',
+                type: 'term', // daily, mid, term
+                createTime: '2025-01-15',
+                evaluations: {} // { studentId: { content, status, updateTime } }
+            },
+            {
+                id: 2,
+                name: '11月日常观察记录',
+                semester: '2025年上学期',
+                type: 'daily',
+                createTime: '2025-11-01',
+                evaluations: {}
+            }
+        ];
+
+        let currentEvalSchemeId = null;
+        let selectedEvalStudentIds = new Set();
+
+        // 评价类型映射
+        const evalTypeMap = {
+            'daily': { label: '日常', class: 'daily' },
+            'mid': { label: '期中', class: 'mid' },
+            'term': { label: '期末', class: 'term' }
+        };
+
+        // 初始化评价方案模拟数据
+        function initMockEvalSchemes() {
+            const sampleComments = [
+                '该生学习态度端正，课堂表现积极，作业完成质量高。',
+                '本学期进步明显，学习习惯良好，希望继续保持。',
+                '课堂参与度高，思维活跃，善于提问和思考。',
+                '作业认真完成，书写工整，正确率较高。',
+                '学习主动性强，能够举一反三，是同学们的榜样。'
+            ];
+
+            evalSchemes.forEach(scheme => {
+                studentsData.forEach((student, index) => {
+                    // 随机给部分学生添加评价
+                    if (Math.random() > 0.4) {
+                        const isPublished = Math.random() > 0.5;
+                        scheme.evaluations[student.id] = {
+                            content: sampleComments[index % sampleComments.length],
+                            status: isPublished ? 'published' : 'draft',
+                            updateTime: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().replace('T', ' ').substring(0, 16)
+                        };
+                    }
+                });
+            });
+
+            // 默认选中第一个方案
+            if (evalSchemes.length > 0) {
+                currentEvalSchemeId = evalSchemes[0].id;
+            }
+        }
+
+        // 渲染评价方案列表
+        function renderEvalSchemes() {
+            const container = document.getElementById('evalSchemeList');
+            if (!container) return;
+
+            container.innerHTML = evalSchemes.map(scheme => {
+                const isActive = scheme.id === currentEvalSchemeId;
+                const typeInfo = evalTypeMap[scheme.type] || evalTypeMap['daily'];
+                
+                // 计算进度
+                const total = studentsData.length;
+                const completed = Object.keys(scheme.evaluations).length;
+                const published = Object.values(scheme.evaluations).filter(e => e.status === 'published').length;
+                const progressPercent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+                return `
+                    <div class="eval-scheme-item ${isActive ? 'active' : ''}" onclick="selectEvalScheme(${scheme.id})">
+                        <div class="scheme-more-dropdown">
+                            <div class="more-btn" onclick="event.stopPropagation(); toggleSchemeMenu(this)">
+                                <div class="three-dots">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </div>
+                            <div class="scheme-more-content">
+                                <div class="scheme-more-item" onclick="event.stopPropagation(); closeSchemeMenus(); renameEvalScheme(${scheme.id})">重命名</div>
+                                <div class="scheme-more-item" onclick="event.stopPropagation(); closeSchemeMenus(); deleteEvalScheme(${scheme.id})">删除</div>
+                            </div>
+                        </div>
+                        <div class="scheme-name">${scheme.name}</div>
+                        <div class="scheme-meta">${scheme.semester} <span class="scheme-type-tag ${typeInfo.class}">${typeInfo.label}</span></div>
+                        <div class="eval-progress">
+                            <div class="eval-progress-bar">
+                                <div class="eval-progress-fill" style="width: ${progressPercent}%"></div>
+                            </div>
+                            <span class="eval-progress-text">${completed}/${total} 已评</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        // 选择评价方案
+        function selectEvalScheme(schemeId) {
+            currentEvalSchemeId = schemeId;
+            selectedEvalStudentIds.clear();
+            renderEvalSchemes();
+            renderEvalTable();
+            updateEvalBatchBar();
+        }
+
+        // 渲染评价表格
+        function renderEvalTable() {
+            const tbody = document.getElementById('evalTableBody');
+            const schemeNameEl = document.getElementById('currentEvalSchemeName');
+            
+            if (!tbody) return;
+
+            const scheme = evalSchemes.find(s => s.id === currentEvalSchemeId);
+            
+            if (!scheme) {
+                schemeNameEl.textContent = '请选择评价方案';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 60px; color: #9ca3af;">请在左侧选择一个评价方案</td></tr>';
+                return;
+            }
+
+            // 更新标题
+            schemeNameEl.textContent = scheme.name;
+
+            // 获取搜索关键词
+            const searchInput = document.getElementById('evalSearchInput');
+            const filterText = searchInput ? searchInput.value.toLowerCase() : '';
+
+            // 渲染学生列表
+            tbody.innerHTML = studentsData
+                .filter(s => s.name.includes(filterText) || s.studentId.includes(filterText))
+                .map(student => {
+                    const evaluation = scheme.evaluations[student.id];
+                    const isSelected = selectedEvalStudentIds.has(student.id);
+                    
+                    let statusClass = 'empty';
+                    let statusText = '未填写';
+                    let content = '';
+                    let isPublished = false;
+
+                    if (evaluation) {
+                        content = evaluation.content;
+                        isPublished = evaluation.status === 'published';
+                        statusClass = isPublished ? 'published' : 'draft';
+                        statusText = isPublished ? '已发布' : '未发布';
+                    }
+
+                    return `
+                        <tr class="${isSelected ? 'selected' : ''}">
+                            <td onclick="event.stopPropagation(); toggleEvalStudentSelection(${student.id})">
+                                <div class="checkbox ${isSelected ? 'checked' : ''}"></div>
+                            </td>
+                            <td>
+                                <div>
+                                    <div style="font-weight: 500;">${student.name}</div>
+                                    <div style="font-size: 12px; color: #6b7280;">${student.studentId}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="eval-status ${statusClass}">${statusText}</span>
+                            </td>
+                            <td class="eval-content-cell">
+                                <div class="eval-content-preview ${!content ? 'empty' : ''}" ${content ? `data-tooltip="${content.replace(/"/g, '&quot;')}"` : ''}>
+                                    ${content || '暂无评价'}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="publish-switch ${isPublished ? 'on' : ''} ${!content ? 'disabled' : ''}" 
+                                     onclick="event.stopPropagation(); ${content ? `toggleEvalPublish(${student.id})` : ''}">
+                                </div>
+                            </td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 4px 12px; height: 28px; font-size: 12px;" 
+                                        onclick="event.stopPropagation(); ${content ? `openEditEvalModal(${student.id})` : `openAiCommentModal(${student.id})`}">
+                                    ${content ? '编辑' : '写评价'}
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+            updateEvalSelectAllCheckbox();
+            lucide.createIcons();
+        }
+
+        // 切换学生选中状态
+        function toggleEvalStudentSelection(studentId) {
+            if (selectedEvalStudentIds.has(studentId)) {
+                selectedEvalStudentIds.delete(studentId);
+            } else {
+                selectedEvalStudentIds.add(studentId);
+            }
+            renderEvalTable();
+            updateEvalBatchBar();
+        }
+
+        // 全选/取消全选
+        function toggleEvalSelectAll() {
+            const allIds = studentsData.map(s => s.id);
+            const isAllSelected = allIds.every(id => selectedEvalStudentIds.has(id));
+
+            if (isAllSelected) {
+                selectedEvalStudentIds.clear();
+            } else {
+                allIds.forEach(id => selectedEvalStudentIds.add(id));
+            }
+            renderEvalTable();
+            updateEvalBatchBar();
+        }
+
+        // 更新全选复选框状态
+        function updateEvalSelectAllCheckbox() {
+            const checkbox = document.getElementById('evalSelectAllCheckbox');
+            if (!checkbox) return;
+
+            const allIds = studentsData.map(s => s.id);
+            const isAllSelected = allIds.length > 0 && allIds.every(id => selectedEvalStudentIds.has(id));
+            
+            if (isAllSelected) {
+                checkbox.classList.add('checked');
+            } else {
+                checkbox.classList.remove('checked');
+            }
+        }
+
+        // 更新批量操作栏
+        function updateEvalBatchBar() {
+            const batchBar = document.getElementById('evalBatchBar');
+            const countEl = document.getElementById('evalSelectedCount');
+            
+            if (!batchBar) return;
+
+            const count = selectedEvalStudentIds.size;
+            if (count > 0) {
+                batchBar.classList.remove('hidden');
+                countEl.textContent = count;
+            } else {
+                batchBar.classList.add('hidden');
+            }
+        }
+
+        // 清除选择
+        function clearEvalSelection() {
+            selectedEvalStudentIds.clear();
+            renderEvalTable();
+            updateEvalBatchBar();
+        }
+
+        // 切换发布状态
+        function toggleEvalPublish(studentId) {
+            const scheme = evalSchemes.find(s => s.id === currentEvalSchemeId);
+            if (!scheme || !scheme.evaluations[studentId]) return;
+
+            const evaluation = scheme.evaluations[studentId];
+            evaluation.status = evaluation.status === 'published' ? 'draft' : 'published';
+            
+            renderEvalTable();
+            renderEvalSchemes();
+            showToast(evaluation.status === 'published' ? '已发布' : '已隐藏', 'success');
+        }
+
+        // 批量发布/隐藏
+        function batchPublishEval(publish) {
+            const scheme = evalSchemes.find(s => s.id === currentEvalSchemeId);
+            if (!scheme) return;
+
+            const targetStatus = publish ? 'published' : 'draft';
+            let changedCount = 0;
+            let totalWithContent = 0;
+
+            selectedEvalStudentIds.forEach(studentId => {
+                const evaluation = scheme.evaluations[studentId];
+                if (evaluation) {
+                    totalWithContent++;
+                    // 只统计实际变更的数量
+                    if (evaluation.status !== targetStatus) {
+                        evaluation.status = targetStatus;
+                        changedCount++;
+                    }
+                }
+            });
+
+            if (totalWithContent === 0) {
+                showToast('所选学生暂无评价内容', 'warning');
+                return;
+            }
+
+            selectedEvalStudentIds.clear();
+            renderEvalTable();
+            renderEvalSchemes();
+            updateEvalBatchBar();
+
+            if (changedCount > 0) {
+                showToast(`已${publish ? '发布' : '隐藏'} ${changedCount} 条评价`, 'success');
+            } else {
+                showToast(`所选评价已全部${publish ? '发布' : '隐藏'}`, 'info');
+            }
+        }
+
+        // 过滤评价表格
+        function filterEvalTable(value) {
+            renderEvalTable();
+        }
+
+        // 用于记录名称是否被用户手动编辑过
+        let evalSchemeNameEdited = false;
+
+        // 打开创建评价方案模态框
+        function openCreateEvalSchemeModal() {
+            evalSchemeNameEdited = false;
+            
+            // 生成学期选项
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth() + 1;
+            
+            let semesters = [];
+            for (let y = currentYear; y >= 2023; y--) {
+                if (y === currentYear && currentMonth < 7) {
+                    semesters.push(`${y}年上学期`);
+                } else {
+                    semesters.push(`${y}年下学期`);
+                    semesters.push(`${y}年上学期`);
+                }
+            }
+
+            const semesterOptions = semesters.map(s => `<option value="${s}">${s}</option>`).join('');
+
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal" onclick="event.stopPropagation()">
+                    <div class="modal-title">创建评价方案</div>
+                    <div class="form-group">
+                        <label class="form-label">所属学期：</label>
+                        <select class="form-select" id="evalSchemeSemester" onchange="onEvalSchemeFieldChange()">
+                            ${semesterOptions}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">评价类型：</label>
+                        <select class="form-select" id="evalSchemeType" onchange="onEvalSchemeFieldChange()" required>
+                            <option value="" disabled selected>请选择类型</option>
+                            <option value="daily">日常评价</option>
+                            <option value="mid">期中评价</option>
+                            <option value="term">期末评价</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">方案名称：</label>
+                        <input type="text" class="form-input" id="evalSchemeName" placeholder="请输入方案名称" maxlength="30" 
+                               oninput="evalSchemeNameEdited = this.value.trim() !== ''">
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                        <button class="btn btn-primary" onclick="createEvalScheme()">创建</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.addEventListener('click', closeModal);
+        }
+
+        // 生成默认方案名称
+        function generateEvalSchemeName(semester, type) {
+            const typeLabels = {
+                'daily': '日常评价',
+                'mid': '期中评价',
+                'term': '期末评价'
+            };
+            return `${semester}-${typeLabels[type] || '评价'}`;
+        }
+
+        // 学期或类型变化时，自动更新名称（如果用户未手动编辑）
+        function onEvalSchemeFieldChange() {
+            const nameInput = document.getElementById('evalSchemeName');
+            const semester = document.getElementById('evalSchemeSemester').value;
+            const type = document.getElementById('evalSchemeType').value;
+            
+            // 只有名称为空或未被手动编辑时，才自动更新
+            if (!evalSchemeNameEdited || nameInput.value.trim() === '') {
+                nameInput.value = generateEvalSchemeName(semester, type);
+                evalSchemeNameEdited = false;
+            }
+        }
+
+        // 创建评价方案
+        function createEvalScheme() {
+            const name = document.getElementById('evalSchemeName').value.trim();
+            const semester = document.getElementById('evalSchemeSemester').value;
+            const type = document.getElementById('evalSchemeType').value;
+
+            if (!type) {
+                showToast('请选择评价类型', 'warning');
+                return;
+            }
+
+            if (!name) {
+                showToast('请输入方案名称', 'warning');
+                return;
+            }
+
+            // 检查名称是否重复
+            const exists = evalSchemes.some(s => s.name === name);
+            if (exists) {
+                showToast('该方案名称已存在', 'warning');
+                return;
+            }
+
+            const newScheme = {
+                id: Date.now(),
+                name: name,
+                semester: semester,
+                type: type,
+                createTime: new Date().toISOString().substring(0, 10),
+                evaluations: {}
+            };
+
+            evalSchemes.unshift(newScheme);
+            currentEvalSchemeId = newScheme.id;
+            selectedEvalStudentIds.clear();
+
+            closeModal();
+            renderEvalSchemes();
+            renderEvalTable();
+            updateEvalBatchBar();
+            showToast('评价方案创建成功', 'success');
+        }
+
+        // 重命名评价方案
+        async function renameEvalScheme(schemeId) {
+            const scheme = evalSchemes.find(s => s.id === schemeId);
+            if (!scheme) return;
+
+            const newName = await showPromptDialog(
+                '重命名方案',
+                '请输入新的方案名称：',
+                scheme.name,
+                '请输入方案名称'
+            );
+
+            if (newName && newName.trim()) {
+                const exists = evalSchemes.some(s => s.id !== schemeId && s.name === newName.trim());
+                if (exists) {
+                    showToast('该方案名称已存在', 'warning');
+                    return;
+                }
+                scheme.name = newName.trim();
+                renderEvalSchemes();
+                renderEvalTable();
+                showToast('方案已重命名', 'success');
+            }
+        }
+
+        // 删除评价方案
+        async function deleteEvalScheme(schemeId) {
+            if (evalSchemes.length <= 1) {
+                showToast('至少需要保留一个评价方案', 'warning');
+                return;
+            }
+
+            const confirmed = await showConfirmDialog(
+                '删除评价方案',
+                '确定要删除这个评价方案吗？所有评价内容将被清除。',
+                '删除'
+            );
+
+            if (confirmed) {
+                evalSchemes = evalSchemes.filter(s => s.id !== schemeId);
+                if (currentEvalSchemeId === schemeId) {
+                    currentEvalSchemeId = evalSchemes.length > 0 ? evalSchemes[0].id : null;
+                }
+                selectedEvalStudentIds.clear();
+                renderEvalSchemes();
+                renderEvalTable();
+                updateEvalBatchBar();
+                showToast('评价方案已删除', 'success');
+            }
+        }
+
+        // 初始化专项评价模块
+        function initEvalModule() {
+            initMockEvalSchemes();
+            renderEvalSchemes();
+            renderEvalTable();
+        }
+
+        // 页面加载时初始化
+        initEvalModule();
+
+        // --- 旧评语模块逻辑（保留兼容） ---
 
         // 模拟评语数据结构: { studentId: [ { id, type, content, date, semester } ] }
         let commentsData = {};
@@ -4767,30 +5661,88 @@
         // --- AI 评价模态框逻辑 ---
         let currentCommentType = 'daily'; // daily 或 term
 
-        // 打开 AI 评价模态框
+        // 打开 AI 评价模态框（适配专项评价模式）
         function openAiCommentModal(studentId = null) {
             const modal = document.getElementById('aiCommentModal');
             const nameEl = document.getElementById('aiModalStudentName');
 
+            // 检查是否选择了评价方案
+            const scheme = evalSchemes.find(s => s.id === currentEvalSchemeId);
+            if (!scheme) {
+                showToast('请先选择评价方案', 'warning');
+                return;
+            }
+
             // 重置状态
             resetAiStep();
-            currentCommentType = 'daily';
-            switchCommentType('daily');
+            
+            // 根据方案类型设置评价类型
+            currentCommentType = scheme.type === 'term' ? 'term' : 'daily';
 
             if (studentId) {
                 // 单个评价
                 const student = studentsData.find(s => s.id === studentId);
                 nameEl.innerText = `正在为 ${student.name} 生成评价`;
-                selectedStudentIds.clear();
-                selectedStudentIds.add(studentId);
+                selectedEvalStudentIds.clear();
+                selectedEvalStudentIds.add(studentId);
             } else {
-                // 批量评价
-                const names = Array.from(selectedStudentIds).map(id => {
+                // 批量评价（使用专项评价的选中列表）
+                const names = Array.from(selectedEvalStudentIds).map(id => {
                     const s = studentsData.find(s => s.id === id);
                     return s ? s.name : '';
-                }).join('、');
+                }).filter(n => n).join('、');
+                
+                if (!names) {
+                    showToast('请先选择学生', 'warning');
+                    return;
+                }
                 nameEl.innerText = `正在为 ${names} 生成评价`;
             }
+
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        // 打开编辑评价模态框（直接显示已有内容）
+        function openEditEvalModal(studentId) {
+            const modal = document.getElementById('aiCommentModal');
+            const nameEl = document.getElementById('aiModalStudentName');
+            const resultLabel = document.getElementById('aiResultLabel');
+            const retryBtn = document.getElementById('aiRetryBtn');
+
+            // 检查是否选择了评价方案
+            const scheme = evalSchemes.find(s => s.id === currentEvalSchemeId);
+            if (!scheme) {
+                showToast('请先选择评价方案', 'warning');
+                return;
+            }
+
+            // 获取已有评价内容
+            const evaluation = scheme.evaluations[studentId];
+            if (!evaluation || !evaluation.content) {
+                // 如果没有内容，走新建流程
+                openAiCommentModal(studentId);
+                return;
+            }
+
+            // 设置当前选中的学生
+            selectedEvalStudentIds.clear();
+            selectedEvalStudentIds.add(studentId);
+
+            // 更新标题文案
+            const student = studentsData.find(s => s.id === studentId);
+            nameEl.innerText = `正在为 ${student.name} 编辑评价`;
+
+            // 更新标签和按钮文案
+            resultLabel.textContent = '评价内容（可编辑，最多500字）';
+            retryBtn.textContent = '重新生成';
+
+            // 隐藏维度选择，直接显示结果区域
+            document.getElementById('aiStep1').style.display = 'none';
+            document.getElementById('aiResultStep').classList.add('show');
+
+            // 填充已有内容
+            document.getElementById('aiResultText').value = evaluation.content;
 
             modal.classList.remove('hidden');
             lucide.createIcons();
@@ -4838,6 +5790,18 @@
         function resetAiStep() {
             document.getElementById('aiStep1').style.display = 'block';
             document.getElementById('aiResultStep').classList.remove('show');
+            
+            // 恢复默认文案
+            document.getElementById('aiResultLabel').textContent = '生成结果（可编辑，最多500字）';
+            document.getElementById('aiRetryBtn').textContent = '重新生成';
+            
+            // 清空已选维度
+            document.querySelectorAll('.dimension-option.active').forEach(el => el.classList.remove('active'));
+            document.getElementById('aiCustomInput').value = '';
+            document.getElementById('aiResultText').value = '';
+            
+            // 隐藏所有警告
+            document.querySelectorAll('.dimension-warning').forEach(el => el.style.display = 'none');
         }
 
         function generateAiComment() {
@@ -5036,7 +6000,7 @@
             }, 800); // 800ms 思考时间
         }
 
-        // 保存评价
+        // 保存评价（适配专项评价模式）
         function saveAiComment() {
             const content = document.getElementById('aiResultText').value.trim();
             
@@ -5046,35 +6010,38 @@
                 return;
             }
 
+            // 获取当前评价方案
+            const scheme = evalSchemes.find(s => s.id === currentEvalSchemeId);
+            if (!scheme) {
+                showToast('评价方案不存在', 'error');
+                return;
+            }
+
             const now = new Date();
-            const date = now.toISOString().replace('T', ' ').substring(0, 16); // yyyy-mm-dd HH:mm
+            const updateTime = now.toISOString().replace('T', ' ').substring(0, 16);
 
-            selectedStudentIds.forEach(id => {
-                if (!commentsData[id]) commentsData[id] = [];
-
-                commentsData[id].unshift({
-                    id: Date.now() + Math.random(),
-                    type: currentCommentType === 'daily' ? '日常' : '期末',
+            // 保存到当前评价方案
+            selectedEvalStudentIds.forEach(id => {
+                scheme.evaluations[id] = {
                     content: content,
-                    date: date,
-                    semester: currentSemester
-                });
+                    status: 'draft', // 新保存的默认为未发布
+                    updateTime: updateTime
+                };
             });
 
             closeAiCommentModal();
-            renderCommentTable();
+            
+            // 保存后清空选择
+            selectedEvalStudentIds.clear();
+            
+            renderEvalTable();
+            renderEvalSchemes();
+            updateEvalBatchBar();
             showToast('评价已保存', 'success');
-
-            // 如果是批量操作，清空选择
-            if (selectedStudentIds.size > 1) {
-                selectedStudentIds.clear();
-                document.getElementById('selectAllCheckbox').classList.remove('checked');
-                updateBatchBtnState();
-            }
         }
 
-        // 初始化
-        initMockComments();
+        // 旧评语模块初始化已废弃，改用专项评价模块
+        // initMockComments();
 
         // --- 自定义 Tooltip 逻辑 ---
         const tooltipEl = document.createElement('div');
@@ -5148,7 +6115,8 @@
             } else if (tab === 'comment') {
                 tabs[2].classList.add('active');
                 commentView.classList.remove('hidden');
-                renderCommentTable();
+                renderEvalSchemes();
+                renderEvalTable();
             }
         };
     </script>
