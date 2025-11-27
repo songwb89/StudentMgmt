@@ -15,18 +15,24 @@ class DailyPerformanceModal {
         // 预定义徽章配置 (系统默认)
         this.systemBadges = {
             positive: [
-                { id: 'p1', name: '积极回答', icon: 'hand', color: 'text-green-600', bg: 'bg-green-100', border: 'border-green-200' },
-                { id: 'p2', name: '作业优秀', icon: 'book-open', color: 'text-blue-600', bg: 'bg-blue-100', border: 'border-blue-200' },
-                { id: 'p3', name: '帮助同学', icon: 'heart', color: 'text-pink-600', bg: 'bg-pink-100', border: 'border-pink-200' },
-                { id: 'p4', name: '进步明显', icon: 'trending-up', color: 'text-purple-600', bg: 'bg-purple-100', border: 'border-purple-200' },
-                { id: 'p5', name: '遵守纪律', icon: 'check-circle', color: 'text-teal-600', bg: 'bg-teal-100', border: 'border-teal-200' }
+                { id: 'p1', name: '一点就通', icon: 'lightbulb', color: 'text-orange-500', bg: 'bg-orange-100', border: 'border-orange-200' },
+                { id: 'p2', name: '举手答问', icon: 'hand', color: 'text-orange-500', bg: 'bg-orange-100', border: 'border-orange-200' },
+                { id: 'p3', name: '团队合作', icon: 'users', color: 'text-green-600', bg: 'bg-green-100', border: 'border-green-200' },
+                { id: 'p4', name: '帮助他人', icon: 'heart-handshake', color: 'text-cyan-500', bg: 'bg-cyan-100', border: 'border-cyan-200' },
+                { id: 'p5', name: '注意力集中', icon: 'target', color: 'text-orange-500', bg: 'bg-orange-100', border: 'border-orange-200' },
+                { id: 'p6', name: '积极思考', icon: 'sun', color: 'text-yellow-500', bg: 'bg-yellow-100', border: 'border-yellow-200' },
+                { id: 'p7', name: '认真读书', icon: 'book-open', color: 'text-orange-500', bg: 'bg-orange-100', border: 'border-orange-200' },
+                { id: 'p8', name: '遵守纪律', icon: 'shield-check', color: 'text-yellow-500', bg: 'bg-yellow-100', border: 'border-yellow-200' }
             ],
             negative: [
-                { id: 'n1', name: '课堂走神', icon: 'cloud', color: 'text-orange-600', bg: 'bg-orange-100', border: 'border-orange-200' },
-                { id: 'n2', name: '作业未交', icon: 'x-circle', color: 'text-red-600', bg: 'bg-red-100', border: 'border-red-200' },
-                { id: 'n3', name: '纪律差', icon: 'alert-circle', color: 'text-red-700', bg: 'bg-red-200', border: 'border-red-300' },
-                { id: 'n4', name: '迟到早退', icon: 'clock', color: 'text-yellow-600', bg: 'bg-yellow-100', border: 'border-yellow-200' },
-                { id: 'n5', name: '扰乱课堂', icon: 'message-square-off', color: 'text-gray-600', bg: 'bg-gray-200', border: 'border-gray-300' }
+                { id: 'n1', name: '上课走神', icon: 'cloud', color: 'text-rose-500', bg: 'bg-rose-50', border: 'border-rose-200' },
+                { id: 'n2', name: '大声喧哗', icon: 'volume-2', color: 'text-orange-500', bg: 'bg-orange-50', border: 'border-orange-200' },
+                { id: 'n3', name: '没交作业', icon: 'file-x', color: 'text-red-500', bg: 'bg-red-50', border: 'border-red-200' },
+                { id: 'n4', name: '疏于思考', icon: 'brain', color: 'text-pink-500', bg: 'bg-pink-50', border: 'border-pink-200' },
+                { id: 'n5', name: '较少合作', icon: 'user-x', color: 'text-purple-500', bg: 'bg-purple-50', border: 'border-purple-200' },
+                { id: 'n6', name: '追跑打闹', icon: 'zap', color: 'text-amber-500', bg: 'bg-amber-50', border: 'border-amber-200' },
+                { id: 'n7', name: '损坏公物', icon: 'trash-2', color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' },
+                { id: 'n8', name: '迟到', icon: 'clock', color: 'text-slate-500', bg: 'bg-slate-100', border: 'border-slate-200' }
             ]
         };
 
@@ -191,6 +197,13 @@ class DailyPerformanceModal {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
+                gap: 12px;
+            }
+            .student-index {
+                color: #9ca3af;
+                font-size: 13px;
+                min-width: 20px;
+                text-align: right;
             }
             .student-list-item:hover {
                 background: #fff;
@@ -209,30 +222,63 @@ class DailyPerformanceModal {
             .stat-item {
                 display: flex;
                 align-items: center;
-                gap: 4px;
-                padding: 2px 8px;
-                border-radius: 99px;
+                gap: 2px;
+                font-size: 13px;
             }
-            .stat-item.praise { background: #dcfce7; color: #166534; }
-            .stat-item.criticism { background: #fee2e2; color: #991b1b; }
+            .stat-item.praise { color: #16a34a; }
+            .stat-item.criticism { color: #dc2626; }
             
             .badge-grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-                gap: 16px;
-                margin-bottom: 32px;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 12px;
+                margin-bottom: 24px;
+            }
+            .badge-grid.compact {
+                gap: 8px;
+            }
+            .badge-grid.compact .perf-badge {
+                padding: 12px 8px;
+            }
+            .badge-grid.compact .perf-badge .badge-icon {
+                width: 40px;
+                height: 40px;
+                margin-bottom: 6px;
+            }
+            .badge-grid.compact .perf-badge .badge-icon i {
+                width: 20px;
+                height: 20px;
+            }
+            .badge-grid.compact .perf-badge .badge-name {
+                font-size: 12px;
             }
             .perf-badge {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                padding: 20px;
+                padding: 16px 12px;
                 border-radius: 12px;
                 cursor: pointer;
                 transition: all 0.2s;
                 border: 2px solid transparent;
                 user-select: none;
+            }
+            .perf-badge .badge-icon {
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                background: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 8px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            }
+            .perf-badge .badge-name {
+                font-size: 13px;
+                font-weight: 600;
+                text-align: center;
             }
             .perf-badge:hover {
                 transform: translateY(-4px);
@@ -684,7 +730,7 @@ class DailyPerformanceModal {
             .header-visibility-btn {
                 display: flex;
                 align-items: center;
-                gap: 6px;
+                gap: 8px;
                 padding: 4px 12px;
                 font-size: 13px;
                 font-weight: 500;
@@ -692,24 +738,45 @@ class DailyPerformanceModal {
                 transition: all 0.2s;
                 margin-left: 8px;
                 user-select: none;
-                border-left: 1px solid #e2e8f0; /* Add separator line */
-                height: 24px; /* Match height of selects approx */
+                border-left: 1px solid #e2e8f0;
             }
             .header-visibility-btn:hover {
                 opacity: 0.8;
             }
             .header-visibility-btn.visible {
-                color: #2563eb; /* Blue text */
-            }
-            .header-visibility-btn.visible:hover {
-                background: transparent;
+                color: #16a34a;
             }
             .header-visibility-btn.hidden-state {
-                color: #94a3b8; /* Gray text */
+                color: #6b7280;
             }
-            .header-visibility-btn.hidden-state:hover {
-                color: #64748b;
-                background: transparent;
+            
+            /* 开关样式 */
+            .publish-toggle {
+                position: relative;
+                width: 36px;
+                height: 20px;
+                background: #d1d5db;
+                border-radius: 10px;
+                transition: all 0.2s;
+                flex-shrink: 0;
+            }
+            .publish-toggle::after {
+                content: '';
+                position: absolute;
+                top: 2px;
+                left: 2px;
+                width: 16px;
+                height: 16px;
+                background: white;
+                border-radius: 50%;
+                transition: all 0.2s;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            }
+            .publish-toggle.on {
+                background: #16a34a;
+            }
+            .publish-toggle.on::after {
+                left: 18px;
             }
         `;
         document.head.appendChild(style);
@@ -722,7 +789,7 @@ class DailyPerformanceModal {
         btn.innerHTML = `
             <i data-lucide="trophy" class="text-white w-7 h-7"></i>
             <div class="absolute bottom-full right-0 mb-2 bg-gray-800 text-white text-xs px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                日常表现
+                课堂点评
             </div>
         `;
         btn.onclick = () => this.show();
@@ -790,10 +857,10 @@ class DailyPerformanceModal {
                                 <!-- Options generated dynamically -->
                             </select>
 
-                            <!-- 新增：直观的可见性切换按钮 -->
-                            <div class="header-visibility-btn visible" id="headerVisibilityBtn" title="点击切换学生端可见性">
-                                <i data-lucide="eye" class="w-4 h-4"></i>
-                                <span>学生可见</span>
+                            <!-- 新增：发布状态开关 -->
+                            <div class="header-visibility-btn visible" id="headerVisibilityBtn" title="点击切换发布状态">
+                                <div class="publish-toggle on"></div>
+                                <span>已发布</span>
                             </div>
                         </div>
                     </div>
@@ -832,7 +899,7 @@ class DailyPerformanceModal {
                             </div>
                         </div>
 
-                        <div class="flex-1 overflow-y-auto pr-2">
+                        <div class="flex-1 overflow-hidden pr-2">
                             <div class="mb-8">
                                 <div class="flex items-center justify-between mb-4">
                                     <h4 class="text-sm font-bold text-green-700 uppercase tracking-wider flex items-center gap-2">
@@ -991,20 +1058,25 @@ class DailyPerformanceModal {
             return;
         }
 
-        listContainer.innerHTML = filteredStudents.map(s => `
+        listContainer.innerHTML = filteredStudents.map((s, index) => `
             <div class="student-list-item ${s.id === this.selectedStudentId ? 'active' : ''}" 
                  onclick="window.dailyPerfModal.selectStudent(${s.id})">
+                <span class="student-index">${index + 1}</span>
                 <div class="font-medium text-gray-700">${s.name}</div>
                 <div class="stats-pill">
                     <div class="stat-item praise">
+                        <i data-lucide="thumbs-up" class="w-3.5 h-3.5"></i>
                         <span id="praise_count_${s.id}">${s.dailyStats.praise}</span>
                     </div>
                     <div class="stat-item criticism">
+                        <i data-lucide="thumbs-down" class="w-3.5 h-3.5"></i>
                         <span id="criticism_count_${s.id}">${s.dailyStats.criticism}</span>
                     </div>
                 </div>
             </div>
         `).join('');
+        
+        if (window.lucide) window.lucide.createIcons();
     }
 
     renderBadges() {
@@ -1013,12 +1085,20 @@ class DailyPerformanceModal {
 
         const createBadge = (b, type) => `
             <div class="perf-badge ${b.bg} ${b.border}" onclick="window.dailyPerfModal.triggerBadge('${type}', '${b.name}', this)">
-                <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center mb-3 shadow-sm">
+                <div class="badge-icon">
                     <i data-lucide="${b.icon}" class="${b.color} w-6 h-6"></i>
                 </div>
-                <span class="${b.color} font-bold">${b.name}</span>
+                <span class="badge-name ${b.color}">${b.name}</span>
             </div>
         `;
+
+        // 根据徽章数量决定是否使用紧凑模式（两者统一）
+        const posCount = this.badges.positive.length;
+        const negCount = this.badges.negative.length;
+        const useCompact = posCount > 8 || negCount > 8;
+        
+        posContainer.className = `badge-grid${useCompact ? ' compact' : ''}`;
+        negContainer.className = `badge-grid${useCompact ? ' compact' : ''}`;
 
         posContainer.innerHTML = this.badges.positive.map(b => createBadge(b, 'positive')).join('');
         negContainer.innerHTML = this.badges.negative.map(b => createBadge(b, 'negative')).join('');
@@ -1040,9 +1120,14 @@ class DailyPerformanceModal {
 
         nameEl.textContent = student.name;
         statsEl.innerHTML = `
-            <span class="text-green-600 font-medium mr-4">👍 点赞：${student.dailyStats.praise}</span>
-            <span class="text-red-600 font-medium">👎 批评：${student.dailyStats.criticism}</span>
+            <span class="text-green-600 font-medium mr-4 inline-flex items-center gap-1">
+                <i data-lucide="thumbs-up" class="w-4 h-4"></i> 点赞：${student.dailyStats.praise}
+            </span>
+            <span class="text-red-600 font-medium inline-flex items-center gap-1">
+                <i data-lucide="thumbs-down" class="w-4 h-4"></i> 批评：${student.dailyStats.criticism}
+            </span>
         `;
+        if (window.lucide) window.lucide.createIcons();
     }
 
     triggerBadge(type, reason, element) {
@@ -1070,7 +1155,7 @@ class DailyPerformanceModal {
             this.showFloatingAnim(element, '+1', 'text-green-600');
         } else {
             student.dailyStats.criticism++;
-            this.showFloatingAnim(element, '+1', 'text-red-600');
+            this.showFloatingAnim(element, '-1', 'text-red-600');
         }
 
         // 3. 更新UI
@@ -1220,18 +1305,16 @@ class DailyPerformanceModal {
         if (isVisible) {
             btn.className = 'header-visibility-btn visible';
             btn.innerHTML = `
-                <i data-lucide="eye" class="w-4 h-4"></i>
-                <span>学生可见</span>
+                <div class="publish-toggle on"></div>
+                <span>已发布</span>
             `;
         } else {
             btn.className = 'header-visibility-btn hidden-state';
             btn.innerHTML = `
-                <i data-lucide="eye-off" class="w-4 h-4"></i>
-                <span>学生隐藏</span>
+                <div class="publish-toggle"></div>
+                <span>未发布</span>
             `;
         }
-        
-        if (window.lucide) window.lucide.createIcons();
     }
     
     toggleVisibility() {
@@ -1248,9 +1331,9 @@ class DailyPerformanceModal {
         const newIsVisible = !currentIsVisible;
         this.showToast(
             newIsVisible 
-                ? '✓ 已开启学生端可见' 
-                : '✗ 已关闭学生端可见',
-            newIsVisible ? 'success' : 'warning'
+                ? '已发布，学生端可查看' 
+                : '已取消发布',
+            newIsVisible ? 'success' : 'info'
         );
         
         // 这里可以添加保存到后端的逻辑
@@ -1332,9 +1415,10 @@ class DailyPerformanceModal {
             const input = overlay.querySelector('#newBadgeName');
             const name = input.value.trim();
             if (name) {
-                this.addCustomBadge(name, type);
-                input.value = '';
-                this.renderManagerList(type);
+                if (this.addCustomBadge(name, type)) {
+                    input.value = '';
+                    this.renderManagerList(type);
+                }
             }
         };
         // 回车添加
@@ -1374,6 +1458,13 @@ class DailyPerformanceModal {
     }
 
     addCustomBadge(name, type) {
+        // 检查是否已达到上限（系统8个 + 自定义最多4个 = 12个）
+        const totalCount = this.systemBadges[type].length + this.customBadges[type].length;
+        if (totalCount >= 12) {
+            this.showToast('最多只能添加4个自定义徽章', 'warning');
+            return false;
+        }
+
         const id = Date.now().toString();
         const badge = {
             id: id,
@@ -1387,14 +1478,13 @@ class DailyPerformanceModal {
 
         this.customBadges[type].push(badge);
         this.saveCustomBadges();
+        return true;
     }
 
     deleteCustomBadge(id, type) {
-        if (confirm('确定要删除这个徽章吗？')) {
-            this.customBadges[type] = this.customBadges[type].filter(b => b.id !== id);
-            this.saveCustomBadges();
-            this.renderManagerList(type);
-        }
+        this.customBadges[type] = this.customBadges[type].filter(b => b.id !== id);
+        this.saveCustomBadges();
+        this.renderManagerList(type);
     }
 
     showToast(message, type = 'success') {
@@ -1402,16 +1492,17 @@ class DailyPerformanceModal {
         toast.style.cssText = `
             position: fixed;
             top: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            background: ${type === 'success' ? '#10b981' : '#f59e0b'};
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            background: ${type === 'success' ? '#10b981' : type === 'warning' ? '#f59e0b' : '#3b82f6'};
             color: white;
             border-radius: 8px;
             font-size: 14px;
             font-weight: 500;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 10000;
-            animation: slideInRight 0.3s ease;
+            z-index: 99999;
+            animation: fadeIn 0.2s ease;
         `;
         toast.textContent = message;
         document.body.appendChild(toast);

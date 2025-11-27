@@ -2603,11 +2603,17 @@
                                 <div style="font-weight: 600; font-size: 16px;" id="currentEvalSchemeName">请选择评价方案</div>
                             </div>
                             <div style="display: flex; gap: 12px; align-items: center;">
+                                <select class="form-select" id="evalStatusFilter" style="width: 120px; height: 43px; padding: 0 12px;" onchange="filterEvalTable()">
+                                    <option value="">全部状态</option>
+                                    <option value="empty">未填写</option>
+                                    <option value="draft">未发布</option>
+                                    <option value="published">已发布</option>
+                                </select>
                                 <div style="position: relative;">
                                     <i data-lucide="search"
                                         style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: #9ca3af;"></i>
                                     <input type="text" placeholder="搜索学生..." class="form-input" id="evalSearchInput"
-                                        style="padding-left: 32px; width: 180px;" oninput="filterEvalTable(this.value)">
+                                        style="padding-left: 32px; width: 180px;" oninput="filterEvalTable()">
                                 </div>
                             </div>
                         </div>
@@ -3689,6 +3695,7 @@
         function openCreateSchemeModal() {
             const modal = document.createElement('div');
             modal.className = 'modal-overlay';
+            modal.id = 'createGroupSchemeModal';
             modal.innerHTML = `
                 <div class="modal" onclick="event.stopPropagation()">
                     <div class="modal-title">创建分组方案</div>
@@ -3761,10 +3768,11 @@
 
         // 关闭模态框
         function closeModal() {
-            const modal = document.querySelector('.modal-overlay');
-            if (modal) {
-                modal.remove();
-            }
+            const groupModal = document.getElementById('createGroupSchemeModal');
+            if (groupModal) groupModal.remove();
+            
+            const evalModal = document.getElementById('createSchemeModal');
+            if (evalModal) evalModal.remove();
         }
 
         // 显示 Toast
@@ -4686,7 +4694,17 @@
             const container = document.getElementById('evalSchemeList');
             if (!container) return;
 
-            container.innerHTML = evalSchemes.map(scheme => {
+            // 按学期升序，同一学期按创建时间升序排序
+            const sortedSchemes = [...evalSchemes].sort((a, b) => {
+                // 先按学期排序（如 "2024年上学期" < "2024年下学期" < "2025年上学期"）
+                if (a.semester !== b.semester) {
+                    return a.semester.localeCompare(b.semester, 'zh-CN');
+                }
+                // 同一学期按创建时间升序（id 即时间戳）
+                return a.id - b.id;
+            });
+
+            container.innerHTML = sortedSchemes.map(scheme => {
                 const isActive = scheme.id === currentEvalSchemeId;
                 const typeInfo = evalTypeMap[scheme.type] || evalTypeMap['daily'];
                 
@@ -4753,13 +4771,23 @@
             // 更新标题
             schemeNameEl.textContent = scheme.name;
 
-            // 获取搜索关键词
+            // 获取筛选条件
             const searchInput = document.getElementById('evalSearchInput');
             const filterText = searchInput ? searchInput.value.toLowerCase() : '';
+            const statusFilter = document.getElementById('evalStatusFilter');
+            const filterStatus = statusFilter ? statusFilter.value : '';
 
             // 渲染学生列表
             tbody.innerHTML = studentsData
                 .filter(s => s.name.includes(filterText) || s.studentId.includes(filterText))
+                .filter(student => {
+                    if (!filterStatus) return true; // 全部状态
+                    const evaluation = scheme.evaluations[student.id];
+                    if (filterStatus === 'empty') return !evaluation;
+                    if (filterStatus === 'draft') return evaluation && evaluation.status === 'draft';
+                    if (filterStatus === 'published') return evaluation && evaluation.status === 'published';
+                    return true;
+                })
                 .map(student => {
                     const evaluation = scheme.evaluations[student.id];
                     const isSelected = selectedEvalStudentIds.has(student.id);
@@ -4929,7 +4957,7 @@
         }
 
         // 过滤评价表格
-        function filterEvalTable(value) {
+        function filterEvalTable() {
             renderEvalTable();
         }
 
@@ -4959,6 +4987,7 @@
 
             const modal = document.createElement('div');
             modal.className = 'modal-overlay';
+            modal.id = 'createSchemeModal';
             modal.innerHTML = `
                 <div class="modal" onclick="event.stopPropagation()">
                     <div class="modal-title">创建评价方案</div>
@@ -5029,6 +5058,16 @@
             if (!name) {
                 showToast('请输入方案名称', 'warning');
                 return;
+            }
+
+            // 检查期中/期末是否已存在（同一学期只能有一个）
+            if (type === 'mid' || type === 'term') {
+                const typeLabel = type === 'mid' ? '期中' : '期末';
+                const existsSameType = evalSchemes.some(s => s.semester === semester && s.type === type);
+                if (existsSameType) {
+                    showToast(`${semester}已存在${typeLabel}评价`, 'warning');
+                    return;
+                }
             }
 
             // 检查名称是否重复
@@ -6184,7 +6223,7 @@
     </div>
     <script src="daily-performance.js"></script>
     <script>
-        // 初始化日常表现组件
+        // 初始化课堂点评组件
         window.addEventListener('load', () => {
             if (typeof DailyPerformanceModal !== 'undefined' && typeof studentsData !== 'undefined') {
                 // 延迟一点初始化以确保其他逻辑完成
