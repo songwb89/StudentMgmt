@@ -1,0 +1,11 @@
+{
+  "docs": [
+    { "name": "示例文档", "file": "demo.md" },
+    { "name": "登录页 PRD", "file": "login.md" },
+    { "name": "仪表盘 PRD", "file": "dashboard.md" }
+  ],
+  "pageMapping": {
+    "student-management.html": "demo.md",
+    "index.html": "*"
+  }
+}

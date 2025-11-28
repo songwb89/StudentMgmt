@@ -4694,6 +4694,18 @@
             const container = document.getElementById('evalSchemeList');
             if (!container) return;
 
+            // 如果没有方案，显示空白缺省样式
+            if (evalSchemes.length === 0) {
+                container.innerHTML = `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; color: #9ca3af;">
+                        <i data-lucide="clipboard-list" style="width: 48px; height: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                        <div style="font-size: 14px; margin-bottom: 8px;">暂无评价方案</div>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
             // 按学期升序，同一学期按创建时间升序排序
             const sortedSchemes = [...evalSchemes].sort((a, b) => {
                 // 先按学期排序（如 "2024年上学期" < "2024年下学期" < "2025年上学期"）
@@ -4763,8 +4775,21 @@
             const scheme = evalSchemes.find(s => s.id === currentEvalSchemeId);
             
             if (!scheme) {
-                schemeNameEl.textContent = '请选择评价方案';
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 60px; color: #9ca3af;">请在左侧选择一个评价方案</td></tr>';
+                schemeNameEl.textContent = '';
+                const emptyMessage = evalSchemes.length === 0 
+                    ? '请先创建评价方案' 
+                    : '请在左侧选择一个评价方案';
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 80px 20px;">
+                            <div style="display: flex; flex-direction: column; align-items: center; color: #9ca3af;">
+                                <i data-lucide="file-text" style="width: 56px; height: 56px; margin-bottom: 16px; opacity: 0.4;"></i>
+                                <div style="font-size: 15px; margin-bottom: 8px;">${emptyMessage}</div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                lucide.createIcons();
                 return;
             }
 
@@ -5124,11 +5149,6 @@
 
         // 删除评价方案
         async function deleteEvalScheme(schemeId) {
-            if (evalSchemes.length <= 1) {
-                showToast('至少需要保留一个评价方案', 'warning');
-                return;
-            }
-
             const confirmed = await showConfirmDialog(
                 '删除评价方案',
                 '确定要删除这个评价方案吗？所有评价内容将被清除。',
@@ -6233,6 +6253,8 @@
             }
         });
     </script>
+      <!-- ========== PRD 文档抽屉组件（自动加载依赖，自动匹配 docs/demo.md） ========== -->
+    <script src="../components/prd-drawer.js"></script>
 </body>
 
 </html>
