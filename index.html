@@ -2,13 +2,35 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=pages/student-management.html">
-    <title>跳转中...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生评价体系原型入口 - 兆涵科技</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <script>
-        window.location.href = 'pages/student-management.html';
-    </script>
+<body class="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white">
+    <div class="max-w-3xl w-full px-4">
+        <div class="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl p-10 border border-white/20">
+            <div class="mb-8 text-center">
+                <h1 class="text-3xl md:text-4xl font-bold mb-3">学生评价体系原型</h1>
+                <p class="text-sm md:text-base text-white/80">
+                    构建“过程性 + 总结性”双轨学生评价体系，覆盖课堂日常与阶段总结，避免评价数据碎片化、维度单一。
+                </p>
+            </div>
+
+            <div class="flex justify-center">
+                <button
+                    class="inline-flex items-center px-8 py-3 rounded-full bg-white text-purple-700 font-semibold shadow-lg hover:shadow-xl hover:bg-purple-50 transition"
+                    onclick="window.open('pages/student-management.html', '_blank')">
+                    <span class="mr-2">进入页面原型</span>
+                    <span class="text-lg">→</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="mt-6 text-center text-xs md:text-sm text-white/70">
+            <p>© 2025 兆涵科技. All rights reserved.</p>
+        </div>
+    </div>
 </body>
 </html>
 
