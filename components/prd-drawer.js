@@ -47,7 +47,7 @@
 
     // 位置映射
     const positions = {
-        'bottom-right': 'right: 24px; bottom: 24px;',
+        'bottom-right': 'right: 32px; bottom: 96px;',
         'bottom-left': 'left: 24px; bottom: 24px;',
         'top-right': 'right: 24px; top: 24px;',
         'top-left': 'left: 24px; top: 24px;'
@@ -329,6 +329,12 @@
             transition: all 0.15s;
             border-left: 3px solid transparent;
         }
+        .prd-toc-parent > span:last-child {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
         .prd-toc-parent:hover {
             background: #eee;
         }
@@ -386,13 +392,113 @@
             overflow-y: auto;
         }
         /* Markdown 渲染样式 */
-        .prd-content h1 { font-size: 1.8em; border-bottom: 2px solid #eee; padding-bottom: 0.3em; margin: 0 0 0.8em; color: #1a1a2e; }
-        .prd-content h2 { font-size: 1.4em; border-bottom: 1px solid #eee; padding-bottom: 0.3em; margin: 1.2em 0 0.6em; color: #1a1a2e; }
-        .prd-content h3 { font-size: 1.15em; margin: 1em 0 0.5em; color: #333; }
-        .prd-content h4 { font-size: 1em; margin: 1em 0 0.5em; color: #444; }
+        .prd-content h1 {
+            font-size: 2em;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin: 1.5em 0 1em;
+            padding-bottom: 0.4em;
+            border-bottom: 2px solid #e5e7eb;
+            position: relative;
+        }
+        .prd-content h1::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -2px;
+            width: 80px;
+            height: 3px;
+            background: #667eea;
+            border-radius: 2px;
+        }
+
+        .prd-content h2 {
+            font-size: 1.6em;
+            font-weight: 600;
+            color: #1a1a2e;
+            margin: 1.8em 0 0.8em;
+            padding: 0.4em 0;
+            border-left: 4px solid #667eea;
+            padding-left: 16px;
+            background: linear-gradient(to right, rgba(102, 126, 234, 0.05), transparent);
+        }
+
+        .prd-content h3 {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2d3748;
+            margin: 1.6em 0 0.8em;
+            padding: 0.3em 0;
+            position: relative;
+            padding-left: 12px;
+        }
+        .prd-content h3::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 0.8em;
+            background: #a5b4fc;
+            border-radius: 2px;
+        }
+
+        .prd-content h4 {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #4a5568;
+            margin: 1.4em 0 0.6em;
+            padding-left: 8px;
+            position: relative;
+        }
+        .prd-content h4::before {
+            content: '·';
+            position: absolute;
+            left: -4px;
+            color: #a5b4fc;
+            font-weight: bold;
+        }
+
+        .prd-content h5 {
+            font-size: 1em;
+            font-weight: 600;
+            color: #4a5568;
+            margin: 1.2em 0 0.5em;
+            padding-left: 12px;
+            position: relative;
+        }
+        .prd-content h5::before {
+            content: '›';
+            position: absolute;
+            left: 0;
+            color: #a5b4fc;
+        }
         .prd-content p { line-height: 1.8; margin: 0.8em 0; color: #444; }
-        .prd-content ul, .prd-content ol { padding-left: 1.8em; margin: 0.8em 0; }
-        .prd-content li { line-height: 1.8; margin: 0.3em 0; }
+        /* 列表样式：强制使用浏览器默认多级圆点，仅做轻量缩进/间距调整 */
+        .prd-content ul {
+            list-style-type: disc;
+            list-style-position: outside;
+            margin: 0.6em 0 0.6em 1.8em;
+            padding-left: 0;
+        }
+        .prd-content ul ul {
+            list-style-type: circle;
+            margin-left: 1.5em;
+        }
+        .prd-content ul ul ul {
+            list-style-type: square;
+        }
+        .prd-content ol {
+            list-style-type: decimal;
+            list-style-position: outside;
+            margin: 0.6em 0 0.6em 1.8em;
+            padding-left: 0;
+        }
+        .prd-content li {
+            line-height: 1.8;
+            margin: 0.2em 0;
+        }
         .prd-content code {
             background: #f0f0f0;
             padding: 2px 6px;
@@ -415,7 +521,7 @@
             color: inherit;
         }
         .prd-content blockquote {
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #e5e7eb;
             padding: 12px 16px;
             color: #666;
             margin: 1em 0;
@@ -672,6 +778,17 @@
             
             content.innerHTML = marked.parse(md);
 
+            // 恢复滚动条位置
+            const savedScroll = localStorage.getItem('prd-scroll-' + currentDoc);
+            if (savedScroll) {
+                // 使用 setTimeout 确保 DOM 渲染完成后执行
+                setTimeout(() => {
+                    content.scrollTop = parseInt(savedScroll);
+                }, 0);
+            } else {
+                content.scrollTop = 0;
+            }
+
             // 生成目录
             buildTOC();
 
@@ -735,6 +852,30 @@
         // 箭头 SVG
         const arrowSvg = '<svg class="prd-toc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>';
         
+        // 大纲展开状态存储 key
+        const tocStateKey = 'prd-toc-state-' + (currentDoc || 'default');
+        
+        // 获取保存的展开状态
+        function getCollapsedNodes() {
+            try {
+                return JSON.parse(localStorage.getItem(tocStateKey)) || {};
+            } catch (e) {
+                return {};
+            }
+        }
+        
+        // 保存展开状态
+        function saveCollapsedNodes(collapsed) {
+            localStorage.setItem(tocStateKey, JSON.stringify(collapsed));
+        }
+        
+        // 生成节点唯一标识（标题文字 + 层级）
+        function getNodeKey(node) {
+            return node.heading.textContent.trim() + '|h' + node.level;
+        }
+        
+        let collapsedNodes = getCollapsedNodes();
+        
         // 递归渲染树
         function renderNode(node, container, depth = 0) {
             const groupEl = document.createElement('div');
@@ -743,9 +884,10 @@
             // 标题项
             const itemEl = document.createElement('div');
             itemEl.className = 'prd-toc-parent';
-            itemEl.style.paddingLeft = (16 + depth * 16) + 'px';
+            itemEl.style.paddingLeft = (16 + depth * 12) + 'px';
+            const headingText = node.heading.textContent;
             itemEl.innerHTML = (node.children.length > 0 ? arrowSvg : '<span class="prd-toc-arrow empty"></span>') + 
-                               '<span>' + node.heading.textContent + '</span>';
+                               '<span title="' + headingText.replace(/"/g, '&quot;') + '">' + headingText + '</span>';
             itemEl.dataset.id = node.id;
             
             // 子级容器
@@ -762,13 +904,29 @@
                 childrenEl.style.maxHeight = (countNodes(node) * 40) + 'px';
             }
             
+            // 恢复保存的展开/收起状态
+            const nodeKey = getNodeKey(node);
+            if (node.children.length > 0 && collapsedNodes[nodeKey]) {
+                const arrow = itemEl.querySelector('.prd-toc-arrow');
+                if (arrow) arrow.classList.add('collapsed');
+                childrenEl.classList.add('collapsed');
+            }
+            
             // 点击箭头只展开/收起
             const arrow = itemEl.querySelector('.prd-toc-arrow');
             if (arrow && node.children.length > 0) {
                 arrow.onclick = (e) => {
                     e.stopPropagation();
-                    arrow.classList.toggle('collapsed');
+                    const isCollapsed = arrow.classList.toggle('collapsed');
                     childrenEl.classList.toggle('collapsed');
+                    
+                    // 保存状态
+                    if (isCollapsed) {
+                        collapsedNodes[nodeKey] = true;
+                    } else {
+                        delete collapsedNodes[nodeKey];
+                    }
+                    saveCollapsedNodes(collapsedNodes);
                 };
             }
             
@@ -825,7 +983,17 @@
         
         // 更新滚动监听
         content.removeEventListener('scroll', scrollHandler);
+        
+        let saveScrollTimer = null;
         function scrollHandler() {
+            // 保存滚动位置（防抖处理）
+            if (saveScrollTimer) clearTimeout(saveScrollTimer);
+            saveScrollTimer = setTimeout(() => {
+                if (currentDoc) {
+                    localStorage.setItem('prd-scroll-' + currentDoc, content.scrollTop);
+                }
+            }, 200);
+
             let current = null;
             allNodes.forEach((node) => {
                 const rect = node.heading.getBoundingClientRect();

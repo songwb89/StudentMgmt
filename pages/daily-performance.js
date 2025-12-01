@@ -403,16 +403,12 @@ class DailyPerformanceModal {
                 right: 8px;
                 top: 50%;
                 transform: translateY(-50%);
-                opacity: 0;
-                transition: all 0.2s;
                 cursor: pointer;
                 padding: 6px;
                 border-radius: 4px;
                 color: #94a3b8;
                 background: rgba(255,255,255,0.8);
-            }
-            .timeline-card:hover .timeline-delete {
-                opacity: 1;
+                transition: all 0.2s;
             }
             .timeline-delete:hover {
                 background: #fee2e2;

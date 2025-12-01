@@ -822,11 +822,16 @@
             box-shadow: 0 0 0 3px rgba(30, 111, 255, 0.1);
         }
 
-        .form-input:disabled {
-            background: #f9fafb;
-            color: #374151;
-            /* 保持深色文字，方便阅读 */
-            cursor: not-allowed;
+        .form-input.error,
+        .form-select.error {
+            border-color: #ef4444;
+        }
+
+        .field-error {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 4px;
+            min-height: 18px;
         }
 
         .form-select {
@@ -3773,6 +3778,9 @@
             
             const evalModal = document.getElementById('createSchemeModal');
             if (evalModal) evalModal.remove();
+
+            const renameModal = document.getElementById('renameSchemeModal');
+            if (renameModal) renameModal.remove();
         }
 
         // 显示 Toast
@@ -5024,17 +5032,19 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">评价类型：</label>
-                        <select class="form-select" id="evalSchemeType" onchange="onEvalSchemeFieldChange()" required>
+                        <select class="form-select" id="evalSchemeType" onchange="onEvalSchemeFieldChange(); clearFieldError('evalSchemeType')" required>
                             <option value="" disabled selected>请选择类型</option>
                             <option value="daily">日常评价</option>
                             <option value="mid">期中评价</option>
                             <option value="term">期末评价</option>
                         </select>
+                        <div class="field-error" id="evalSchemeTypeError"></div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">方案名称：</label>
                         <input type="text" class="form-input" id="evalSchemeName" placeholder="请输入方案名称" maxlength="30" 
-                               oninput="evalSchemeNameEdited = this.value.trim() !== ''">
+                               oninput="evalSchemeNameEdited = this.value.trim() !== ''; clearFieldError('evalSchemeName')">
+                        <div class="field-error" id="evalSchemeNameError"></div>
                     </div>
                     <div class="modal-actions">
                         <button class="btn btn-secondary" onclick="closeModal()">取消</button>
@@ -5043,7 +5053,6 @@
                 </div>
             `;
             document.body.appendChild(modal);
-            modal.addEventListener('click', closeModal);
         }
 
         // 生成默认方案名称
@@ -5069,28 +5078,64 @@
             }
         }
 
+        // 显示字段错误提示
+        function showFieldError(fieldId, message) {
+            const errorEl = document.getElementById(fieldId + 'Error');
+            const inputEl = document.getElementById(fieldId);
+            if (errorEl) {
+                errorEl.textContent = message;
+            }
+            if (inputEl) {
+                inputEl.classList.add('error');
+            }
+        }
+
+        // 清除字段错误提示
+        function clearFieldError(fieldId) {
+            const errorEl = document.getElementById(fieldId + 'Error');
+            const inputEl = document.getElementById(fieldId);
+            if (errorEl) {
+                errorEl.textContent = '';
+            }
+            if (inputEl) {
+                inputEl.classList.remove('error');
+            }
+        }
+
+        // 清除所有字段错误
+        function clearAllFieldErrors() {
+            document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
+            document.querySelectorAll('.form-input.error, .form-select.error').forEach(el => el.classList.remove('error'));
+        }
+
         // 创建评价方案
         function createEvalScheme() {
             const name = document.getElementById('evalSchemeName').value.trim();
             const semester = document.getElementById('evalSchemeSemester').value;
             const type = document.getElementById('evalSchemeType').value;
 
+            // 清除之前的错误提示
+            clearAllFieldErrors();
+
+            let hasError = false;
+
             if (!type) {
-                showToast('请选择评价类型', 'warning');
-                return;
+                showFieldError('evalSchemeType', '请选择评价类型');
+                hasError = true;
             }
 
             if (!name) {
-                showToast('请输入方案名称', 'warning');
-                return;
+                showFieldError('evalSchemeName', '请输入方案名称');
+                hasError = true;
             }
+
+            if (hasError) return;
 
             // 检查期中/期末是否已存在（同一学期只能有一个）
             if (type === 'mid' || type === 'term') {
-                const typeLabel = type === 'mid' ? '期中' : '期末';
                 const existsSameType = evalSchemes.some(s => s.semester === semester && s.type === type);
                 if (existsSameType) {
-                    showToast(`${semester}已存在${typeLabel}评价`, 'warning');
+                    showFieldError('evalSchemeType', '该学期已存在同类型评价');
                     return;
                 }
             }
@@ -5098,7 +5143,7 @@
             // 检查名称是否重复
             const exists = evalSchemes.some(s => s.name === name);
             if (exists) {
-                showToast('该方案名称已存在', 'warning');
+                showFieldError('evalSchemeName', '该方案名称已存在');
                 return;
             }
 
@@ -5123,28 +5168,70 @@
         }
 
         // 重命名评价方案
-        async function renameEvalScheme(schemeId) {
+        function renameEvalScheme(schemeId) {
             const scheme = evalSchemes.find(s => s.id === schemeId);
             if (!scheme) return;
 
-            const newName = await showPromptDialog(
-                '重命名方案',
-                '请输入新的方案名称：',
-                scheme.name,
-                '请输入方案名称'
-            );
-
-            if (newName && newName.trim()) {
-                const exists = evalSchemes.some(s => s.id !== schemeId && s.name === newName.trim());
-                if (exists) {
-                    showToast('该方案名称已存在', 'warning');
-                    return;
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.id = 'renameSchemeModal';
+            modal.innerHTML = `
+                <div class="modal" onclick="event.stopPropagation()">
+                    <div class="modal-title">重命名方案</div>
+                    <div class="form-group">
+                        <label class="form-label">方案名称：</label>
+                        <input type="text" class="form-input" id="renameSchemeInput" value="${scheme.name}" maxlength="30"
+                               oninput="clearFieldError('renameSchemeInput')">
+                        <div class="field-error" id="renameSchemeInputError"></div>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                        <button class="btn btn-primary" onclick="confirmRenameScheme(${schemeId})">确定</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // 聚焦并选中文本
+            setTimeout(() => {
+                const input = document.getElementById('renameSchemeInput');
+                if (input) {
+                    input.focus();
+                    input.select();
                 }
-                scheme.name = newName.trim();
-                renderEvalSchemes();
-                renderEvalTable();
-                showToast('方案已重命名', 'success');
+            }, 100);
+        }
+
+        // 确认重命名
+        function confirmRenameScheme(schemeId) {
+            const scheme = evalSchemes.find(s => s.id === schemeId);
+            if (!scheme) return;
+
+            const input = document.getElementById('renameSchemeInput');
+            const newName = input.value.trim();
+
+            // 清除之前的错误
+            clearFieldError('renameSchemeInput');
+
+            // 校验：名称为空
+            if (!newName) {
+                showFieldError('renameSchemeInput', '请输入方案名称');
+                return;
             }
+
+            // 校验：名称重复
+            const exists = evalSchemes.some(s => s.id !== schemeId && s.name === newName);
+            if (exists) {
+                showFieldError('renameSchemeInput', '该方案名称已存在');
+                return;
+            }
+
+            // 执行重命名
+            scheme.name = newName;
+            closeModal();
+            renderEvalSchemes();
+            renderEvalTable();
+            showToast('重命名成功', 'success');
         }
 
         // 删除评价方案
@@ -5719,9 +5806,11 @@
 
         // --- AI 评价模态框逻辑 ---
         let currentCommentType = 'daily'; // daily 或 term
+        let cameFromStep1 = false; // 标记是否从维度选择页跳转过来
 
         // 打开 AI 评价模态框（适配专项评价模式）
         function openAiCommentModal(studentId = null) {
+            cameFromStep1 = false; // 新建模式
             const modal = document.getElementById('aiCommentModal');
             const nameEl = document.getElementById('aiModalStudentName');
 
@@ -5764,6 +5853,7 @@
 
         // 打开编辑评价模态框（直接显示已有内容）
         function openEditEvalModal(studentId) {
+            cameFromStep1 = false; // 编辑模式，直接进入结果页，未经过维度选择页
             const modal = document.getElementById('aiCommentModal');
             const nameEl = document.getElementById('aiModalStudentName');
             const resultLabel = document.getElementById('aiResultLabel');
@@ -5854,13 +5944,19 @@
             document.getElementById('aiResultLabel').textContent = '生成结果（可编辑，最多500字）';
             document.getElementById('aiRetryBtn').textContent = '重新生成';
             
-            // 清空已选维度
-            document.querySelectorAll('.dimension-option.active').forEach(el => el.classList.remove('active'));
-            document.getElementById('aiCustomInput').value = '';
+            // 清空结果文本
             document.getElementById('aiResultText').value = '';
             
-            // 隐藏所有警告
-            document.querySelectorAll('.dimension-warning').forEach(el => el.style.display = 'none');
+            // 如果是从维度选择页跳转过来的，保留选择；否则清空
+            if (cameFromStep1) {
+                // 保留维度选择和补充关键点
+            } else {
+                // 直接从编辑入口进入，清空所有选择
+                document.querySelectorAll('.dimension-option.active').forEach(el => el.classList.remove('active'));
+                document.getElementById('aiCustomInput').value = '';
+                // 隐藏所有警告
+                document.querySelectorAll('.dimension-warning').forEach(el => el.style.display = 'none');
+            }
         }
 
         function generateAiComment() {
@@ -5887,12 +5983,6 @@
             if (hasError) {
                 return;
             }
-
-            // 模拟 AI 生成过程
-            const btn = document.querySelector('#aiStep1 .btn-primary');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i> 正在思考...';
-            btn.disabled = true;
 
             // 预先构建评语内容
             let comment = "该生在校表现";
@@ -6008,55 +6098,50 @@
                 comment += " " + customInput;
             }
 
-            // 模拟思考延迟后开始流式输出
-            setTimeout(() => {
-                // 切换视图
-                document.getElementById('aiStep1').style.display = 'none';
-                document.getElementById('aiResultStep').classList.add('show');
+            // 标记从维度选择页跳转过来
+            cameFromStep1 = true;
 
-                // 准备流式输出
-                const resultTextarea = document.getElementById('aiResultText');
-                resultTextarea.value = ''; // 清空内容
-                resultTextarea.disabled = true; // 禁止编辑
+            // 直接切换到结果页，开始流式输出
+            document.getElementById('aiStep1').style.display = 'none';
+            document.getElementById('aiResultStep').classList.add('show');
 
-                // 禁用结果页面的按钮
-                const backBtn = document.querySelector('#aiResultStep .btn-secondary');
-                const saveBtn = document.querySelector('#aiResultStep .btn-primary');
-                const originalSaveText = '保存评价';
+            // 准备流式输出
+            const resultTextarea = document.getElementById('aiResultText');
+            resultTextarea.value = ''; // 清空内容
+            resultTextarea.disabled = true; // 禁止编辑
 
-                backBtn.disabled = true;
-                saveBtn.disabled = true;
-                saveBtn.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i> AI正在撰写...';
-                lucide.createIcons(); // 刷新图标
+            // 禁用结果页面的按钮
+            const backBtn = document.querySelector('#aiResultStep .btn-secondary');
+            const saveBtn = document.querySelector('#aiResultStep .btn-primary');
+            const originalSaveText = '保存评价';
 
-                // 开始打字机效果
-                let i = 0;
-                function typeWriter() {
-                    if (i < comment.length) {
-                        resultTextarea.value += comment.charAt(i);
-                        resultTextarea.scrollTop = resultTextarea.scrollHeight; // 自动滚动到底部
-                        i++;
-                        // 随机打字速度，模拟真实感 (30ms - 80ms)
-                        setTimeout(typeWriter, 30 + Math.random() * 50);
-                    } else {
-                        // 输出完成，恢复按钮状态
-                        backBtn.disabled = false;
-                        saveBtn.disabled = false;
-                        saveBtn.innerHTML = originalSaveText;
+            backBtn.disabled = true;
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i> AI正在撰写...';
+            lucide.createIcons(); // 刷新图标
 
-                        // 恢复文本域编辑
-                        resultTextarea.disabled = false;
-                        resultTextarea.focus();
+            // 开始打字机效果
+            let i = 0;
+            function typeWriter() {
+                if (i < comment.length) {
+                    resultTextarea.value += comment.charAt(i);
+                    resultTextarea.scrollTop = resultTextarea.scrollHeight; // 自动滚动到底部
+                    i++;
+                    // 随机打字速度，模拟真实感 (30ms - 80ms)
+                    setTimeout(typeWriter, 30 + Math.random() * 50);
+                } else {
+                    // 输出完成，恢复按钮状态
+                    backBtn.disabled = false;
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalSaveText;
 
-                        // 恢复第一步的按钮状态（以便下次使用）
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                    }
+                    // 恢复文本域编辑
+                    resultTextarea.disabled = false;
+                    resultTextarea.focus();
                 }
+            }
 
-                typeWriter();
-
-            }, 800); // 800ms 思考时间
+            typeWriter();
         }
 
         // 保存评价（适配专项评价模式）
