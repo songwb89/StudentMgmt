@@ -8,7 +8,7 @@ class DailyPerformanceModal {
         this.selectedStudentId = null;
         this.searchText = ''; // 搜索关键词
         this.isSettingsDropdownOpen = false;
-        
+
         // 可见性设置：key格式为 "班级-学科-学期"
         this.visibilitySettings = {};
 
@@ -38,7 +38,7 @@ class DailyPerformanceModal {
 
         // 加载自定义徽章
         this.customBadges = this.loadCustomBadges();
-        
+
         // 合并所有徽章供界面使用
         this.badges = { positive: [], negative: [] };
         this.mergeBadges();
@@ -230,34 +230,17 @@ class DailyPerformanceModal {
             
             .badge-grid {
                 display: grid;
-                grid-template-columns: repeat(4, 1fr);
-                gap: 12px;
+                grid-template-columns: repeat(6, 1fr);
+                gap: 10px;
                 margin-bottom: 24px;
             }
-            .badge-grid.compact {
-                gap: 8px;
-            }
-            .badge-grid.compact .perf-badge {
-                padding: 12px 8px;
-            }
-            .badge-grid.compact .perf-badge .badge-icon {
-                width: 40px;
-                height: 40px;
-                margin-bottom: 6px;
-            }
-            .badge-grid.compact .perf-badge .badge-icon i {
-                width: 20px;
-                height: 20px;
-            }
-            .badge-grid.compact .perf-badge .badge-name {
-                font-size: 12px;
-            }
+            /* Compact mode removed as per requirement */
             .perf-badge {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                padding: 16px 12px;
+                padding: 14px 10px;
                 border-radius: 12px;
                 cursor: pointer;
                 transition: all 0.2s;
@@ -265,8 +248,8 @@ class DailyPerformanceModal {
                 user-select: none;
             }
             .perf-badge .badge-icon {
-                width: 48px;
-                height: 48px;
+                width: 42px;
+                height: 42px;
                 border-radius: 50%;
                 background: white;
                 display: flex;
@@ -276,7 +259,7 @@ class DailyPerformanceModal {
                 box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             }
             .perf-badge .badge-name {
-                font-size: 13px;
+                font-size: 12px;
                 font-weight: 600;
                 text-align: center;
             }
@@ -959,7 +942,7 @@ class DailyPerformanceModal {
             this.renderStudentList();
             this.updateVisibilityToggleState();
         });
-        
+
         const subjectSelect = this.overlay.querySelector('#dailySubjectSelect');
         subjectSelect.addEventListener('change', (e) => {
             this.currentSubject = e.target.value;
@@ -969,17 +952,17 @@ class DailyPerformanceModal {
         // 监听学期变化
         // semesterSelect 已经在上面定义过
         semesterSelect.addEventListener('change', (e) => {
-             this.currentSemester = e.target.value;
-             this.renderStudentList();
-             this.updateVisibilityToggleState();
+            this.currentSemester = e.target.value;
+            this.renderStudentList();
+            this.updateVisibilityToggleState();
         });
-        
+
         // 绑定可见性切换按钮事件
         const visibilityBtn = this.overlay.querySelector('#headerVisibilityBtn');
         visibilityBtn.addEventListener('click', () => {
             this.toggleVisibility();
         });
-        
+
         // 初始化可见性按钮状态
         this.updateVisibilityToggleState();
 
@@ -1031,7 +1014,7 @@ class DailyPerformanceModal {
 
         // 过滤逻辑
         let filteredStudents = [...this.students];
-        
+
         // 1. 按搜索词过滤
         if (this.searchText) {
             const term = this.searchText.toLowerCase();
@@ -1071,7 +1054,7 @@ class DailyPerformanceModal {
                 </div>
             </div>
         `).join('');
-        
+
         if (window.lucide) window.lucide.createIcons();
     }
 
@@ -1088,13 +1071,9 @@ class DailyPerformanceModal {
             </div>
         `;
 
-        // 根据徽章数量决定是否使用紧凑模式（两者统一）
-        const posCount = this.badges.positive.length;
-        const negCount = this.badges.negative.length;
-        const useCompact = posCount > 8 || negCount > 8;
-        
-        posContainer.className = `badge-grid${useCompact ? ' compact' : ''}`;
-        negContainer.className = `badge-grid${useCompact ? ' compact' : ''}`;
+        // 始终使用统一的标准样式，不再需要紧凑模式
+        posContainer.className = 'badge-grid';
+        negContainer.className = 'badge-grid';
 
         posContainer.innerHTML = this.badges.positive.map(b => createBadge(b, 'positive')).join('');
         negContainer.innerHTML = this.badges.negative.map(b => createBadge(b, 'negative')).join('');
@@ -1253,8 +1232,8 @@ class DailyPerformanceModal {
         this.renderTimeline();
 
         // 更新左侧列表
-        const praiseEl = document.getElementById(`praise_count_${student.id}`);
-        const critEl = document.getElementById(`criticism_count_${student.id}`);
+        const praiseEl = document.getElementById(`praise_count_${student.id} `);
+        const critEl = document.getElementById(`criticism_count_${student.id} `);
         if (praiseEl) praiseEl.textContent = student.dailyStats.praise;
         if (critEl) critEl.textContent = student.dailyStats.criticism;
     }
@@ -1262,10 +1241,10 @@ class DailyPerformanceModal {
     showFloatingAnim(targetEl, text, colorClass) {
         const rect = targetEl.getBoundingClientRect();
         const floatEl = document.createElement('div');
-        floatEl.className = `floating-score-anim ${colorClass}`;
+        floatEl.className = `floating - score - anim ${colorClass} `;
         floatEl.textContent = text;
-        floatEl.style.left = `${rect.left + rect.width / 2 - 10}px`;
-        floatEl.style.top = `${rect.top}px`;
+        floatEl.style.left = `${rect.left + rect.width / 2 - 10} px`;
+        floatEl.style.top = `${rect.top} px`;
         document.body.appendChild(floatEl);
 
         setTimeout(() => floatEl.remove(), 1000);
@@ -1285,19 +1264,19 @@ class DailyPerformanceModal {
         this.isVisible = false;
         this.overlay.classList.remove('show');
     }
-    
+
     getVisibilityKey() {
-        return `${this.currentClass}-${this.currentSubject}-${this.currentSemester}`;
+        return `${this.currentClass} -${this.currentSubject} -${this.currentSemester} `;
     }
-    
+
     updateVisibilityToggleState() {
         const btn = document.getElementById('headerVisibilityBtn');
         if (!btn) return;
-        
+
         const key = this.getVisibilityKey();
         // 默认为 true（可见）
         const isVisible = this.visibilitySettings[key] !== false;
-        
+
         if (isVisible) {
             btn.className = 'header-visibility-btn visible';
             btn.innerHTML = `
@@ -1312,30 +1291,30 @@ class DailyPerformanceModal {
             `;
         }
     }
-    
+
     toggleVisibility() {
         const key = this.getVisibilityKey();
         const currentIsVisible = this.visibilitySettings[key] !== false;
-        
+
         // 切换状态
         this.visibilitySettings[key] = !currentIsVisible;
-        
+
         // 更新 UI
         this.updateVisibilityToggleState();
-        
+
         // 显示提示
         const newIsVisible = !currentIsVisible;
         this.showToast(
-            newIsVisible 
-                ? '已发布，学生端可查看' 
+            newIsVisible
+                ? '已发布，学生端可查看'
                 : '已取消发布',
             newIsVisible ? 'success' : 'info'
         );
-        
+
         // 这里可以添加保存到后端的逻辑
         console.log('可见性设置已更新:', key, newIsVisible);
     }
-    
+
     loadCustomBadges() {
         try {
             const stored = localStorage.getItem('custom_badges');
@@ -1372,7 +1351,7 @@ class DailyPerformanceModal {
         const overlay = document.createElement('div');
         overlay.id = 'badgeManagerOverlay';
         overlay.className = 'badge-manager-overlay show';
-        
+
         const typeName = type === 'positive' ? '正向激励' : '待改进';
         const icon = type === 'positive' ? 'thumbs-up' : 'thumbs-down';
         const color = type === 'positive' ? 'text-green-600' : 'text-red-600';
@@ -1432,12 +1411,12 @@ class DailyPerformanceModal {
 
         const systemList = this.systemBadges[type];
         const customList = this.customBadges[type];
-        const allList = [...systemList.map(b => ({...b, isSystem: true})), ...customList];
+        const allList = [...systemList.map(b => ({ ...b, isSystem: true })), ...customList];
 
         container.innerHTML = allList.map(b => {
             const isSystem = b.isSystem;
             const tagClass = isSystem ? 'system' : (type === 'positive' ? 'custom-positive' : 'custom-negative');
-            
+
             return `
                 <div class="manager-badge-tag ${tagClass}">
                     <span>${b.name}</span>
@@ -1449,7 +1428,7 @@ class DailyPerformanceModal {
                 </div>
             `;
         }).join('');
-        
+
         if (window.lucide) window.lucide.createIcons();
     }
 
@@ -1502,7 +1481,7 @@ class DailyPerformanceModal {
         `;
         toast.textContent = message;
         document.body.appendChild(toast);
-        
+
         setTimeout(() => {
             toast.style.animation = 'slideOutRight 0.3s ease';
             setTimeout(() => toast.remove(), 300);
@@ -1520,6 +1499,14 @@ toastStyle.textContent = `
     @keyframes slideOutRight {
         from { transform: translateX(0); opacity: 1; }
         to { transform: translateX(100%); opacity: 0; }
+    }
+    @keyframes slideDown {
+        from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+        to { transform: translateX(-50%) translateY(0); opacity: 1; }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 `;
 document.head.appendChild(toastStyle);

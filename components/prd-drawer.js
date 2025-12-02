@@ -6,13 +6,13 @@
  * <script src="../components/prd-drawer.js" data-doc="../docs/your-doc.md"></script>
  */
 
-(function() {
+(function () {
     // 获取配置
     const script = document.currentScript;
     const scriptDir = script.src.substring(0, script.src.lastIndexOf('/'));
     const configUrl = scriptDir + '/../docs/config.json';
     const buttonPosition = script.getAttribute('data-position') || 'bottom-right';
-    
+
     // 配置数据
     let config = { docs: [], pageMapping: {} };
     let currentDoc = null; // 当前显示的文档
@@ -47,7 +47,7 @@
 
     // 位置映射
     const positions = {
-        'bottom-right': 'right: 32px; bottom: 96px;',
+        'bottom-right': 'right: 32px; bottom: 176px;',
         'bottom-left': 'left: 24px; bottom: 24px;',
         'top-right': 'right: 24px; top: 24px;',
         'top-left': 'left: 24px; top: 24px;'
@@ -646,14 +646,14 @@
         toc.classList.add('hidden');
         tocCollapsed.classList.add('show');
     }
-    
+
     // 大纲显示/隐藏切换
     tocToggle.addEventListener('click', () => {
         toc.classList.add('hidden');
         tocCollapsed.classList.add('show');
         localStorage.setItem('prd-toc-hidden', 'true');
     });
-    
+
     tocExpand.addEventListener('click', () => {
         toc.classList.remove('hidden');
         tocCollapsed.classList.remove('show');
@@ -677,7 +677,7 @@
     // 渲染文档列表
     function renderDocList() {
         docListInner.innerHTML = '';
-        
+
         // 添加标题
         const header = document.createElement('div');
         header.style.padding = '0 0 16px 4px';
@@ -728,15 +728,15 @@
         overlay.classList.add('open');
         drawer.classList.add('open');
         document.body.style.overflow = 'hidden';
-        
+
         // 加载配置
         await loadConfig();
         renderDocList();
-        
+
         // 根据页面映射决定显示什么
         const pageName = getPageName();
         const mapping = config.pageMapping[pageName];
-        
+
         if (mapping === '*') {
             // 显示文档列表
             showListView();
@@ -768,14 +768,14 @@
         try {
             content.innerHTML = '<div class="prd-loading">加载中...</div>';
             tocList.innerHTML = ''; // 清空大纲
-            
+
             // 先加载依赖库
             await loadDependencies();
-            
+
             const res = await fetch(docPath);
             if (!res.ok) throw new Error('文档未找到: ' + docPath);
             const md = await res.text();
-            
+
             content.innerHTML = marked.parse(md);
 
             // 恢复滚动条位置
@@ -799,7 +799,7 @@
                     const text = block.textContent.trim();
                     const isMermaid = block.className.includes('mermaid') ||
                         /^(flowchart|graph|sequenceDiagram|classDiagram|stateDiagram|erDiagram|gantt|pie|mindmap|timeline)/.test(text);
-                    
+
                     if (isMermaid) {
                         const pre = block.parentElement;
                         const div = document.createElement('div');
@@ -808,7 +808,7 @@
                         pre.replaceWith(div);
                     }
                 });
-                
+
                 mermaid.initialize({ startOnLoad: false, theme: 'default' });
                 await mermaid.run({ querySelector: '.prd-content .mermaid' });
             }
@@ -830,17 +830,17 @@
         // 获取所有标题
         const headings = content.querySelectorAll('h1, h2, h3, h4, h5, h6');
         tocList.innerHTML = '';
-        
+
         // 构建树状结构（支持任意层级）
         const tree = [];
         const stack = [{ level: 0, children: tree }];
-        
+
         headings.forEach((heading, index) => {
             const id = 'prd-heading-' + index;
             heading.id = id;
             const level = parseInt(heading.tagName.charAt(1));
             const node = { heading, id, level, children: [] };
-            
+
             // 找到合适的父级
             while (stack.length > 1 && stack[stack.length - 1].level >= level) {
                 stack.pop();
@@ -848,13 +848,13 @@
             stack[stack.length - 1].children.push(node);
             stack.push(node);
         });
-        
+
         // 箭头 SVG
         const arrowSvg = '<svg class="prd-toc-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>';
-        
+
         // 大纲展开状态存储 key
         const tocStateKey = 'prd-toc-state-' + (currentDoc || 'default');
-        
+
         // 获取保存的展开状态
         function getCollapsedNodes() {
             try {
@@ -863,47 +863,47 @@
                 return {};
             }
         }
-        
+
         // 保存展开状态
         function saveCollapsedNodes(collapsed) {
             localStorage.setItem(tocStateKey, JSON.stringify(collapsed));
         }
-        
+
         // 生成节点唯一标识（标题文字 + 层级）
         function getNodeKey(node) {
             return node.heading.textContent.trim() + '|h' + node.level;
         }
-        
+
         let collapsedNodes = getCollapsedNodes();
-        
+
         // 递归渲染树
         function renderNode(node, container, depth = 0) {
             const groupEl = document.createElement('div');
             groupEl.className = 'prd-toc-group';
-            
+
             // 标题项
             const itemEl = document.createElement('div');
             itemEl.className = 'prd-toc-parent';
             itemEl.style.paddingLeft = (16 + depth * 12) + 'px';
             const headingText = node.heading.textContent;
-            itemEl.innerHTML = (node.children.length > 0 ? arrowSvg : '<span class="prd-toc-arrow empty"></span>') + 
-                               '<span title="' + headingText.replace(/"/g, '&quot;') + '">' + headingText + '</span>';
+            itemEl.innerHTML = (node.children.length > 0 ? arrowSvg : '<span class="prd-toc-arrow empty"></span>') +
+                '<span title="' + headingText.replace(/"/g, '&quot;') + '">' + headingText + '</span>';
             itemEl.dataset.id = node.id;
-            
+
             // 子级容器
             const childrenEl = document.createElement('div');
             childrenEl.className = 'prd-toc-children';
-            
+
             // 递归渲染子级
             node.children.forEach(child => {
                 renderNode(child, childrenEl, depth + 1);
             });
-            
+
             // 计算子级高度用于动画
             if (node.children.length > 0) {
                 childrenEl.style.maxHeight = (countNodes(node) * 40) + 'px';
             }
-            
+
             // 恢复保存的展开/收起状态
             const nodeKey = getNodeKey(node);
             if (node.children.length > 0 && collapsedNodes[nodeKey]) {
@@ -911,7 +911,7 @@
                 if (arrow) arrow.classList.add('collapsed');
                 childrenEl.classList.add('collapsed');
             }
-            
+
             // 点击箭头只展开/收起
             const arrow = itemEl.querySelector('.prd-toc-arrow');
             if (arrow && node.children.length > 0) {
@@ -919,7 +919,7 @@
                     e.stopPropagation();
                     const isCollapsed = arrow.classList.toggle('collapsed');
                     childrenEl.classList.toggle('collapsed');
-                    
+
                     // 保存状态
                     if (isCollapsed) {
                         collapsedNodes[nodeKey] = true;
@@ -929,7 +929,7 @@
                     saveCollapsedNodes(collapsedNodes);
                 };
             }
-            
+
             // 点击文字跳转并选中
             const textSpan = itemEl.querySelector('span:last-child');
             if (textSpan) {
@@ -940,12 +940,12 @@
                     setActive(node.id);
                 };
             }
-            
+
             groupEl.appendChild(itemEl);
             groupEl.appendChild(childrenEl);
             container.appendChild(groupEl);
         }
-        
+
         // 计算节点总数（用于动画高度）
         function countNodes(node) {
             let count = node.children.length;
@@ -954,22 +954,22 @@
             });
             return count;
         }
-        
+
         // 渲染顶层节点
         tree.forEach(node => renderNode(node, tocList));
-        
+
         // 设置高亮
         function setActive(id) {
             tocList.querySelectorAll('.prd-toc-parent, .prd-toc-child').forEach(el => {
                 el.classList.toggle('active', el.dataset.id === id);
             });
         }
-        
+
         // 默认高亮第一个
         if (tree.length > 0) {
             setActive(tree[0].id);
         }
-        
+
         // 收集所有节点用于滚动高亮
         function getAllNodes(nodes) {
             let all = [];
@@ -980,10 +980,10 @@
             return all;
         }
         const allNodes = getAllNodes(tree);
-        
+
         // 更新滚动监听
         content.removeEventListener('scroll', scrollHandler);
-        
+
         let saveScrollTimer = null;
         function scrollHandler() {
             // 保存滚动位置（防抖处理）
