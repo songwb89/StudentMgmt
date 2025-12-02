@@ -433,7 +433,7 @@
         .scheme-more-dropdown {
             position: absolute;
             right: 12px;
-            top: 12px;
+            top: 8px;
         }
 
         /* Keep hover active while moving from button to menu */
@@ -908,12 +908,14 @@
             background: #0d4fd4;
         }
 
-        .btn:disabled {
-            background-color: #e5e7eb;
-            color: #9ca3af;
-            cursor: not-allowed;
-            opacity: 1;
-            pointer-events: none;
+        .btn-outline {
+            background: #fff;
+            color: #1e6fff;
+            border: 1px solid rgba(30, 111, 255, 0.35);
+        }
+
+        .btn-outline:hover {
+            background: rgba(30, 111, 255, 0.08);
         }
 
         /* 禁用按钮的提示容器 */
@@ -2100,8 +2102,20 @@
             background: white;
             border-radius: 12px;
             padding: 20px;
-            overflow-y: auto;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .eval-sidebar #evalSchemeList {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        .eval-sidebar .create-scheme-btn {
             flex-shrink: 0;
         }
 
@@ -2146,7 +2160,9 @@
             border-radius: 4px;
             font-size: 12px;
             font-weight: 500;
-            margin-left: 8px;
+            flex-shrink: 0;
+            align-self: flex-start;
+            margin-top: -2px;
         }
 
         .scheme-type-tag.daily {
@@ -2387,14 +2403,23 @@
         }
 
         /* 方案名称样式 */
+        .scheme-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            min-width: 0;
+            height: 24px;
+        }
+
         .scheme-name {
             font-weight: 600;
             font-size: 15px;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 6px;
-            padding-right: 24px;
+            line-height: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: help;
         }
 
         .scheme-meta {
@@ -2508,13 +2533,16 @@
     <!-- 主内容区 -->
     <main class="main-content">
         <!-- 标签页和班级/学科选择器 -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div id="studentsToolbarRow" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
             <div class="tabs">
                 <button class="tab-btn active" onclick="switchTab('all')">全部学生</button>
                 <button class="tab-btn" onclick="switchTab('group')">学生分组</button>
                 <button class="tab-btn" onclick="switchTab('comment')">综合评价</button>
             </div>
-            <div style="display: flex; gap: 12px; align-items: center;">
+
+            <div id="studentsToolbarRight" style="display: flex; gap: 12px; align-items: center;">
+                <div id="dailyPerfButtonSlot"></div>
+                <div id="studentsToolbarFilters" style="display: flex; gap: 12px; align-items: center;">
                 <!-- 班级选择器 -->
                 <div class="grade-selector-custom">
                     <div class="grade-display" onclick="toggleGradeDropdown()">
@@ -2536,6 +2564,7 @@
                     <div class="grade-dropdown hidden" id="subjectDropdown">
                         <!-- 学科选项将通过 JavaScript 动态生成 -->
                     </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -2748,8 +2777,11 @@
 
                     <div class="form-group">
                         <label class="form-label">补充关键点（选填，最多200字）</label>
-                        <textarea class="form-input" rows="2" placeholder="例如：需要加强时间管理，作业完成情况有待改进..."
-                            id="aiCustomInput" maxlength="200"></textarea>
+                        <div style="position: relative;">
+                            <textarea class="form-input" rows="2" placeholder="例如：需要加强时间管理，作业完成情况有待改进..."
+                                id="aiCustomInput" maxlength="200" oninput="updateCharCount('aiCustomInput', 'customInputCount', 200)"></textarea>
+                            <span class="char-count" id="customInputCount" style="position: absolute; bottom: 6px; right: 10px; font-size: 12px; color: #9ca3af; pointer-events: none;">0/200</span>
+                        </div>
                     </div>
 
                     <div class="modal-footer">
@@ -2765,8 +2797,12 @@
                 <div id="aiResultStep" class="ai-result-area">
                     <div class="form-group">
                         <label class="form-label" id="aiResultLabel">生成结果（可编辑，最多500字）</label>
-                        <textarea class="form-input" rows="4" id="aiResultText" maxlength="500"></textarea>
+                        <div style="position: relative;">
+                            <textarea class="form-input" rows="4" id="aiResultText" maxlength="500" oninput="updateCharCount('aiResultText', 'resultTextCount', 500)"></textarea>
+                            <span class="char-count" id="resultTextCount" style="position: absolute; bottom: 6px; right: 10px; font-size: 12px; color: #9ca3af; pointer-events: none;">0/500</span>
+                        </div>
                     </div>
+
                     <div class="modal-actions">
                         <button class="btn btn-secondary" id="aiRetryBtn" onclick="resetAiStep()">重新生成</button>
                         <button class="btn btn-primary" onclick="saveAiComment()">保存评价</button>
@@ -4714,15 +4750,8 @@
                 return;
             }
 
-            // 按学期升序，同一学期按创建时间升序排序
-            const sortedSchemes = [...evalSchemes].sort((a, b) => {
-                // 先按学期排序（如 "2024年上学期" < "2024年下学期" < "2025年上学期"）
-                if (a.semester !== b.semester) {
-                    return a.semester.localeCompare(b.semester, 'zh-CN');
-                }
-                // 同一学期按创建时间升序（id 即时间戳）
-                return a.id - b.id;
-            });
+            // 按创建时间降序排序
+            const sortedSchemes = [...evalSchemes].sort((a, b) => b.id - a.id);
 
             container.innerHTML = sortedSchemes.map(scheme => {
                 const isActive = scheme.id === currentEvalSchemeId;
@@ -4749,8 +4778,10 @@
                                 <div class="scheme-more-item" onclick="event.stopPropagation(); closeSchemeMenus(); deleteEvalScheme(${scheme.id})">删除</div>
                             </div>
                         </div>
-                        <div class="scheme-name">${scheme.name}</div>
-                        <div class="scheme-meta">${scheme.semester} <span class="scheme-type-tag ${typeInfo.class}">${typeInfo.label}</span></div>
+                        <div class="scheme-header">
+                            <span class="scheme-type-tag ${typeInfo.class}">${typeInfo.label}</span>
+                            <div class="scheme-name" title="${scheme.name}">${scheme.name}</div>
+                        </div>
                         <div class="eval-progress">
                             <div class="eval-progress-bar">
                                 <div class="eval-progress-fill" style="width: ${progressPercent}%"></div>
@@ -4994,30 +5025,8 @@
             renderEvalTable();
         }
 
-        // 用于记录名称是否被用户手动编辑过
-        let evalSchemeNameEdited = false;
-
         // 打开创建评价方案模态框
         function openCreateEvalSchemeModal() {
-            evalSchemeNameEdited = false;
-            
-            // 生成学期选项
-            const now = new Date();
-            const currentYear = now.getFullYear();
-            const currentMonth = now.getMonth() + 1;
-            
-            let semesters = [];
-            for (let y = currentYear; y >= 2023; y--) {
-                if (y === currentYear && currentMonth < 7) {
-                    semesters.push(`${y}年上学期`);
-                } else {
-                    semesters.push(`${y}年下学期`);
-                    semesters.push(`${y}年上学期`);
-                }
-            }
-
-            const semesterOptions = semesters.map(s => `<option value="${s}">${s}</option>`).join('');
-
             const modal = document.createElement('div');
             modal.className = 'modal-overlay';
             modal.id = 'createSchemeModal';
@@ -5025,26 +5034,20 @@
                 <div class="modal" onclick="event.stopPropagation()">
                     <div class="modal-title">创建评价方案</div>
                     <div class="form-group">
-                        <label class="form-label">所属学期：</label>
-                        <select class="form-select" id="evalSchemeSemester" onchange="onEvalSchemeFieldChange()">
-                            ${semesterOptions}
-                        </select>
+                        <label class="form-label">方案名称：</label>
+                        <input type="text" class="form-input" id="evalSchemeName" placeholder="请输入方案名称" maxlength="30" 
+                               oninput="clearFieldError('evalSchemeName')">
+                        <div class="field-error" id="evalSchemeNameError"></div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">评价类型：</label>
-                        <select class="form-select" id="evalSchemeType" onchange="onEvalSchemeFieldChange(); clearFieldError('evalSchemeType')" required>
+                        <select class="form-select" id="evalSchemeType" onchange="clearFieldError('evalSchemeType')" required>
                             <option value="" disabled selected>请选择类型</option>
                             <option value="daily">日常评价</option>
                             <option value="mid">期中评价</option>
                             <option value="term">期末评价</option>
                         </select>
                         <div class="field-error" id="evalSchemeTypeError"></div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">方案名称：</label>
-                        <input type="text" class="form-input" id="evalSchemeName" placeholder="请输入方案名称" maxlength="30" 
-                               oninput="evalSchemeNameEdited = this.value.trim() !== ''; clearFieldError('evalSchemeName')">
-                        <div class="field-error" id="evalSchemeNameError"></div>
                     </div>
                     <div class="modal-actions">
                         <button class="btn btn-secondary" onclick="closeModal()">取消</button>
@@ -5053,29 +5056,6 @@
                 </div>
             `;
             document.body.appendChild(modal);
-        }
-
-        // 生成默认方案名称
-        function generateEvalSchemeName(semester, type) {
-            const typeLabels = {
-                'daily': '日常评价',
-                'mid': '期中评价',
-                'term': '期末评价'
-            };
-            return `${semester}-${typeLabels[type] || '评价'}`;
-        }
-
-        // 学期或类型变化时，自动更新名称（如果用户未手动编辑）
-        function onEvalSchemeFieldChange() {
-            const nameInput = document.getElementById('evalSchemeName');
-            const semester = document.getElementById('evalSchemeSemester').value;
-            const type = document.getElementById('evalSchemeType').value;
-            
-            // 只有名称为空或未被手动编辑时，才自动更新
-            if (!evalSchemeNameEdited || nameInput.value.trim() === '') {
-                nameInput.value = generateEvalSchemeName(semester, type);
-                evalSchemeNameEdited = false;
-            }
         }
 
         // 显示字段错误提示
@@ -5111,7 +5091,6 @@
         // 创建评价方案
         function createEvalScheme() {
             const name = document.getElementById('evalSchemeName').value.trim();
-            const semester = document.getElementById('evalSchemeSemester').value;
             const type = document.getElementById('evalSchemeType').value;
 
             // 清除之前的错误提示
@@ -5119,26 +5098,17 @@
 
             let hasError = false;
 
-            if (!type) {
-                showFieldError('evalSchemeType', '请选择评价类型');
-                hasError = true;
-            }
-
             if (!name) {
                 showFieldError('evalSchemeName', '请输入方案名称');
                 hasError = true;
             }
 
-            if (hasError) return;
-
-            // 检查期中/期末是否已存在（同一学期只能有一个）
-            if (type === 'mid' || type === 'term') {
-                const existsSameType = evalSchemes.some(s => s.semester === semester && s.type === type);
-                if (existsSameType) {
-                    showFieldError('evalSchemeType', '该学期已存在同类型评价');
-                    return;
-                }
+            if (!type) {
+                showFieldError('evalSchemeType', '请选择评价类型');
+                hasError = true;
             }
+
+            if (hasError) return;
 
             // 检查名称是否重复
             const exists = evalSchemes.some(s => s.name === name);
@@ -5150,7 +5120,6 @@
             const newScheme = {
                 id: Date.now(),
                 name: name,
-                semester: semester,
                 type: type,
                 createTime: new Date().toISOString().substring(0, 10),
                 evaluations: {}
@@ -5895,6 +5864,15 @@
 
             modal.classList.remove('hidden');
             lucide.createIcons();
+        }
+
+        // 更新字数统计
+        function updateCharCount(textareaId, countId, maxLength) {
+            const textarea = document.getElementById(textareaId);
+            const countEl = document.getElementById(countId);
+            if (!textarea || !countEl) return;
+            const len = textarea.value.length;
+            countEl.textContent = `${len}/${maxLength}`;
         }
 
         function closeAiCommentModal() {

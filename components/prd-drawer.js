@@ -47,7 +47,7 @@
 
     // 位置映射
     const positions = {
-        'bottom-right': 'right: 32px; bottom: 176px;',
+        'bottom-right': 'right: 32px; bottom: 32px;',
         'bottom-left': 'left: 24px; bottom: 24px;',
         'top-right': 'right: 24px; top: 24px;',
         'top-left': 'left: 24px; top: 24px;'
@@ -522,9 +522,9 @@
         }
         .prd-content blockquote {
             border-left: 4px solid #e5e7eb;
-            padding: 12px 16px;
+            padding: 6px 12px;
             color: #666;
-            margin: 1em 0;
+            margin: 0.5em 0;
             background: #f8f9fa;
             border-radius: 0 8px 8px 0;
         }

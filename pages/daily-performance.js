@@ -4,7 +4,7 @@ class DailyPerformanceModal {
         this.isVisible = false;
         this.currentClass = '三年二班';
         this.currentSubject = '语文';
-        this.currentSemester = ''; // Will be set in initUI
+        this.currentTimeRange = 180; // 默认近六个月（天数）
         this.selectedStudentId = null;
         this.searchText = ''; // 搜索关键词
         this.isSettingsDropdownOpen = false;
@@ -762,24 +762,40 @@ class DailyPerformanceModal {
     }
 
     createFloatingButton() {
-        const btn = document.createElement('div');
-        btn.className = 'fixed bottom-8 right-8 w-14 h-14 bg-blue-600 rounded-full shadow-xl flex items-center justify-center cursor-pointer hover:bg-blue-700 hover:scale-110 transition-all z-[100] group';
-        btn.id = 'dailyPerfFloatingBtn';
-        btn.innerHTML = `
-            <i data-lucide="trophy" class="text-white w-7 h-7"></i>
-            <div class="absolute bottom-full right-0 mb-2 bg-gray-800 text-white text-xs px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+        // 在筛选条件左侧的槽位插入按钮
+        const buttonSlot = document.getElementById('dailyPerfButtonSlot');
+        if (!buttonSlot) {
+            console.warn('未找到 dailyPerfButtonSlot，无法插入“课堂点评”按钮');
+            return;
+        }
+
+        let btn = document.getElementById('dailyPerfToolbarBtn');
+        if (!btn) {
+            btn = document.createElement('button');
+            btn.id = 'dailyPerfToolbarBtn';
+            btn.className = 'btn btn-outline';
+            btn.style.display = 'flex';
+            btn.style.alignItems = 'center';
+            btn.style.gap = '8px';
+            btn.style.padding = '10px 16px';
+            btn.innerHTML = `
+                <i data-lucide="trophy" style="width: 16px; height: 16px;"></i>
                 课堂点评
-            </div>
-        `;
-        btn.onclick = () => this.show();
-        document.body.appendChild(btn);
-        this.floatingBtn = btn;
+            `;
+            btn.onclick = () => this.show();
+            buttonSlot.appendChild(btn);
+        }
+
+        this.toolbarBtn = btn;
 
         // 初始化图标
         if (window.lucide) window.lucide.createIcons();
 
         // 监听标签页切换
         this.observeTabSwitch();
+
+        // 初始化可见性
+        this.updateFloatingButtonVisibility('all');
     }
 
     observeTabSwitch() {
@@ -794,13 +810,10 @@ class DailyPerformanceModal {
     }
 
     updateFloatingButtonVisibility(tab) {
-        if (!this.floatingBtn) return;
+        const buttonSlot = document.getElementById('dailyPerfButtonSlot');
+        if (!buttonSlot) return;
 
-        if (tab === 'all') {
-            this.floatingBtn.style.display = 'flex';
-        } else {
-            this.floatingBtn.style.display = 'none';
-        }
+        buttonSlot.style.display = tab === 'all' ? 'block' : 'none';
     }
 
     createModal() {
@@ -832,8 +845,12 @@ class DailyPerformanceModal {
                                 <option>数学</option>
                                 <option>英语</option>
                             </select>
-                            <select class="header-select" id="dailySemesterSelect">
-                                <!-- Options generated dynamically -->
+                            <select class="header-select" id="dailyTimeRangeSelect">
+                                <option value="7">近一周</option>
+                                <option value="30">近一个月</option>
+                                <option value="180" selected>近六个月</option>
+                                <option value="365">近一年</option>
+                                <option value="0">全部数据</option>
                             </select>
 
                             <!-- 新增：发布状态开关 -->
@@ -926,15 +943,6 @@ class DailyPerformanceModal {
             document.body.appendChild(dropdownEl);
         }
 
-        // 初始化并绑定学期选择事件
-        const semesterSelect = this.overlay.querySelector('#dailySemesterSelect');
-        this.initSemesterOptions(semesterSelect);
-        semesterSelect.addEventListener('change', (e) => {
-            this.currentSemester = e.target.value;
-            // Here you might want to reload data based on semester
-            this.renderStudentList();
-        });
-
         // 绑定筛选事件
         const classSelect = this.overlay.querySelector('#dailyClassSelect');
         classSelect.addEventListener('change', (e) => {
@@ -949,12 +957,10 @@ class DailyPerformanceModal {
             this.updateVisibilityToggleState();
         });
 
-        // 监听学期变化
-        // semesterSelect 已经在上面定义过
-        semesterSelect.addEventListener('change', (e) => {
-            this.currentSemester = e.target.value;
+        const timeRangeSelect = this.overlay.querySelector('#dailyTimeRangeSelect');
+        timeRangeSelect.addEventListener('change', (e) => {
+            this.currentTimeRange = parseInt(e.target.value);
             this.renderStudentList();
-            this.updateVisibilityToggleState();
         });
 
         // 绑定可见性切换按钮事件
@@ -1182,7 +1188,25 @@ class DailyPerformanceModal {
         }
 
         // 按时间倒序排列
-        const sorted = [...student.dailyHistory].sort((a, b) => b.timestamp - a.timestamp);
+        let sorted = [...student.dailyHistory].sort((a, b) => b.timestamp - a.timestamp);
+
+        // 应用时段筛选
+        if (this.currentTimeRange > 0) {
+            const cutoffTime = Date.now() - this.currentTimeRange * 24 * 60 * 60 * 1000;
+            sorted = sorted.filter(item => item.timestamp >= cutoffTime);
+        }
+
+        // 如果没有符合条件的记录
+        if (sorted.length === 0) {
+            container.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full text-gray-400">
+                    <i data-lucide="clipboard-list" class="w-12 h-12 mb-2 opacity-20"></i>
+                    <p class="text-sm">该时段内暂无点评记录</p>
+                </div>
+            `;
+            if (window.lucide) window.lucide.createIcons();
+            return;
+        }
 
         container.innerHTML = sorted.map((item, index) => `
             <div class="timeline-item">
