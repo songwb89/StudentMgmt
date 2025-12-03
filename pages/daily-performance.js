@@ -1265,10 +1265,10 @@ class DailyPerformanceModal {
     showFloatingAnim(targetEl, text, colorClass) {
         const rect = targetEl.getBoundingClientRect();
         const floatEl = document.createElement('div');
-        floatEl.className = `floating - score - anim ${colorClass} `;
+        floatEl.className = `floating-score-anim ${colorClass}`;
         floatEl.textContent = text;
-        floatEl.style.left = `${rect.left + rect.width / 2 - 10} px`;
-        floatEl.style.top = `${rect.top} px`;
+        floatEl.style.left = `${rect.left + rect.width / 2 - 10}px`;
+        floatEl.style.top = `${rect.top}px`;
         document.body.appendChild(floatEl);
 
         setTimeout(() => floatEl.remove(), 1000);
