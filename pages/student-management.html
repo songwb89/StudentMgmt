@@ -2639,8 +2639,8 @@
                             <div style="display: flex; gap: 12px; align-items: center;">
                                 <select class="form-select" id="evalStatusFilter" style="width: 120px; height: 43px; padding: 0 12px;" onchange="filterEvalTable()">
                                     <option value="">全部状态</option>
-                                    <option value="empty">未填写</option>
-                                    <option value="draft">未发布</option>
+                                    <option value="empty">待评价</option>
+                                    <option value="draft">待发布</option>
                                     <option value="published">已发布</option>
                                 </select>
                                 <div style="position: relative;">
@@ -4857,7 +4857,7 @@
                     const isSelected = selectedEvalStudentIds.has(student.id);
                     
                     let statusClass = 'empty';
-                    let statusText = '未填写';
+                    let statusText = '待评价';
                     let content = '';
                     let isPublished = false;
 
@@ -4865,7 +4865,7 @@
                         content = evaluation.content;
                         isPublished = evaluation.status === 'published';
                         statusClass = isPublished ? 'published' : 'draft';
-                        statusText = isPublished ? '已发布' : '未发布';
+                        statusText = isPublished ? '已发布' : '待发布';
                     }
 
                     return `
@@ -6146,7 +6146,7 @@
             selectedEvalStudentIds.forEach(id => {
                 scheme.evaluations[id] = {
                     content: content,
-                    status: 'draft', // 新保存的默认为未发布
+                    status: 'draft', // 新保存的默认为待发布
                     updateTime: updateTime
                 };
             });

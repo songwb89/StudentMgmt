@@ -1311,7 +1311,7 @@ class DailyPerformanceModal {
             btn.className = 'header-visibility-btn hidden-state';
             btn.innerHTML = `
                 <div class="publish-toggle"></div>
-                <span>未发布</span>
+                <span>待发布</span>
             `;
         }
     }
