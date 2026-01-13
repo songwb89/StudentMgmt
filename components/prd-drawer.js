@@ -18,9 +18,48 @@
     let currentDoc = null; // 当前显示的文档
     let currentView = 'list'; // 'list' 或 'doc'
 
-    // 获取当前页面名
+    // 获取当前页面名（标准化处理，兼容多种环境）
     function getPageName() {
-        return window.location.pathname.split('/').pop() || 'index.html';
+        let pathname = window.location.pathname;
+
+        // 移除尾部斜杠
+        pathname = pathname.replace(/\/$/, '');
+
+        // 提取最后一个 / 之后的部分
+        let pageName = pathname.split('/').pop() || 'index.html';
+
+        // 如果没有文件扩展名，自动补上 .html
+        if (pageName && !pageName.includes('.')) {
+            pageName = pageName + '.html';
+        }
+
+        return pageName || 'index.html';
+    }
+
+    // 从 pageMapping 中查找映射（支持多种格式的降级匹配）
+    function getPageMapping(pageName) {
+        // 1. 精确匹配
+        if (config.pageMapping[pageName]) {
+            return config.pageMapping[pageName];
+        }
+
+        // 2. 如果有 .html 扩展名，尝试去掉后再匹配
+        if (pageName.endsWith('.html')) {
+            const nameWithoutExt = pageName.replace('.html', '');
+            if (config.pageMapping[nameWithoutExt]) {
+                return config.pageMapping[nameWithoutExt];
+            }
+        }
+
+        // 3. 如果没有 .html 扩展名，尝试加上后再匹配
+        if (!pageName.endsWith('.html')) {
+            const nameWithExt = pageName + '.html';
+            if (config.pageMapping[nameWithExt]) {
+                return config.pageMapping[nameWithExt];
+            }
+        }
+
+        return undefined;
     }
 
     // 动态加载依赖库
@@ -543,6 +582,9 @@
             background: #f8f9fa;
             font-weight: 600;
         }
+        .prd-content thead {
+            position: static;
+        }
         .prd-content a {
             color: #667eea;
         }
@@ -566,6 +608,17 @@
             border-radius: 8px;
             margin: 1em 0;
             text-align: center;
+        }
+        .prd-content .prd-plantuml {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 1em 0;
+            text-align: center;
+        }
+        .prd-content .prd-plantuml img {
+            max-width: 100%;
+            height: auto;
         }
     `;
     document.head.appendChild(style);
@@ -735,17 +788,26 @@
 
         // 根据页面映射决定显示什么
         const pageName = getPageName();
-        const mapping = config.pageMapping[pageName];
+        const mapping = getPageMapping(pageName);
 
         if (mapping === '*') {
             // 显示文档列表
             showListView();
+        } else if (mapping) {
+            // 显示具体文档（通过映射找到）
+            const docInfo = config.docs.find(d => d.file === mapping);
+            const docName = docInfo ? docInfo.name : mapping;
+            await openDoc(mapping, docName);
         } else {
-            // 显示具体文档
-            const docFile = mapping || pageName.replace('.html', '.md');
+            // 备选方案：尝试将页面名转换为 markdown 文件名
+            const docFile = pageName.replace('.html', '.md');
             const docInfo = config.docs.find(d => d.file === docFile);
-            const docName = docInfo ? docInfo.name : docFile;
-            await openDoc(docFile, docName);
+            if (docInfo) {
+                await openDoc(docFile, docInfo.name);
+            } else {
+                // 如果还是找不到，显示文档列表
+                showListView();
+            }
         }
     }
 
@@ -778,26 +840,33 @@
 
             content.innerHTML = marked.parse(md);
 
-            // 恢复滚动条位置
-            const savedScroll = localStorage.getItem('prd-scroll-' + currentDoc);
-            if (savedScroll) {
-                // 使用 setTimeout 确保 DOM 渲染完成后执行
-                setTimeout(() => {
-                    content.scrollTop = parseInt(savedScroll);
-                }, 0);
-            } else {
-                content.scrollTop = 0;
-            }
+            // 修复图片路径：将相对于 md 文件的路径转换为相对于 docs 目录的路径
+            const images = content.querySelectorAll('img');
+            images.forEach(img => {
+                const src = img.getAttribute('src');
+                // 如果是相对路径（不是 http/https/data 开头），添加 docs 目录前缀
+                if (src && !src.startsWith('http') && !src.startsWith('data:') && !src.startsWith('/')) {
+                    img.src = '../docs/' + src;
+                }
+            });
 
             // 生成目录
             buildTOC();
+
+            // 先渲染 PlantUML 图表（在 Mermaid 之前，避免冲突）
+            await renderPlantUML();
 
             // 渲染 Mermaid 图表
             if (typeof mermaid !== 'undefined') {
                 const codeBlocks = content.querySelectorAll('pre code');
                 codeBlocks.forEach((block) => {
                     const text = block.textContent.trim();
-                    const isMermaid = block.className.includes('mermaid') ||
+                    // 排除 PlantUML 代码块
+                    if (block.className.includes('language-plantuml') || text.startsWith('@start')) {
+                        return;
+                    }
+                    const isMermaid = block.className.includes('language-mermaid') ||
+                        block.className.includes('mermaid') ||
                         /^(flowchart|graph|sequenceDiagram|classDiagram|stateDiagram|erDiagram|gantt|pie|mindmap|timeline)/.test(text);
 
                     if (isMermaid) {
@@ -812,8 +881,174 @@
                 mermaid.initialize({ startOnLoad: false, theme: 'default' });
                 await mermaid.run({ querySelector: '.prd-content .mermaid' });
             }
+
+            // 恢复滚动条位置（在所有内容渲染完成后执行）
+            const savedScroll = localStorage.getItem('prd-scroll-' + currentDoc);
+            if (savedScroll) {
+                setTimeout(() => {
+                    content.scrollTop = parseInt(savedScroll);
+                }, 50); // 稍微增加延时确保布局稳定
+            } else {
+                content.scrollTop = 0;
+            }
         } catch (e) {
             content.innerHTML = '<div class="prd-loading">❌ ' + e.message + '</div>';
+        }
+    }
+
+    // 加载 pako 库用于 deflate 压缩
+    async function loadPako() {
+        if (typeof pako === 'undefined') {
+            await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js');
+        }
+    }
+
+    // PlantUML 编码函数（使用 PlantUML 官方的编码方式：deflate + 自定义64位编码）
+    function encodePlantUML(code) {
+        // PlantUML 使用自定义的 64 位编码
+        function encode6bit(b) {
+            if (b < 10) return String.fromCharCode(48 + b); // 0-9
+            b -= 10;
+            if (b < 26) return String.fromCharCode(65 + b); // A-Z
+            b -= 26;
+            if (b < 26) return String.fromCharCode(97 + b); // a-z
+            b -= 26;
+            if (b === 0) return '-';
+            if (b === 1) return '_';
+            return '?';
+        }
+
+        function append3bytes(b1, b2, b3) {
+            const c1 = b1 >> 2;
+            const c2 = ((b1 & 0x3) << 4) | (b2 >> 4);
+            const c3 = ((b2 & 0xF) << 2) | (b3 >> 6);
+            const c4 = b3 & 0x3F;
+            return encode6bit(c1 & 0x3F) + encode6bit(c2 & 0x3F) + encode6bit(c3 & 0x3F) + encode6bit(c4 & 0x3F);
+        }
+
+        // 将字符串转为 UTF-8 字节数组
+        const encoder = new TextEncoder();
+        const data = encoder.encode(code);
+
+        // 使用 pako 进行 deflate 压缩（level 9，raw deflate）
+        const compressed = pako.deflateRaw(data, { level: 9 });
+
+        let result = '';
+        for (let i = 0; i < compressed.length; i += 3) {
+            if (i + 2 === compressed.length) {
+                result += append3bytes(compressed[i], compressed[i + 1], 0);
+            } else if (i + 1 === compressed.length) {
+                result += append3bytes(compressed[i], 0, 0);
+            } else {
+                result += append3bytes(compressed[i], compressed[i + 1], compressed[i + 2]);
+            }
+        }
+        return result;
+    }
+
+    // 渲染 PlantUML 图表
+    async function renderPlantUML() {
+        const codeBlocks = content.querySelectorAll('pre code');
+        const plantUMLBlocks = [];
+        const imageLoadPromises = [];
+
+        console.log('[PlantUML] 检测到代码块数量:', codeBlocks.length);
+
+        codeBlocks.forEach((block, index) => {
+            const text = block.textContent.trim();
+            console.log(`[PlantUML] 代码块 ${index}: className="${block.className}", 内容前50字符="${text.substring(0, 50)}"`);
+
+            // 检测 language-plantuml 类名或 PlantUML 语法标记
+            const isPlantUML = block.className.includes('language-plantuml') ||
+                block.className.includes('plantuml') ||
+                text.startsWith('@startuml') ||
+                text.startsWith('@startmindmap') ||
+                text.startsWith('@startwbs') ||
+                text.startsWith('@startgantt');
+
+            console.log(`[PlantUML] 代码块 ${index} 是否为 PlantUML:`, isPlantUML);
+
+            if (isPlantUML) {
+                plantUMLBlocks.push({ block, text });
+            }
+        });
+
+        console.log('[PlantUML] 找到 PlantUML 代码块数量:', plantUMLBlocks.length);
+
+        if (plantUMLBlocks.length === 0) return;
+
+        // 加载 pako 库
+        await loadPako();
+
+        // 处理所有 PlantUML 代码块
+        for (const { block, text } of plantUMLBlocks) {
+            try {
+                const pre = block.parentElement;
+                console.log('[PlantUML] 开始编码，原始代码长度:', text.length);
+                const encoded = encodePlantUML(text);
+                console.log('[PlantUML] 编码结果:', encoded.substring(0, 100) + '...');
+                // 使用 PlantUML 官方服务（使用 HTTPS）
+                const imageUrl = `https://www.plantuml.com/plantuml/svg/${encoded}`;
+                console.log('[PlantUML] 图片URL:', imageUrl);
+
+                // 创建图片容器
+                const container = document.createElement('div');
+                container.className = 'prd-plantuml';
+                container.style.cssText = 'background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 1em 0; text-align: center;';
+
+                // 创建加载提示
+                const loading = document.createElement('div');
+                loading.style.cssText = 'color: #666; padding: 10px;';
+                loading.textContent = '加载 PlantUML 图表中...';
+                container.appendChild(loading);
+
+                // 创建图片元素
+                const img = document.createElement('img');
+
+                const loadPromise = new Promise((resolve) => {
+                    img.onload = () => {
+                        loading.remove();
+                        img.style.display = 'block';
+                        resolve();
+                    };
+
+                    img.onerror = (e) => {
+                        console.error('PlantUML image load error:', e, 'URL:', imageUrl);
+                        loading.remove();
+                        const errorMsg = document.createElement('div');
+                        errorMsg.style.cssText = 'color: #e74c3c; padding: 20px;';
+                        errorMsg.innerHTML = '❌ PlantUML 图表加载失败<br><small>请检查网络连接或代码是否正确</small>';
+                        container.innerHTML = '';
+                        container.appendChild(errorMsg);
+                        resolve();
+                    };
+                });
+                imageLoadPromises.push(loadPromise);
+
+                img.src = imageUrl;
+                img.alt = 'PlantUML Diagram';
+                img.style.cssText = 'max-width: 100%; height: auto; display: none;';
+
+                container.appendChild(img);
+
+                container.appendChild(img);
+                pre.replaceWith(container);
+            } catch (e) {
+                console.error('PlantUML render error:', e);
+                const pre = block.parentElement;
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'prd-plantuml';
+                errorDiv.style.cssText = 'background: #fee; padding: 20px; border-radius: 8px; margin: 1em 0; color: #e74c3c;';
+                errorDiv.textContent = '❌ PlantUML 渲染错误: ' + e.message;
+                pre.replaceWith(errorDiv);
+            }
+        }
+
+        // 等待所有图片加载完成
+        if (imageLoadPromises.length > 0) {
+            console.log(`[PlantUML] Waiting for ${imageLoadPromises.length} images...`);
+            await Promise.all(imageLoadPromises);
+            console.log('[PlantUML] All images loaded');
         }
     }
 
